@@ -2215,6 +2215,10 @@ pre,
     margin: 24px 0;
     padding: 24px 18px;
   }
+  .home-profile {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
   .featured-grid {
     grid-template-columns: 1fr;
   }
