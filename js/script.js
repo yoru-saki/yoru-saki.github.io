@@ -36,12 +36,11 @@
       if (alt) $(this).after('<span class="caption">' + alt + '</span>');
     });
 
-    $(this).children('table').each(function(index){
+    $(this).find('table').not('figure.highlight table, .diagram-card table').each(function(){
       var $table = $(this);
       if ($table.parent('.article-table-wrap').length) return;
 
       $table.wrap('<div class="article-table-wrap"></div>');
-      $table.before('<div class="article-table-head"><span>表格 ' + (index + 1) + '</span><strong>横向滚动查看完整内容</strong></div>');
     });
   });
 
