@@ -3798,13 +3798,22 @@ html[data-theme="dark"] .code-copy {
 .reveal-panel,
 .featured-card,
 .latest-item {
-  opacity: 0;
-  transform: translateY(14px);
+  opacity: 1;
+  transform: translateY(0);
   transition: opacity 0.44s ease, transform 0.44s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
-.reveal-panel.is-revealed,
-.featured-card.is-revealed,
-.latest-item.is-revealed {
+body.reveal-enabled .reveal-panel,
+body.reveal-enabled .featured-card,
+body.reveal-enabled .latest-item {
+  opacity: 0;
+  transform: translateY(14px);
+}
+body.reveal-enabled .reveal-panel.is-revealed,
+body.reveal-enabled .featured-card.is-revealed,
+body.reveal-enabled .latest-item.is-revealed,
+body.reveal-fallback .reveal-panel,
+body.reveal-fallback .featured-card,
+body.reveal-fallback .latest-item {
   opacity: 1;
   transform: translateY(0);
 }

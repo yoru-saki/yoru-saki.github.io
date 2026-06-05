@@ -376,12 +376,22 @@
       return;
     }
 
+    $('body').addClass('reveal-enabled');
+
+    var fallbackTimer = window.setTimeout(function(){
+      $('body').addClass('reveal-fallback');
+    }, 900);
+
     var observer = new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
         if (!entry.isIntersecting) return;
         $(entry.target).addClass('is-revealed');
         observer.unobserve(entry.target);
       });
+
+      if ($targets.length === $targets.filter('.is-revealed').length) {
+        window.clearTimeout(fallbackTimer);
+      }
     }, { threshold: 0.12 });
 
     $targets.each(function(index){
