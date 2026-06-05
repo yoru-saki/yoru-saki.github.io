@@ -22,7 +22,7 @@
     <link rel="shortcut icon" href="/favicon.png">
   
   
-  <link rel="stylesheet" href="/css/style.css?v=20260605-refined">
+  <link rel="stylesheet" href="/css/style.css?v=20260605-system">
   
     
 <link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
@@ -77,10 +77,10 @@
 </header>
 
       <div class="outer">
-        <section id="main"><section class="home-profile reveal-panel">
+        <section id="main"><section class="home-profile reveal-panel" aria-labelledby="home-profile-title">
   <div class="home-profile-main">
-    <p class="home-kicker">Personal notebook for AI application building</p>
-    <h2>普通开发者，追寻新事物，偶尔记录分享。</h2>
+    <p class="home-kicker">AI Application Notes</p>
+    <h2 id="home-profile-title">普通开发者，追寻新事物，偶尔记录分享。</h2>
     <p>
       这里收集我在 AI 应用开发、项目实践和个人成长里的观察、复盘与踩坑记录。
       不追求宏大叙事，只把每一次动手、验证和修正留下来。
@@ -90,17 +90,18 @@
       <a href="https://github.com/yoru-saki" target="_blank" rel="noopener">GitHub 主页</a>
     </div>
   </div>
-  <div class="home-profile-aside" aria-hidden="true">
-    <span>AI</span>
+  <div class="home-profile-aside" aria-label="内容关键词">
+    <span>LLM App</span>
     <span>Agent</span>
     <span>RAG</span>
-    <span>Full Stack</span>
-    <span>Growth</span>
   </div>
 </section>
 
-<section class="home-directions reveal-panel">
-  <h2>技术方向</h2>
+<section class="home-directions reveal-panel" aria-labelledby="home-directions-title">
+  <div class="home-section-head compact">
+    <p>Focus Areas</p>
+    <h2 id="home-directions-title">技术方向</h2>
+  </div>
   <div class="direction-list">
     <span>大模型应用开发</span>
     <span>Agent</span>
@@ -110,10 +111,10 @@
   </div>
 </section>
 
-<section id="featured-posts" class="home-section reveal-panel">
+<section id="featured-posts" class="home-section reveal-panel" aria-labelledby="featured-posts-title">
   <div class="home-section-head">
     <p>Selected Notes</p>
-    <h2>精选文章</h2>
+    <h2 id="featured-posts-title">精选文章</h2>
   </div>
   <div class="featured-grid">
     
@@ -128,7 +129,7 @@
           
           项目名：大观园智学系统技术关键词：Vue、FastAPI、LangGraph、多 Agent、RAG、Text2SQL、SSE 流式响应、Codex 前端落地 摘要这篇文章适合想把普通业务系统改造成 AI 应用的同学阅读。项目的起点是一个学...
         </p>
-        <a class="featured-more" href="/2026/06/05/agent-platform-frontend-showcase/">继续阅读</a>
+        <a class="featured-more" href="/2026/06/05/agent-platform-frontend-showcase/" aria-label="继续阅读：抛砖引玉：教你扩展一个多 Agent 智能平台，并配套落地强风格化前端">继续阅读</a>
       </article>
     
       <article class="featured-card featured-card-2">
@@ -142,16 +143,16 @@
           
           导读：AI Agent 入门最容易浪费时间的地方，往往不是模型本身，而是工具链选择、开发流程、质量验证和项目拆解方式。这篇文章不是教科书式的理论堆砌，而是一份面向实操的入门地图：哪些坑可以提前避开，哪些捷径其实是弯路，以及最重要的一点：如何...
         </p>
-        <a class="featured-more" href="/2026/06/05/ai-agent-getting-started/">继续阅读</a>
+        <a class="featured-more" href="/2026/06/05/ai-agent-getting-started/" aria-label="继续阅读：AI Agent 开发入门教程：从概念到第一个可运行项目">继续阅读</a>
       </article>
     
   </div>
 </section>
 
-<section class="home-section latest-section reveal-panel">
+<section class="home-section latest-section reveal-panel" aria-labelledby="latest-posts-title">
   <div class="home-section-head">
     <p>Latest Records</p>
-    <h2>最新记录</h2>
+    <h2 id="latest-posts-title">最新记录</h2>
   </div>
   <div class="latest-list">
     
