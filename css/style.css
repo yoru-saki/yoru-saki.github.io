@@ -1792,10 +1792,11 @@ pre,
   margin: 34px 0;
   border: 1px solid rgba(41,191,203,0.24);
   border-radius: 8px;
-  background: -webkit-linear-gradient(315deg, rgba(255,255,255,0.88), rgba(255,248,234,0.76)), -webkit-radial-gradient(circle at 10% 18%, rgba(41,191,203,0.14), transparent 28%), -webkit-radial-gradient(circle at 88% 75%, rgba(255,127,119,0.12), transparent 24%);
-  background: -moz-linear-gradient(315deg, rgba(255,255,255,0.88), rgba(255,248,234,0.76)), -moz-radial-gradient(circle at 10% 18%, rgba(41,191,203,0.14), transparent 28%), -moz-radial-gradient(circle at 88% 75%, rgba(255,127,119,0.12), transparent 24%);
-  background: -ms-linear-gradient(315deg, rgba(255,255,255,0.88), rgba(255,248,234,0.76)), -ms-radial-gradient(circle at 10% 18%, rgba(41,191,203,0.14), transparent 28%), -ms-radial-gradient(circle at 88% 75%, rgba(255,127,119,0.12), transparent 24%);
-  background: linear-gradient(135deg, rgba(255,255,255,0.88), rgba(255,248,234,0.76)), radial-gradient(circle at 10% 18%, rgba(41,191,203,0.14), transparent 28%), radial-gradient(circle at 88% 75%, rgba(255,127,119,0.12), transparent 24%);
+  background: -webkit-linear-gradient(315deg, rgba(255,255,255,0.94), rgba(255,251,242,0.86)), -webkit-linear-gradient(0deg, rgba(41,191,203,0.045) 1px, transparent 1px), -webkit-linear-gradient(rgba(41,191,203,0.035) 1px, transparent 1px);
+  background: -moz-linear-gradient(315deg, rgba(255,255,255,0.94), rgba(255,251,242,0.86)), -moz-linear-gradient(0deg, rgba(41,191,203,0.045) 1px, transparent 1px), -moz-linear-gradient(rgba(41,191,203,0.035) 1px, transparent 1px);
+  background: -ms-linear-gradient(315deg, rgba(255,255,255,0.94), rgba(255,251,242,0.86)), -ms-linear-gradient(0deg, rgba(41,191,203,0.045) 1px, transparent 1px), -ms-linear-gradient(rgba(41,191,203,0.035) 1px, transparent 1px);
+  background: linear-gradient(135deg, rgba(255,255,255,0.94), rgba(255,251,242,0.86)), linear-gradient(90deg, rgba(41,191,203,0.045) 1px, transparent 1px), linear-gradient(rgba(41,191,203,0.035) 1px, transparent 1px);
+  background-size: auto, 34px 34px, 34px 34px;
   -webkit-box-shadow: var(--shadow);
   box-shadow: var(--shadow);
   overflow: hidden;
@@ -1815,39 +1816,40 @@ pre,
 .home-section:after {
   content: "";
   position: absolute;
-  right: -42px;
-  top: 22px;
-  width: 220px;
-  height: 48px;
-  -webkit-transform: rotate(12deg);
-  -moz-transform: rotate(12deg);
-  -ms-transform: rotate(12deg);
-  transform: rotate(12deg);
-  opacity: 0.74;
-  background: -webkit-linear-gradient(0deg, rgba(247,201,74,0.24), rgba(255,127,119,0.18)), -webkit-repeating-linear-gradient(0deg, rgba(255,255,255,0.34) 0 10px, transparent 10px 20px);
-  background: -moz-linear-gradient(0deg, rgba(247,201,74,0.24), rgba(255,127,119,0.18)), -moz-repeating-linear-gradient(0deg, rgba(255,255,255,0.34) 0 10px, transparent 10px 20px);
-  background: -ms-linear-gradient(0deg, rgba(247,201,74,0.24), rgba(255,127,119,0.18)), -ms-repeating-linear-gradient(0deg, rgba(255,255,255,0.34) 0 10px, transparent 10px 20px);
-  background: linear-gradient(90deg, rgba(247,201,74,0.24), rgba(255,127,119,0.18)), repeating-linear-gradient(90deg, rgba(255,255,255,0.34) 0 10px, transparent 10px 20px);
+  right: 30px;
+  top: 30px;
+  width: 140px;
+  height: 2px;
+  -webkit-transform: none;
+  -moz-transform: none;
+  -ms-transform: none;
+  transform: none;
+  opacity: 0.42;
+  background: -webkit-linear-gradient(0deg, rgba(41,191,203,0.34), rgba(255,127,119,0.22));
+  background: -moz-linear-gradient(0deg, rgba(41,191,203,0.34), rgba(255,127,119,0.22));
+  background: -ms-linear-gradient(0deg, rgba(41,191,203,0.34), rgba(255,127,119,0.22));
+  background: linear-gradient(90deg, rgba(41,191,203,0.34), rgba(255,127,119,0.22));
 }
 .home-profile {
   min-height: 330px;
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) 300px;
-  gap: 42px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
   -webkit-box-align: center;
   -moz-box-align: center;
   -ms-flex-align: center;
   -webkit-align-items: center;
   align-items: center;
   padding: 48px 52px;
-  background: -webkit-linear-gradient(315deg, rgba(255,255,255,0.9), rgba(255,248,234,0.78)), url("/images/collage-strip.png") right 4% top 18%/46% auto no-repeat, -webkit-radial-gradient(circle at 10% 18%, rgba(41,191,203,0.12), transparent 28%), -webkit-radial-gradient(circle at 88% 75%, rgba(255,127,119,0.1), transparent 24%);
-  background: -moz-linear-gradient(315deg, rgba(255,255,255,0.9), rgba(255,248,234,0.78)), url("/images/collage-strip.png") right 4% top 18%/46% auto no-repeat, -moz-radial-gradient(circle at 10% 18%, rgba(41,191,203,0.12), transparent 28%), -moz-radial-gradient(circle at 88% 75%, rgba(255,127,119,0.1), transparent 24%);
-  background: -ms-linear-gradient(315deg, rgba(255,255,255,0.9), rgba(255,248,234,0.78)), url("/images/collage-strip.png") right 4% top 18%/46% auto no-repeat, -ms-radial-gradient(circle at 10% 18%, rgba(41,191,203,0.12), transparent 28%), -ms-radial-gradient(circle at 88% 75%, rgba(255,127,119,0.1), transparent 24%);
-  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,248,234,0.78)), url("/images/collage-strip.png") right 4% top 18%/46% auto no-repeat, radial-gradient(circle at 10% 18%, rgba(41,191,203,0.12), transparent 28%), radial-gradient(circle at 88% 75%, rgba(255,127,119,0.1), transparent 24%);
+  background: -webkit-linear-gradient(315deg, rgba(255,255,255,0.96), rgba(255,251,242,0.9)), -webkit-linear-gradient(0deg, rgba(41,191,203,0.045) 1px, transparent 1px), -webkit-linear-gradient(rgba(41,191,203,0.035) 1px, transparent 1px);
+  background: -moz-linear-gradient(315deg, rgba(255,255,255,0.96), rgba(255,251,242,0.9)), -moz-linear-gradient(0deg, rgba(41,191,203,0.045) 1px, transparent 1px), -moz-linear-gradient(rgba(41,191,203,0.035) 1px, transparent 1px);
+  background: -ms-linear-gradient(315deg, rgba(255,255,255,0.96), rgba(255,251,242,0.9)), -ms-linear-gradient(0deg, rgba(41,191,203,0.045) 1px, transparent 1px), -ms-linear-gradient(rgba(41,191,203,0.035) 1px, transparent 1px);
+  background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(255,251,242,0.9)), linear-gradient(90deg, rgba(41,191,203,0.045) 1px, transparent 1px), linear-gradient(rgba(41,191,203,0.035) 1px, transparent 1px);
+  background-size: auto, 34px 34px, 34px 34px;
 }
 .home-profile:after {
-  width: 260px;
-  height: 58px;
+  width: 140px;
+  height: 2px;
 }
 .home-profile-main {
   position: relative;
@@ -1941,12 +1943,12 @@ pre,
   color: #fff;
   text-decoration: none;
   font-weight: 600;
-  background: -webkit-linear-gradient(315deg, var(--aqua-deep), var(--coral));
-  background: -moz-linear-gradient(315deg, var(--aqua-deep), var(--coral));
-  background: -ms-linear-gradient(315deg, var(--aqua-deep), var(--coral));
-  background: linear-gradient(135deg, var(--aqua-deep), var(--coral));
-  -webkit-box-shadow: 0 14px 28px rgba(11,136,163,0.22);
-  box-shadow: 0 14px 28px rgba(11,136,163,0.22);
+  background: -webkit-linear-gradient(315deg, #21869a, #d87878);
+  background: -moz-linear-gradient(315deg, #21869a, #d87878);
+  background: -ms-linear-gradient(315deg, #21869a, #d87878);
+  background: linear-gradient(135deg, #21869a, #d87878);
+  -webkit-box-shadow: 0 12px 24px rgba(11,136,163,0.16);
+  box-shadow: 0 12px 24px rgba(11,136,163,0.16);
   -webkit-transition: -webkit-transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease;
   -moz-transition: -moz-transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease;
   -ms-transition: -ms-transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease;
@@ -1957,8 +1959,8 @@ pre,
   -moz-transform: translateY(-2px);
   -ms-transform: translateY(-2px);
   transform: translateY(-2px);
-  -webkit-box-shadow: 0 18px 34px rgba(11,136,163,0.26);
-  box-shadow: 0 18px 34px rgba(11,136,163,0.26);
+  -webkit-box-shadow: 0 16px 30px rgba(11,136,163,0.2);
+  box-shadow: 0 16px 30px rgba(11,136,163,0.2);
 }
 .home-actions a:focus-visible {
   outline: 3px solid rgba(247,201,74,0.64);
@@ -1974,106 +1976,7 @@ pre,
   background: rgba(255,253,245,0.9);
 }
 .home-profile-aside {
-  position: relative;
-  z-index: 1;
-  min-height: 240px;
-  border-radius: 8px;
-  background: -webkit-radial-gradient(circle at 50% 50%, rgba(255,255,255,0.64), transparent 34%), repeating-conic-gradient(from 18deg, rgba(41,191,203,0.2) 0 10deg, rgba(255,127,119,0.15) 10deg 20deg, rgba(247,201,74,0.16) 20deg 30deg);
-  background: -moz-radial-gradient(circle at 50% 50%, rgba(255,255,255,0.64), transparent 34%), repeating-conic-gradient(from 18deg, rgba(41,191,203,0.2) 0 10deg, rgba(255,127,119,0.15) 10deg 20deg, rgba(247,201,74,0.16) 20deg 30deg);
-  background: -ms-radial-gradient(circle at 50% 50%, rgba(255,255,255,0.64), transparent 34%), repeating-conic-gradient(from 18deg, rgba(41,191,203,0.2) 0 10deg, rgba(255,127,119,0.15) 10deg 20deg, rgba(247,201,74,0.16) 20deg 30deg);
-  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.64), transparent 34%), repeating-conic-gradient(from 18deg, rgba(41,191,203,0.2) 0 10deg, rgba(255,127,119,0.15) 10deg 20deg, rgba(247,201,74,0.16) 20deg 30deg);
-  border: 1px solid rgba(41,191,203,0.24);
-  overflow: hidden;
-}
-.home-profile-aside:before {
-  content: "";
-  position: absolute;
-  inset: 14px;
-  opacity: 0.3;
-  background: url("/images/sticker-sheet.png") center/118% auto no-repeat;
-  mix-blend-mode: multiply;
-}
-.home-profile-aside span {
-  position: absolute;
-  display: -webkit-inline-box;
-  display: -moz-inline-box;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
-  display: inline-box;
-  display: inline-flex;
-  -webkit-box-align: center;
-  -moz-box-align: center;
-  -ms-flex-align: center;
-  -webkit-align-items: center;
-  align-items: center;
-  -webkit-box-pack: center;
-  -moz-box-pack: center;
-  -ms-flex-pack: center;
-  -webkit-justify-content: center;
-  justify-content: center;
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  color: #24586a;
-  font-weight: 700;
-  background: rgba(255,253,245,0.78);
-  border: 1px solid rgba(41,191,203,0.34);
-  -webkit-box-shadow: 0 12px 32px rgba(39,66,86,0.12);
-  box-shadow: 0 12px 32px rgba(39,66,86,0.12);
-  backdrop-filter: blur(4px);
-  -webkit-transition: -webkit-transform 220ms ease, box-shadow 220ms ease;
-  -moz-transition: -moz-transform 220ms ease, box-shadow 220ms ease;
-  -ms-transition: -ms-transform 220ms ease, box-shadow 220ms ease;
-  transition: transform 220ms ease, box-shadow 220ms ease;
-  -webkit-animation: sticker-float 7s ease-in-out infinite;
-  -moz-animation: sticker-float 7s ease-in-out infinite;
-  -ms-animation: sticker-float 7s ease-in-out infinite;
-  animation: sticker-float 7s ease-in-out infinite;
-}
-.home-profile-aside span:hover {
-  -webkit-transform: translateY(-4px) rotate(-2deg);
-  -moz-transform: translateY(-4px) rotate(-2deg);
-  -ms-transform: translateY(-4px) rotate(-2deg);
-  transform: translateY(-4px) rotate(-2deg);
-  -webkit-box-shadow: 0 18px 38px rgba(39,66,86,0.16);
-  box-shadow: 0 18px 38px rgba(39,66,86,0.16);
-}
-.home-profile-aside span:nth-child(1) {
-  left: 12%;
-  top: 16%;
-}
-.home-profile-aside span:nth-child(2) {
-  right: 10%;
-  top: 10%;
-  -webkit-animation-delay: -1.2s;
-  -moz-animation-delay: -1.2s;
-  -ms-animation-delay: -1.2s;
-  animation-delay: -1.2s;
-}
-.home-profile-aside span:nth-child(3) {
-  left: 38%;
-  top: 39%;
-  -webkit-animation-delay: -2s;
-  -moz-animation-delay: -2s;
-  -ms-animation-delay: -2s;
-  animation-delay: -2s;
-}
-.home-profile-aside span:nth-child(4) {
-  left: 8%;
-  bottom: 8%;
-  width: 118px;
-  -webkit-animation-delay: -3s;
-  -moz-animation-delay: -3s;
-  -ms-animation-delay: -3s;
-  animation-delay: -3s;
-}
-.home-profile-aside span:nth-child(5) {
-  right: 12%;
-  bottom: 12%;
-  -webkit-animation-delay: -4.2s;
-  -moz-animation-delay: -4.2s;
-  -ms-animation-delay: -4.2s;
-  animation-delay: -4.2s;
+  display: none;
 }
 .home-directions {
   padding: 34px 38px;
@@ -2144,12 +2047,12 @@ pre,
   padding: 30px;
   border-radius: 8px;
   border: 1px solid rgba(41,191,203,0.24);
-  background: -webkit-linear-gradient(315deg, rgba(255,255,255,0.78), rgba(255,248,234,0.68)), -webkit-radial-gradient(circle at 100% 0, rgba(41,191,203,0.16), transparent 30%);
-  background: -moz-linear-gradient(315deg, rgba(255,255,255,0.78), rgba(255,248,234,0.68)), -moz-radial-gradient(circle at 100% 0, rgba(41,191,203,0.16), transparent 30%);
-  background: -ms-linear-gradient(315deg, rgba(255,255,255,0.78), rgba(255,248,234,0.68)), -ms-radial-gradient(circle at 100% 0, rgba(41,191,203,0.16), transparent 30%);
-  background: linear-gradient(135deg, rgba(255,255,255,0.78), rgba(255,248,234,0.68)), radial-gradient(circle at 100% 0, rgba(41,191,203,0.16), transparent 30%);
-  -webkit-box-shadow: 0 18px 50px rgba(39,66,86,0.12);
-  box-shadow: 0 18px 50px rgba(39,66,86,0.12);
+  background: -webkit-linear-gradient(315deg, rgba(255,255,255,0.86), rgba(255,251,242,0.76));
+  background: -moz-linear-gradient(315deg, rgba(255,255,255,0.86), rgba(255,251,242,0.76));
+  background: -ms-linear-gradient(315deg, rgba(255,255,255,0.86), rgba(255,251,242,0.76));
+  background: linear-gradient(135deg, rgba(255,255,255,0.86), rgba(255,251,242,0.76));
+  -webkit-box-shadow: 0 14px 36px rgba(39,66,86,0.1);
+  box-shadow: 0 14px 36px rgba(39,66,86,0.1);
   -webkit-transition: -webkit-transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
   -moz-transition: -moz-transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
   -ms-transition: -ms-transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
@@ -2160,10 +2063,13 @@ pre,
   position: absolute;
   right: 18px;
   top: 18px;
-  width: 82px;
-  height: 82px;
-  opacity: 0.18;
-  background: url("/images/sticker-sheet.png") center/210% auto no-repeat;
+  width: 64px;
+  height: 2px;
+  opacity: 0.34;
+  background: -webkit-linear-gradient(0deg, rgba(41,191,203,0.32), rgba(255,127,119,0.2));
+  background: -moz-linear-gradient(0deg, rgba(41,191,203,0.32), rgba(255,127,119,0.2));
+  background: -ms-linear-gradient(0deg, rgba(41,191,203,0.32), rgba(255,127,119,0.2));
+  background: linear-gradient(90deg, rgba(41,191,203,0.32), rgba(255,127,119,0.2));
   pointer-events: none;
 }
 .featured-card:hover {
@@ -2172,8 +2078,8 @@ pre,
   -ms-transform: translateY(-5px);
   transform: translateY(-5px);
   border-color: rgba(255,127,119,0.34);
-  -webkit-box-shadow: 0 24px 58px rgba(39,66,86,0.16);
-  box-shadow: 0 24px 58px rgba(39,66,86,0.16);
+  -webkit-box-shadow: 0 20px 44px rgba(39,66,86,0.13);
+  box-shadow: 0 20px 44px rgba(39,66,86,0.13);
 }
 .featured-card h3 {
   margin: 14px 0;
@@ -2273,10 +2179,11 @@ pre,
   padding: 34px;
   border-radius: 8px;
   border: 1px solid rgba(41,191,203,0.24);
-  background: -webkit-linear-gradient(315deg, rgba(255,255,255,0.86), rgba(255,248,234,0.76)), -webkit-radial-gradient(circle at 94% 10%, rgba(41,191,203,0.12), transparent 26%);
-  background: -moz-linear-gradient(315deg, rgba(255,255,255,0.86), rgba(255,248,234,0.76)), -moz-radial-gradient(circle at 94% 10%, rgba(41,191,203,0.12), transparent 26%);
-  background: -ms-linear-gradient(315deg, rgba(255,255,255,0.86), rgba(255,248,234,0.76)), -ms-radial-gradient(circle at 94% 10%, rgba(41,191,203,0.12), transparent 26%);
-  background: linear-gradient(135deg, rgba(255,255,255,0.86), rgba(255,248,234,0.76)), radial-gradient(circle at 94% 10%, rgba(41,191,203,0.12), transparent 26%);
+  background: -webkit-linear-gradient(315deg, rgba(255,255,255,0.9), rgba(255,251,242,0.8)), -webkit-linear-gradient(0deg, rgba(41,191,203,0.04) 1px, transparent 1px);
+  background: -moz-linear-gradient(315deg, rgba(255,255,255,0.9), rgba(255,251,242,0.8)), -moz-linear-gradient(0deg, rgba(41,191,203,0.04) 1px, transparent 1px);
+  background: -ms-linear-gradient(315deg, rgba(255,255,255,0.9), rgba(255,251,242,0.8)), -ms-linear-gradient(0deg, rgba(41,191,203,0.04) 1px, transparent 1px);
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,251,242,0.8)), linear-gradient(90deg, rgba(41,191,203,0.04) 1px, transparent 1px);
+  background-size: auto, 34px 34px;
   -webkit-box-shadow: var(--shadow);
   box-shadow: var(--shadow);
   overflow: hidden;
@@ -2286,11 +2193,14 @@ pre,
   position: absolute;
   right: 22px;
   top: 18px;
-  width: 180px;
-  height: 120px;
-  opacity: 0.12;
+  width: 120px;
+  height: 2px;
+  opacity: 0.34;
   pointer-events: none;
-  background: url("/images/sticker-sheet.png") center/cover no-repeat;
+  background: -webkit-linear-gradient(0deg, rgba(41,191,203,0.3), rgba(255,127,119,0.18));
+  background: -moz-linear-gradient(0deg, rgba(41,191,203,0.3), rgba(255,127,119,0.18));
+  background: -ms-linear-gradient(0deg, rgba(41,191,203,0.3), rgba(255,127,119,0.18));
+  background: linear-gradient(90deg, rgba(41,191,203,0.3), rgba(255,127,119,0.18));
 }
 .archive-year {
   display: inline-block;
