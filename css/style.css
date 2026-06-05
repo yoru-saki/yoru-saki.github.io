@@ -1785,6 +1785,20 @@ pre,
 .is-home #sidebar {
   display: none;
 }
+.is-post-page #main {
+  width: 100%;
+  float: none;
+}
+.is-post-page #sidebar {
+  display: none;
+}
+.is-inner-page #main {
+  width: 100%;
+  float: none;
+}
+.is-inner-page #sidebar {
+  display: none;
+}
 .home-profile,
 .home-directions,
 .home-section {
@@ -2823,34 +2837,43 @@ button:focus-visible,
   }
 }
 @media (max-width: 760px) {
-  #mobile-nav {
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 30;
-    width: 78vw;
-    height: 100vh;
-    -webkit-transform: translateX(-102%);
-    -moz-transform: translateX(-102%);
-    -ms-transform: translateX(-102%);
-    transform: translateX(-102%);
-    opacity: 0;
-    pointer-events: none;
-    -webkit-box-shadow: 22px 0 60px rgba(22,76,92,0.18);
-    box-shadow: 22px 0 60px rgba(22,76,92,0.18);
-    -webkit-transition: -webkit-transform 220ms ease, opacity 220ms ease;
-    -moz-transition: -moz-transform 220ms ease, opacity 220ms ease;
-    -ms-transition: -ms-transform 220ms ease, opacity 220ms ease;
-    transition: transform 220ms ease, opacity 220ms ease;
+  #main-nav {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: box;
+    display: flex;
+    -webkit-box-lines: multiple;
+    -moz-box-lines: multiple;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    gap: 8px;
+    max-width: 220px;
   }
-  .mobile-nav-on #mobile-nav {
-    -webkit-transform: translateX(0);
-    -moz-transform: translateX(0);
-    -ms-transform: translateX(0);
-    transform: translateX(0);
-    opacity: 1;
-    pointer-events: auto;
+  .mobile-nav-on #main-nav .main-nav-link {
+    display: -webkit-inline-box;
+    display: -moz-inline-box;
+    display: -webkit-inline-flex;
+    display: -ms-inline-flexbox;
+    display: inline-box;
+    display: inline-flex;
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(43,128,148,0.18);
+    background: rgba(255,253,247,0.86);
   }
   .mobile-nav-on #wrap {
     left: 0;
