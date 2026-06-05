@@ -301,7 +301,7 @@
   };
 
   var initBackToTop = function(){
-    var $button = $('<button class="back-to-top" type="button" aria-label="回到顶部"><span>↑</span></button>');
+    var $button = $('<button class="back-to-top" type="button" aria-label="回到顶部"><span class="fa fa-long-arrow-up"></span></button>');
     $('body').append($button);
 
     var toggleBackToTop = function(){
@@ -368,7 +368,7 @@
   };
 
   var initReveal = function(){
-    var $targets = $('.reveal-panel, .featured-card, .latest-item, .article-inner, .article-source-card, .article-brief');
+    var $targets = $('.reveal-panel, .featured-card, .latest-item');
     if (!$targets.length) return;
 
     if (!('IntersectionObserver' in window)) {
