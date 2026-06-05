@@ -112,6 +112,26 @@
 
   initArticleDiagrams();
 
+  var initBackToTop = function(){
+    if (!$('body').hasClass('is-post-page')) return;
+
+    var $button = $('<button class="back-to-top" type="button" aria-label="回到顶部"><span>↑</span></button>');
+    $('body').append($button);
+
+    var toggleBackToTop = function(){
+      $button.toggleClass('is-visible', window.pageYOffset > 480);
+    };
+
+    $button.on('click', function(){
+      $('html, body').stop().animate({ scrollTop: 0 }, 520);
+    });
+
+    $(window).on('scroll', toggleBackToTop);
+    toggleBackToTop();
+  };
+
+  initBackToTop();
+
   var $container = $('#container'),
     isSiteMenuAnim = false,
     siteMenuAnimDuration = 200;
