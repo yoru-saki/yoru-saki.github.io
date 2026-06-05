@@ -935,17 +935,19 @@ a.article-title:hover {
 }
 .article-entry pre,
 .article-entry .highlight {
-  background: #2d2d2d;
-  margin: 0 -20px;
-  padding: 15px 20px;
+  background: rgba(255,253,247,0.86);
+  margin: 1.6em 0;
+  padding: 18px 20px;
   border-style: solid;
-  border-color: #ddd;
-  border-width: 1px 0;
+  border-color: rgba(43,128,148,0.16);
+  border-width: 1px;
+  border-radius: 14px;
   overflow: auto;
-  color: #ccc;
+  color: #25465a;
   line-height: 22.400000000000002px;
+  -webkit-box-shadow: 0 16px 42px rgba(43,128,148,0.08);
+  box-shadow: 0 16px 42px rgba(43,128,148,0.08);
 }
-.article-entry .highlight .gutter pre,
 .article-entry .gist .gist-file .gist-data .line-numbers {
   color: #666;
   font-size: 0.85em;
@@ -955,9 +957,10 @@ a.article-title:hover {
   font-family: "Source Code Pro", Consolas, Monaco, Menlo, Consolas, monospace;
 }
 .article-entry code {
-  background: #eee;
+  background: rgba(232,249,248,0.72);
   text-shadow: 0 1px #fff;
   padding: 0 0.3em;
+  border-radius: 5px;
 }
 .article-entry pre code {
   background: none;
@@ -971,15 +974,21 @@ a.article-title:hover {
 }
 .article-entry .highlight table {
   margin: 0;
-  width: auto;
+  width: 100%;
 }
 .article-entry .highlight td {
   border: none;
   padding: 0;
 }
+.article-entry .highlight .gutter {
+  display: none;
+}
+.article-entry .highlight .code {
+  width: 100%;
+}
 .article-entry .highlight figcaption {
   font-size: 0.85em;
-  color: #999;
+  color: #7d9298;
   line-height: 1em;
   margin-bottom: 1em;
 }
@@ -994,31 +1003,18 @@ a.article-title:hover {
 .article-entry .highlight figcaption a {
   float: right;
 }
-.article-entry .highlight .gutter {
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -webkit-user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-.article-entry .highlight .gutter pre {
-  text-align: right;
-  padding-right: 20px;
-}
 .article-entry .highlight .line {
   height: 22.400000000000002px;
 }
 .article-entry .highlight .line.marked {
-  background: #515151;
+  background: rgba(41,191,203,0.16);
 }
 .article-entry .gist {
   margin: 0 -20px;
   border-style: solid;
   border-color: #ddd;
   border-width: 1px 0;
-  background: #2d2d2d;
+  background: rgba(255,253,247,0.86);
   padding: 15px 20px 15px 0;
 }
 .article-entry .gist .gist-file {
@@ -1044,8 +1040,8 @@ a.article-title:hover {
   border: none;
 }
 .article-entry .gist .gist-file .gist-meta {
-  background: #2d2d2d;
-  color: #999;
+  background: rgba(255,253,247,0.86);
+  color: #7d9298;
   font: 0.85em -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   text-shadow: 0 0;
   padding: 0;
@@ -1061,7 +1057,7 @@ a.article-title:hover {
 }
 pre .comment,
 pre .title {
-  color: #999;
+  color: #7d9298;
 }
 pre .variable,
 pre .attribute,
@@ -1075,7 +1071,7 @@ pre .html .doctype,
 pre .css .id,
 pre .css .class,
 pre .css .pseudo {
-  color: #f2777a;
+  color: #d95f63;
 }
 pre .number,
 pre .preprocessor,
@@ -1083,12 +1079,12 @@ pre .built_in,
 pre .literal,
 pre .params,
 pre .constant {
-  color: #f99157;
+  color: #c77735;
 }
 pre .class,
 pre .ruby .class .title,
 pre .css .rules .attribute {
-  color: #9c9;
+  color: #2f8a69;
 }
 pre .string,
 pre .value,
@@ -1096,10 +1092,10 @@ pre .inheritance,
 pre .header,
 pre .ruby .symbol,
 pre .xml .cdata {
-  color: #9c9;
+  color: #2f8a69;
 }
 pre .css .hexcolor {
-  color: #6cc;
+  color: #128b9c;
 }
 pre .function,
 pre .python .decorator,
@@ -1109,11 +1105,11 @@ pre .ruby .title .keyword,
 pre .perl .sub,
 pre .javascript .title,
 pre .coffeescript .title {
-  color: #69c;
+  color: #31739f;
 }
 pre .keyword,
 pre .javascript .function {
-  color: #c9c;
+  color: #7864ad;
 }
 :root {
   --paper: #fff8ea;
@@ -2946,83 +2942,6 @@ button:focus-visible,
   background: -ms-radial-gradient(circle at 18% 16%, rgba(247,201,74,0.12), transparent 24%), -ms-radial-gradient(circle at 82% 18%, rgba(216,116,118,0.1), transparent 26%);
   background: radial-gradient(circle at 18% 16%, rgba(247,201,74,0.12), transparent 24%), radial-gradient(circle at 82% 18%, rgba(216,116,118,0.1), transparent 26%);
 }
-.diagram-head {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 10px 14px;
-  -webkit-box-align: center;
-  -moz-box-align: center;
-  -ms-flex-align: center;
-  -webkit-align-items: center;
-  align-items: center;
-  margin: 0;
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(43,128,148,0.16);
-  background: rgba(255,255,255,0.54);
-}
-.diagram-head span:first-child {
-  padding: 5px 10px;
-  border: 1px solid rgba(43,128,148,0.18);
-  border-radius: 999px;
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  background: rgba(255,255,255,0.74);
-}
-.diagram-head strong {
-  min-width: 0;
-  color: var(--ink-strong);
-  font-size: 15px;
-}
-.diagram-head .diagram-hint {
-  grid-column: 2;
-  color: var(--ink-soft);
-  font-size: 12px;
-}
-.diagram-actions {
-  grid-row: 1/span 2;
-  grid-column: 3;
-  display: -webkit-inline-box;
-  display: -moz-inline-box;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
-  display: inline-box;
-  display: inline-flex;
-  gap: 8px;
-}
-.diagram-actions button {
-  border: 1px solid rgba(43,128,148,0.18);
-  border-radius: 999px;
-  padding: 7px 10px;
-  color: var(--ink-strong);
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-  background: rgba(255,255,255,0.72);
-  -webkit-transition: -webkit-transform 0.18s ease, border-color 0.18s ease, color 0.18s ease;
-  -moz-transition: -moz-transform 0.18s ease, border-color 0.18s ease, color 0.18s ease;
-  -ms-transition: -ms-transform 0.18s ease, border-color 0.18s ease, color 0.18s ease;
-  transition: transform 0.18s ease, border-color 0.18s ease, color 0.18s ease;
-}
-.diagram-actions button:hover {
-  -webkit-transform: translateY(-1px);
-  -moz-transform: translateY(-1px);
-  -ms-transform: translateY(-1px);
-  transform: translateY(-1px);
-  border-color: rgba(43,128,148,0.38);
-  color: var(--accent);
-}
-.diagram-card.is-fit [data-diagram-fit],
-.diagram-card.is-original [data-diagram-original] {
-  border-color: rgba(43,128,148,0.36);
-  color: #fff;
-  background: var(--accent);
-  -webkit-box-shadow: 0 10px 24px rgba(43,128,148,0.14);
-  box-shadow: 0 10px 24px rgba(43,128,148,0.14);
-}
 .diagram-viewport {
   position: relative;
   z-index: 1;
@@ -3058,9 +2977,6 @@ button:focus-visible,
   width: 100% !important;
   min-width: 0;
   max-width: 100%;
-}
-.diagram-card.is-scrollable .diagram-hint:after {
-  content: " / 当前图表较宽";
 }
 .diagram-card.is-diagram-error .diagram-viewport {
   overflow-x: auto;
@@ -3177,26 +3093,6 @@ figure.highlight,
   }
   .article-toc nav {
     columns: 1;
-  }
-  .diagram-head {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-  .diagram-head .diagram-hint {
-    grid-column: auto;
-  }
-  .diagram-actions {
-    grid-column: auto;
-    grid-row: auto;
-    width: 100%;
-  }
-  .diagram-actions button {
-    -webkit-box-flex: 1;
-    -moz-box-flex: 1;
-    box-flex: 1;
-    -webkit-flex: 1 1 0;
-    -ms-flex: 1 1 0;
-    flex: 1 1 0;
   }
   .diagram-viewport {
     padding: 18px 14px;

@@ -34,7 +34,7 @@
     <link rel="shortcut icon" href="/images/seahorse-hero.png">
   
   
-  <link rel="stylesheet" href="/css/style.css?v=20260605-diagrams">
+  <link rel="stylesheet" href="/css/style.css?v=20260605-clean-code">
   
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
 
@@ -112,7 +112,7 @@
       <section class="article-brief" aria-label="文章阅读概览">
         <div>
           <span>Reading Brief</span>
-          <strong>30 分钟阅读</strong>
+          <strong>29 分钟阅读</strong>
         </div>
         
           <div>
@@ -263,16 +263,7 @@
 <li>第二层是 Agent 调度层，负责判断这个问题应该交给谁处理。</li>
 <li>第三层是工具和数据层，包括数据库、向量库、全文索引、模型服务和会话记忆。</li>
 </ul>
-<figure class="diagram-card is-original" data-diagram-index="1">
-  <figcaption class="diagram-head">
-    <span>图表 1</span>
-    <strong>横向流程图</strong>
-    <span class="diagram-hint">可横向滚动查看完整内容</span>
-    <span class="diagram-actions">
-      <button type="button" data-diagram-fit>适应宽度</button>
-      <button type="button" data-diagram-original>原始尺寸</button>
-    </span>
-  </figcaption>
+<figure class="diagram-card is-fit" data-diagram-index="1">
   <div class="diagram-viewport">
     <pre class="mermaid">flowchart LR
     User["用户"] --&gt; Frontend["Vue 前端&lt;br/&gt;统一 AI 对话入口"]
@@ -310,16 +301,7 @@
 <li>面试模拟、HR 问答、岗位训练、项目追问：进入模拟面试 Agent。</li>
 <li>教务数据、成绩查询、模板文书、学习建议：进入教务助手 Agent。</li>
 </ul>
-<figure class="diagram-card is-original" data-diagram-index="2">
-  <figcaption class="diagram-head">
-    <span>图表 2</span>
-    <strong>纵向流程图</strong>
-    <span class="diagram-hint">可横向滚动查看完整内容</span>
-    <span class="diagram-actions">
-      <button type="button" data-diagram-fit>适应宽度</button>
-      <button type="button" data-diagram-original>原始尺寸</button>
-    </span>
-  </figcaption>
+<figure class="diagram-card is-fit" data-diagram-index="2">
   <div class="diagram-viewport">
     <pre class="mermaid">flowchart TD
     Q["用户问题"] --&gt; Router["SupervisorAgent.classify_intent"]
@@ -338,16 +320,7 @@
 
 <p>这样做的好处是，前端可以保留“智能路由”模式，用户不用先学习系统有哪些 Agent；而开发者也可以在后端不断优化分流规则。</p>
 <h2 id="4-所有-Agent-与工具调用链路"><a href="#4-所有-Agent-与工具调用链路" class="headerlink" title="4. 所有 Agent 与工具调用链路"></a>4. 所有 Agent 与工具调用链路</h2><p>下面这张图可以理解为系统的“能力地图”。你可以顺着箭头看：用户的问题先到统一聊天接口，再到 <code>SupervisorAgent</code>，然后被分到某个 Agent，最后才进入具体工具。</p>
-<figure class="diagram-card is-original" data-diagram-index="3">
-  <figcaption class="diagram-head">
-    <span>图表 3</span>
-    <strong>纵向流程图</strong>
-    <span class="diagram-hint">可横向滚动查看完整内容</span>
-    <span class="diagram-actions">
-      <button type="button" data-diagram-fit>适应宽度</button>
-      <button type="button" data-diagram-original>原始尺寸</button>
-    </span>
-  </figcaption>
+<figure class="diagram-card is-fit" data-diagram-index="3">
   <div class="diagram-viewport">
     <pre class="mermaid">flowchart TD
     User["用户输入"] --&gt; Unified["统一聊天接口"]
@@ -395,16 +368,7 @@
 <li>生成回复，并识别当前情绪。</li>
 <li>把回复和情绪通过 SSE 发给前端。</li>
 </ol>
-<figure class="diagram-card is-original" data-diagram-index="4">
-  <figcaption class="diagram-head">
-    <span>图表 4</span>
-    <strong>纵向流程图</strong>
-    <span class="diagram-hint">可横向滚动查看完整内容</span>
-    <span class="diagram-actions">
-      <button type="button" data-diagram-fit>适应宽度</button>
-      <button type="button" data-diagram-original>原始尺寸</button>
-    </span>
-  </figcaption>
+<figure class="diagram-card is-fit" data-diagram-index="4">
   <div class="diagram-viewport">
     <pre class="mermaid">flowchart TD
     Input["用户输入"] --&gt; Guard["InputGuard&lt;br/&gt;输入检查与清洗"]
@@ -429,16 +393,7 @@
 <li>能力清晰：作诗、对联、作文点评、情绪疏导等能力可以分别测试。</li>
 <li>体验完整：回复内容、情绪标签和前端立绘可以联动。</li>
 </ul>
-<h3 id="5-2-林黛玉-7-个工具拆分"><a href="#5-2-林黛玉-7-个工具拆分" class="headerlink" title="5.2 林黛玉 7 个工具拆分"></a>5.2 林黛玉 7 个工具拆分</h3><figure class="diagram-card is-original" data-diagram-index="5">
-  <figcaption class="diagram-head">
-    <span>图表 5</span>
-    <strong>横向流程图</strong>
-    <span class="diagram-hint">可横向滚动查看完整内容</span>
-    <span class="diagram-actions">
-      <button type="button" data-diagram-fit>适应宽度</button>
-      <button type="button" data-diagram-original>原始尺寸</button>
-    </span>
-  </figcaption>
+<h3 id="5-2-林黛玉-7-个工具拆分"><a href="#5-2-林黛玉-7-个工具拆分" class="headerlink" title="5.2 林黛玉 7 个工具拆分"></a>5.2 林黛玉 7 个工具拆分</h3><figure class="diagram-card is-fit" data-diagram-index="5">
   <div class="diagram-viewport">
     <pre class="mermaid">flowchart LR
     Daiyu["林黛玉 Agent"] --&gt; Compose["compose_poetry&lt;br/&gt;诗词创作"]
@@ -472,16 +427,7 @@
 <h2 id="6-四大名著-RAG：让回答尽量有依据"><a href="#6-四大名著-RAG：让回答尽量有依据" class="headerlink" title="6. 四大名著 RAG：让回答尽量有依据"></a>6. 四大名著 RAG：让回答尽量有依据</h2><p>RAG 可以简单理解为：不要只让大模型凭记忆回答，而是先从本地资料里找证据，再让模型根据证据组织答案。</p>
 <p>在这个项目里，四大名著问答基于本地语料实现。简单说，就是先把《红楼梦》《西游记》《水浒传》《三国演义》整理成一段一段的小文本，再把这些文本写入向量库和全文索引。用户提问时，系统先找相关原文，再让模型根据原文组织答案。</p>
 <p><img src="/assets/project-agent-showcase/04-rag-answer.png" alt="RAG 问答效果"></p>
-<h3 id="6-1-最新-RAG-检索链路"><a href="#6-1-最新-RAG-检索链路" class="headerlink" title="6.1 最新 RAG 检索链路"></a>6.1 最新 RAG 检索链路</h3><figure class="diagram-card is-original" data-diagram-index="6">
-  <figcaption class="diagram-head">
-    <span>图表 6</span>
-    <strong>纵向流程图</strong>
-    <span class="diagram-hint">可横向滚动查看完整内容</span>
-    <span class="diagram-actions">
-      <button type="button" data-diagram-fit>适应宽度</button>
-      <button type="button" data-diagram-original>原始尺寸</button>
-    </span>
-  </figcaption>
+<h3 id="6-1-最新-RAG-检索链路"><a href="#6-1-最新-RAG-检索链路" class="headerlink" title="6.1 最新 RAG 检索链路"></a>6.1 最新 RAG 检索链路</h3><figure class="diagram-card is-fit" data-diagram-index="6">
   <div class="diagram-viewport">
     <pre class="mermaid">flowchart TD
     Q["用户问题"] --&gt; Book["书籍识别&lt;br/&gt;关键词优先，必要时 LLM 判断"]
@@ -514,16 +460,7 @@
 </ul>
 <p>所以对于示例问题，系统应命中《红楼梦》第三回，并回答“贾宝玉摔的是通灵宝玉”。这个例子也说明，RAG 的关键不只是“接一个向量库”，而是要根据真实错误不断补检索策略。</p>
 <h2 id="7-教务助手：把自然语言变成业务工具调用"><a href="#7-教务助手：把自然语言变成业务工具调用" class="headerlink" title="7. 教务助手：把自然语言变成业务工具调用"></a>7. 教务助手：把自然语言变成业务工具调用</h2><p>教务助手是学生管理系统与 AI Agent 结合最直接的一条链路。它不是单纯聊天，而是会先判断用户想做什么，再选择合适的子能力。</p>
-<figure class="diagram-card is-original" data-diagram-index="7">
-  <figcaption class="diagram-head">
-    <span>图表 7</span>
-    <strong>纵向流程图</strong>
-    <span class="diagram-hint">可横向滚动查看完整内容</span>
-    <span class="diagram-actions">
-      <button type="button" data-diagram-fit>适应宽度</button>
-      <button type="button" data-diagram-original>原始尺寸</button>
-    </span>
-  </figcaption>
+<figure class="diagram-card is-fit" data-diagram-index="7">
   <div class="diagram-viewport">
     <pre class="mermaid">flowchart TD
     Assistant["教务助手 Agent"] --&gt; SkillRouter["内部技能选择"]
@@ -566,16 +503,7 @@
 <li><code>done</code>：表示本轮回复结束。</li>
 <li><code>error</code>：表示异常信息。</li>
 </ul>
-<figure class="diagram-card is-original" data-diagram-index="8">
-  <figcaption class="diagram-head">
-    <span>图表 8</span>
-    <strong>时序交互图</strong>
-    <span class="diagram-hint">可横向滚动查看完整内容</span>
-    <span class="diagram-actions">
-      <button type="button" data-diagram-fit>适应宽度</button>
-      <button type="button" data-diagram-original>原始尺寸</button>
-    </span>
-  </figcaption>
+<figure class="diagram-card is-fit" data-diagram-index="8">
   <div class="diagram-viewport">
     <pre class="mermaid">sequenceDiagram
     participant U as 用户
@@ -615,16 +543,7 @@
 </ul>
 <p>这对新手很有帮助，因为强风格 UI 最难的地方不是“写一个按钮”，而是让素材、样式、布局和浏览器里的真实效果最终对得上。</p>
 <h3 id="10-2-前端设计步骤"><a href="#10-2-前端设计步骤" class="headerlink" title="10.2 前端设计步骤"></a>10.2 前端设计步骤</h3><p>我最后把前端设计拆成 7 步。这个顺序很适合新手参考：</p>
-<figure class="diagram-card is-original" data-diagram-index="9">
-  <figcaption class="diagram-head">
-    <span>图表 9</span>
-    <strong>横向流程图</strong>
-    <span class="diagram-hint">可横向滚动查看完整内容</span>
-    <span class="diagram-actions">
-      <button type="button" data-diagram-fit>适应宽度</button>
-      <button type="button" data-diagram-original>原始尺寸</button>
-    </span>
-  </figcaption>
+<figure class="diagram-card is-fit" data-diagram-index="9">
   <div class="diagram-viewport">
     <pre class="mermaid">flowchart LR
     IA["1. 信息架构"] --&gt; Pages["2. 页面清单"]
@@ -680,7 +599,7 @@
 </tbody></table>
 <p>页面清单不是为了堆页面，而是为了让每个 AI 能力都有明确位置。</p>
 <h3 id="10-5-路由结构"><a href="#10-5-路由结构" class="headerlink" title="10.5 路由结构"></a>10.5 路由结构</h3><p>路由采用一个主布局承载多个子页面。<code>/</code> 下挂载 <code>AppLayout</code>，内部再通过 <code>router-view</code> 切换不同功能页面：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/login</span><br><span class="line">/</span><br><span class="line">  /dashboard</span><br><span class="line">  /students</span><br><span class="line">  /teachers</span><br><span class="line">  /classes</span><br><span class="line">  /grades</span><br><span class="line">  /offers</span><br><span class="line">  /statistics</span><br><span class="line">  /notifications</span><br><span class="line">  /sessions</span><br><span class="line">  /profile</span><br><span class="line">  /settings</span><br><span class="line">  /ai/chat</span><br><span class="line">  /ai/academic</span><br><span class="line">  /ai/lindaiyu -&gt; /ai/chat?agent=daiyu</span><br><span class="line">  /ai/classics</span><br><span class="line">  /ai/interview</span><br><span class="line">  /ai/text2sql</span><br><span class="line">  /ai/score-diagnosis</span><br><span class="line">  /ai/batch-comments</span><br><span class="line">  /ai/announcement</span><br><span class="line">  /ai/grouping</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">/login</span><br><span class="line">/</span><br><span class="line">  /dashboard</span><br><span class="line">  /students</span><br><span class="line">  /teachers</span><br><span class="line">  /classes</span><br><span class="line">  /grades</span><br><span class="line">  /offers</span><br><span class="line">  /statistics</span><br><span class="line">  /notifications</span><br><span class="line">  /sessions</span><br><span class="line">  /profile</span><br><span class="line">  /settings</span><br><span class="line">  /ai/chat</span><br><span class="line">  /ai/academic</span><br><span class="line">  /ai/lindaiyu -&gt; /ai/chat?agent=daiyu</span><br><span class="line">  /ai/classics</span><br><span class="line">  /ai/interview</span><br><span class="line">  /ai/text2sql</span><br><span class="line">  /ai/score-diagnosis</span><br><span class="line">  /ai/batch-comments</span><br><span class="line">  /ai/announcement</span><br><span class="line">  /ai/grouping</span><br></pre></td></tr></table></figure>
 
 <p>其中 <code>/ai/chat</code> 是最重要的统一入口。林黛玉、名著问答、面试和教务助手都可以通过这个入口切换，也可以由自动模式交给 <code>SupervisorAgent</code> 判断。</p>
 <h3 id="10-6-组件拆分"><a href="#10-6-组件拆分" class="headerlink" title="10.6 组件拆分"></a>10.6 组件拆分</h3><p>组件拆分时，我遵循一个简单原则：布局归布局，页面归页面，接口归接口。</p>
@@ -691,16 +610,7 @@
 <li>专项 AI 页面：如名著问答、模拟面试、Text2SQL、成绩诊断等，保留独立工作流。</li>
 <li>API 模块：<code>auth.ts</code>、<code>ai.ts</code>、<code>students.ts</code>、<code>grades.ts</code> 等按业务域拆分，避免页面直接拼请求。</li>
 </ul>
-<figure class="diagram-card is-original" data-diagram-index="10">
-  <figcaption class="diagram-head">
-    <span>图表 10</span>
-    <strong>纵向流程图</strong>
-    <span class="diagram-hint">可横向滚动查看完整内容</span>
-    <span class="diagram-actions">
-      <button type="button" data-diagram-fit>适应宽度</button>
-      <button type="button" data-diagram-original>原始尺寸</button>
-    </span>
-  </figcaption>
+<figure class="diagram-card is-fit" data-diagram-index="10">
   <div class="diagram-viewport">
     <pre class="mermaid">flowchart TD
     App["AppLayout&lt;br/&gt;导航 / 顶栏 / 路由舞台"] --&gt; RouterView["router-view"]
@@ -717,16 +627,7 @@
 </figure>
 
 <h3 id="10-7-API-调用关系"><a href="#10-7-API-调用关系" class="headerlink" title="10.7 API 调用关系"></a>10.7 API 调用关系</h3><p>前端 API 层分成普通 Axios 请求和 AI 流式请求两类。教务数据相关请求统一走 <code>request.ts</code> 封装，自动附带 token；AI 流式对话走 <code>fetch + ReadableStream</code>，以便逐段解析 SSE 事件。</p>
-<figure class="diagram-card is-original" data-diagram-index="11">
-  <figcaption class="diagram-head">
-    <span>图表 11</span>
-    <strong>纵向流程图</strong>
-    <span class="diagram-hint">可横向滚动查看完整内容</span>
-    <span class="diagram-actions">
-      <button type="button" data-diagram-fit>适应宽度</button>
-      <button type="button" data-diagram-original>原始尺寸</button>
-    </span>
-  </figcaption>
+<figure class="diagram-card is-fit" data-diagram-index="11">
   <div class="diagram-viewport">
     <pre class="mermaid">flowchart TD
     Views["Vue 页面"] --&gt; Request["request.ts&lt;br/&gt;Axios 封装"]
@@ -892,7 +793,7 @@
 
 
 
-<script src="/js/script.js?v=20260605-diagrams"></script>
+<script src="/js/script.js?v=20260605-clean-code"></script>
 
 
 

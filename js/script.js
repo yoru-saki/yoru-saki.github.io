@@ -111,14 +111,6 @@
     });
   };
 
-  $(document).on('click', '[data-diagram-fit]', function(){
-    $(this).closest('.diagram-card').removeClass('is-original').addClass('is-fit');
-  });
-
-  $(document).on('click', '[data-diagram-original]', function(){
-    $(this).closest('.diagram-card').removeClass('is-fit').addClass('is-original');
-  });
-
   initArticleDiagrams();
 
   var $container = $('#container'),

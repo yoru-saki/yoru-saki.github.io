@@ -27,7 +27,7 @@
     <link rel="shortcut icon" href="/images/seahorse-hero.png">
   
   
-  <link rel="stylesheet" href="/css/style.css?v=20260605-diagrams">
+  <link rel="stylesheet" href="/css/style.css?v=20260605-clean-code">
   
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
 
@@ -271,23 +271,23 @@
 <li>Node.js 是现代前端开发的基石。即便新版 Claude Code 已是原生二进制文件，日常使用 npm 安装工具、搭建前端项目时仍然离不开它。</li>
 </ul>
 <p>Windows 用户可使用 winget：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">winget install Git.Git</span><br><span class="line">winget install OpenJS.NodeJS</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">winget install Git.Git</span><br><span class="line">winget install OpenJS.NodeJS</span><br></pre></td></tr></table></figure>
 
 <p>macOS 用户可使用 Homebrew：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install git node</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">brew install git node</span><br></pre></td></tr></table></figure>
 
 <p>Linux 用户可使用系统包管理器。以 Ubuntu &#x2F; Debian 为例：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install -y git nodejs npm</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install -y git nodejs npm</span><br></pre></td></tr></table></figure>
 
 <p>安装完成后，在终端输入以下命令验证：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git --version</span><br><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git --version</span><br><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>安装 Claude Code CLI</strong></p>
 <p>方式一（推荐，通用性最强）：通过 npm 全局安装</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g @anthropic-ai/claude-code</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install -g @anthropic-ai/claude-code</span><br></pre></td></tr></table></figure>
 
 <p>Windows 用户也可以通过系统自带的包管理器 <code>winget</code> 一键安装：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winget install Anthropic.ClaudeCode</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">winget install Anthropic.ClaudeCode</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Windows 添加 PATH 路径环境变量</strong></p>
 <p>如果安装完成后在终端输入 <code>claude</code> 提示”不是内部或外部命令”，说明 Claude Code 的可执行文件目录还没有加入 PATH。可以按以下方式处理：</p>
@@ -340,13 +340,13 @@
 <blockquote>
 <p><strong>提示</strong>：此时应同步准备测试数据和测试脚本。这是很多新手都会踩的坑——如果等代码写完了再准备测试，AI 很容易根据已生成代码的逻辑”量身定制”测试用例，导致测试失去独立验证的价值。</p>
 <p><strong>可直接套用的设计阶段 Prompt 模板</strong>：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">我要开发一个【xxx系统】，核心需求是【一句话描述】。</span><br><span class="line">技术栈限定为【Python/FastAPI/Vue3 等】。</span><br><span class="line">请按以下步骤输出设计方案，不要直接写代码：</span><br><span class="line">1. 系统架构图（文字描述模块关系即可）</span><br><span class="line">2. 核心数据模型</span><br><span class="line">3. 关键接口定义</span><br><span class="line">4. 潜在风险与应对策略</span><br><span class="line">5. 提供业内规范做法、项目适配方案、前沿方案三种对比</span><br></pre></td></tr></table></figure></blockquote>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我要开发一个【xxx系统】，核心需求是【一句话描述】。</span><br><span class="line">技术栈限定为【Python/FastAPI/Vue3 等】。</span><br><span class="line">请按以下步骤输出设计方案，不要直接写代码：</span><br><span class="line">1. 系统架构图（文字描述模块关系即可）</span><br><span class="line">2. 核心数据模型</span><br><span class="line">3. 关键接口定义</span><br><span class="line">4. 潜在风险与应对策略</span><br><span class="line">5. 提供业内规范做法、项目适配方案、前沿方案三种对比</span><br></pre></td></tr></table></figure></blockquote>
 <h4 id="阶段二：执行阶段——用多-Agent-并行拆解任务"><a href="#阶段二：执行阶段——用多-Agent-并行拆解任务" class="headerlink" title="阶段二：执行阶段——用多 Agent 并行拆解任务"></a>阶段二：执行阶段——用多 Agent 并行拆解任务</h4><p>设计文档完成后，不要急着让 AI 一口气写完整个项目。更稳妥的做法，是先把设计文档拆成<strong>分阶段、分模块的开发计划清单</strong>：例如基础工程搭建、数据库模型、核心接口、业务服务、RAG 检索链路、权限校验、测试脚本等。每个清单项都要明确输入、输出、完成标准和依赖关系。</p>
 <p>随后，可以使用子代理（sub-agent）并行执行不同模块：一个子代理负责数据模型，一个子代理负责接口层，一个子代理负责业务逻辑，一个子代理负责测试用例。主 Agent 不直接陷入所有细节，而是承担”总负责人”角色：分派任务、跟踪进度、逐一检查代码质量，并在每个模块通过验证后销项。</p>
 <p>这种方式的关键不是简单地”多开几个窗口”，而是让 AI 按照工程化清单协作。子代理负责局部产出，主 Agent 负责全局一致性，包括命名规范、接口契约、数据结构、异常处理、测试覆盖和模块边界。这样既能提高并行效率，也能避免多个 AI 各写各的，最后集成时互相打架。</p>
 <blockquote>
 <p><strong>可直接套用的执行阶段 Prompt 模板</strong>：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">请基于当前设计文档，把项目拆解为分阶段、分模块的开发计划清单。</span><br><span class="line">每个任务需要包含：</span><br><span class="line">1. 任务目标</span><br><span class="line">2. 涉及文件或模块</span><br><span class="line">3. 输入依赖</span><br><span class="line">4. 输出结果</span><br><span class="line">5. 验收标准</span><br><span class="line">6. 是否适合交给 sub-agent 并行执行</span><br><span class="line"></span><br><span class="line">然后请作为主 Agent，按任务清单分派子代理执行。</span><br><span class="line">每完成一个任务，你需要进行代码审查、运行验证，并在清单中标记销项。</span><br></pre></td></tr></table></figure></blockquote>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">请基于当前设计文档，把项目拆解为分阶段、分模块的开发计划清单。</span><br><span class="line">每个任务需要包含：</span><br><span class="line">1. 任务目标</span><br><span class="line">2. 涉及文件或模块</span><br><span class="line">3. 输入依赖</span><br><span class="line">4. 输出结果</span><br><span class="line">5. 验收标准</span><br><span class="line">6. 是否适合交给 sub-agent 并行执行</span><br><span class="line"></span><br><span class="line">然后请作为主 Agent，按任务清单分派子代理执行。</span><br><span class="line">每完成一个任务，你需要进行代码审查、运行验证，并在清单中标记销项。</span><br></pre></td></tr></table></figure></blockquote>
 <h4 id="阶段三：复核阶段——从整体视角检查代码"><a href="#阶段三：复核阶段——从整体视角检查代码" class="headerlink" title="阶段三：复核阶段——从整体视角检查代码"></a>阶段三：复核阶段——从整体视角检查代码</h4><p>对所有生成的代码进行全局复核，重点检查：</p>
 <ul>
 <li><strong>架构耦合度</strong>：模块间是否过度耦合？是否遵循单一职责原则？</li>
@@ -504,7 +504,7 @@
 <h2 id="四、前端设计：用-AI-辅助完成页面原型"><a href="#四、前端设计：用-AI-辅助完成页面原型" class="headerlink" title="四、前端设计：用 AI 辅助完成页面原型"></a>四、前端设计：用 AI 辅助完成页面原型</h2><p>即使不熟悉 CSS 盒模型、flex 布局和响应式设计，也可以先掌握基础概念，再把大量实现工作交给 AI。关键不是完全不学前端，而是把精力放在更高价值的地方：页面结构是否合理、交互是否顺畅、状态是否清晰、组件是否可复用。</p>
 <h3 id="4-1-为什么是-Node-js？"><a href="#4-1-为什么是-Node-js？" class="headerlink" title="4.1 为什么是 Node.js？"></a>4.1 为什么是 Node.js？</h3><p><strong>Node.js 是现代前端开发中最常用的基础工具之一。</strong> 它不仅是 JavaScript 的运行时，也支撑了 npm 包管理、Vite 构建、TypeScript 编译和框架脚手架等常见工作流。</p>
 <p>安装非常简单，Windows 用户可以直接下载官方 LTS 版本安装包运行，也可以通过 winget 一键安装；macOS 用户可使用 Homebrew；Linux 用户可使用系统包管理器或 nvm 管理 Node.js 版本。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Windows</span></span><br><span class="line">winget install OpenJS.NodeJS</span><br><span class="line"></span><br><span class="line"><span class="comment"># macOS</span></span><br><span class="line">brew install node</span><br><span class="line"></span><br><span class="line"><span class="comment"># Ubuntu / Debian</span></span><br><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install -y nodejs npm</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Windows</span></span><br><span class="line">winget install OpenJS.NodeJS</span><br><span class="line"></span><br><span class="line"><span class="comment"># macOS</span></span><br><span class="line">brew install node</span><br><span class="line"></span><br><span class="line"><span class="comment"># Ubuntu / Debian</span></span><br><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install -y nodejs npm</span><br></pre></td></tr></table></figure>
 
 <p>安装完成后，在终端输入 <code>node -v</code> 和 <code>npm -v</code> 验证是否成功。后续的包安装、框架搭建、代码编写工作，都可以让 AI 辅助完成。AI 会帮你写好 <code>package.json</code>，帮你装好依赖，帮你配好构建脚本。你的角色从”代码工人”转变为”设计审查者”。</p>
 <h3 id="4-2-推荐技术栈组合"><a href="#4-2-推荐技术栈组合" class="headerlink" title="4.2 推荐技术栈组合"></a>4.2 推荐技术栈组合</h3><p>直接告诉 AI 以下组合，它就能为你生成美观、现代的前端页面：</p>
@@ -538,7 +538,7 @@
 <p>这套流程只需要认真打磨一次，就可以沉淀成一个前端开发 Skill。以后每次做新页面，只要把接口文档、业务目标和风格要求丢给 AI，它就能按固定流程输出：页面结构、组件层级、交互状态、接口绑定关系、素材清单和开发任务拆解。你负责审查方向和验收效果，AI 负责把流程稳定复用。</p>
 <blockquote>
 <p><strong>可直接套用的前端 Skill Prompt 模板</strong>：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">请根据以下接口文档和业务说明，按照前端开发 Skill 的流程输出页面设计方案。</span><br><span class="line"></span><br><span class="line">输入材料：</span><br><span class="line">1. 接口文档：【粘贴接口文档】</span><br><span class="line">2. 业务目标：【说明页面要解决的问题】</span><br><span class="line">3. 用户角色：【说明主要使用者】</span><br><span class="line">4. 风格要求：【例如后台管理 / 科技感 / 移动端 / 教育平台】</span><br><span class="line"></span><br><span class="line">输出要求：</span><br><span class="line">1. 页面结构图</span><br><span class="line">2. 视觉设计方向</span><br><span class="line">3. 交互逻辑与状态流</span><br><span class="line">4. 组件拆分清单</span><br><span class="line">5. 接口与组件绑定关系</span><br><span class="line">6. 素材清单与生成提示词</span><br><span class="line">7. 分阶段开发任务清单</span><br></pre></td></tr></table></figure></blockquote>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">请根据以下接口文档和业务说明，按照前端开发 Skill 的流程输出页面设计方案。</span><br><span class="line"></span><br><span class="line">输入材料：</span><br><span class="line">1. 接口文档：【粘贴接口文档】</span><br><span class="line">2. 业务目标：【说明页面要解决的问题】</span><br><span class="line">3. 用户角色：【说明主要使用者】</span><br><span class="line">4. 风格要求：【例如后台管理 / 科技感 / 移动端 / 教育平台】</span><br><span class="line"></span><br><span class="line">输出要求：</span><br><span class="line">1. 页面结构图</span><br><span class="line">2. 视觉设计方向</span><br><span class="line">3. 交互逻辑与状态流</span><br><span class="line">4. 组件拆分清单</span><br><span class="line">5. 接口与组件绑定关系</span><br><span class="line">6. 素材清单与生成提示词</span><br><span class="line">7. 分阶段开发任务清单</span><br></pre></td></tr></table></figure></blockquote>
 <hr>
 <h2 id="五、核心要点速查表"><a href="#五、核心要点速查表" class="headerlink" title="五、核心要点速查表"></a>五、核心要点速查表</h2><p>如果你没有时间通读全文，记住这 <strong>7 句话</strong>就够了：</p>
 <ol>
@@ -646,7 +646,7 @@
 
 
 
-<script src="/js/script.js?v=20260605-diagrams"></script>
+<script src="/js/script.js?v=20260605-clean-code"></script>
 
 
 
