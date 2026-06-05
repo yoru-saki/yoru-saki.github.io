@@ -21,13 +21,13 @@
 
     $('html').attr('data-theme', theme);
 
-    var $button = $('<button class="nav-icon theme-toggle" type="button" aria-label="切换深浅色"><span class="fa"></span></button>');
+    var $button = $('<button class="nav-icon theme-toggle" type="button" aria-label="切换深浅色"><span class="theme-symbol" aria-hidden="true"></span></button>');
     $('#sub-nav .nav-search-btn').before($button);
 
     var syncButton = function(){
       var isDark = $('html').attr('data-theme') === 'dark';
       $button.attr('title', isDark ? '切换到浅色' : '切换到深色');
-      $button.find('.fa').removeClass('fa-moon-o fa-sun-o').addClass(isDark ? 'fa-sun-o' : 'fa-moon-o');
+      $button.find('.theme-symbol').text(isDark ? '☀' : '☾');
     };
 
     $button.on('click', function(event){

@@ -3457,9 +3457,11 @@ html[data-theme="dark"] .theme-toggle.nav-icon {
   background: rgba(25,39,46,0.72);
   box-shadow: 0 14px 34px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(255,255,255,0.08);
 }
-.theme-toggle.nav-icon .fa {
+.theme-toggle.nav-icon .theme-symbol {
   width: auto;
-  font-size: 19px;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .reading-progress {
