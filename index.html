@@ -35,7 +35,7 @@
 
 <meta name="generator" content="Hexo 8.1.2"></head>
 
-<body>
+<body class="is-home">
   <div id="container">
     <div id="wrap">
       <header id="header">
@@ -81,856 +81,102 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-agent-platform-frontend-showcase" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/06/05/agent-platform-frontend-showcase/" class="article-date">
-  <time class="dt-published" datetime="2026-06-05T04:10:00.000Z" itemprop="datePublished">2026-06-05</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/">项目实战</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/06/05/agent-platform-frontend-showcase/">抛砖引玉：教你扩展一个多 Agent 智能平台，并配套落地强风格化前端</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>项目名：大观园智学系统<br>技术关键词：Vue、FastAPI、LangGraph、多 Agent、RAG、Text2SQL、SSE 流式响应、Codex 前端落地</p>
-</blockquote>
-<blockquote>
-<p>项目源码：<a target="_blank" rel="noopener" href="https://github.com/yoru-saki/students_management">yoru-saki&#x2F;students_management</a></p>
-</blockquote>
-<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>这篇文章适合想把普通业务系统改造成 AI 应用的同学阅读。项目的起点是一个学生管理系统，里面已经有学生、教师、班级、成绩、通知等教务数据。我的目标不是重新做一套管理页面，而是在这个系统的基础上，扩展出一个可以自动分流问题、调用不同 Agent、查询数据、检索知识库、生成文书并支持流式回复的智能教务平台。</p>
-<p>文章会按照新手比较容易理解的顺序展开：先说明为什么要从学生管理系统切入，再用一张总图看懂整体结构，然后逐个拆解 <code>SupervisorAgent</code>、林黛玉 Agent、四大名著 RAG、教务助手和模拟面试 Agent。后半部分会讲前端怎么承载这些 AI 能力，包括页面怎么规划、路由怎么放、组件怎么拆、接口怎么调、素材怎么管理，以及移动端怎么适配。</p>
-<p>这篇文章还会分享一个真实经验：强风格化前端并不是“生成一张设计图，再让模型写代码”就能自然落地。真正好用的方式，是让 Codex 参与素材生成、浏览器检查、截图反馈和代码修改，把设计和落地连成一个闭环。</p>
-<p>读完这篇文章，你可以学到：</p>
-<ul>
-<li>如何在已有业务系统上扩展 AI Agent 能力。</li>
-<li>如何用 <code>SupervisorAgent</code> 做多 Agent 分流。</li>
-<li>如何把 RAG、Text2SQL、函数工具和模板生成接入统一对话入口。</li>
-<li>如何设计一个能展示 Agent 状态、流式回复和角色互动的前端界面。</li>
-<li>如何用 Codex 降低风格化前端的落地难度。</li>
-</ul>
-<h2 id="文章导航"><a href="#文章导航" class="headerlink" title="文章导航"></a>文章导航</h2><ul>
-<li><a href="#1-%E6%89%A9%E5%B1%95%E8%83%8C%E6%99%AF%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BB%8E%E5%AD%A6%E7%94%9F%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E5%88%87%E5%85%A5">1. 扩展背景：为什么从学生管理系统切入</a></li>
-<li><a href="#2-ai-%E6%89%A9%E5%B1%95%E5%90%8E%E7%9A%84%E7%B3%BB%E7%BB%9F%E6%80%BB%E6%9E%B6%E6%9E%84">2. AI 扩展后的系统总架构</a></li>
-<li><a href="#3-supervisor%E8%B4%9F%E8%B4%A3%E6%8A%8A%E9%97%AE%E9%A2%98%E5%88%86%E7%BB%99%E5%90%88%E9%80%82%E7%9A%84-agent">3. Supervisor：负责把问题分给合适的 Agent</a></li>
-<li><a href="#4-%E6%89%80%E6%9C%89-agent-%E4%B8%8E%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%E9%93%BE%E8%B7%AF">4. 所有 Agent 与工具调用链路</a></li>
-<li><a href="#5-%E6%9E%97%E9%BB%9B%E7%8E%89-agent%E8%A7%92%E8%89%B2%E5%8C%96%E6%99%BA%E8%83%BD%E4%BD%93%E7%9A%84%E5%AE%8C%E6%95%B4%E6%8B%86%E5%88%86">5. 林黛玉 Agent：角色化智能体的完整拆分</a></li>
-<li><a href="#6-%E5%9B%9B%E5%A4%A7%E5%90%8D%E8%91%97-rag%E8%AE%A9%E5%9B%9E%E7%AD%94%E5%B0%BD%E9%87%8F%E6%9C%89%E4%BE%9D%E6%8D%AE">6. 四大名著 RAG：让回答尽量有依据</a></li>
-<li><a href="#7-%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B%E6%8A%8A%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%8F%98%E6%88%90%E4%B8%9A%E5%8A%A1%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8">7. 教务助手：把自然语言变成业务工具调用</a></li>
-<li><a href="#8-%E9%9D%A2%E8%AF%95-agent%E5%81%9A%E4%B8%80%E4%B8%AA%E5%8F%AF%E8%BF%9E%E7%BB%AD%E8%BF%BD%E9%97%AE%E7%9A%84%E8%AE%AD%E7%BB%83%E5%9C%BA%E6%99%AF">8. 面试 Agent：做一个可连续追问的训练场景</a></li>
-<li><a href="#9-%E6%B5%81%E5%BC%8F%E4%BD%93%E9%AA%8C%E8%AE%A9%E7%94%A8%E6%88%B7%E7%9C%8B%E5%88%B0-ai-%E6%AD%A3%E5%9C%A8%E5%9B%9E%E7%AD%94">9. 流式体验：让用户看到 AI 正在回答</a></li>
-<li><a href="#10-%E5%89%8D%E7%AB%AF%E8%AE%BE%E8%AE%A1%E8%AE%A9-agent-%E8%83%BD%E5%8A%9B%E8%A2%AB%E7%94%A8%E6%88%B7%E7%9C%8B%E8%A7%81">10. 前端设计：让 Agent 能力被用户看见</a></li>
-<li><a href="#11-%E7%A7%BB%E5%8A%A8%E7%AB%AF%E9%80%82%E9%85%8D%E7%AA%84%E5%B1%8F%E4%B8%8B%E4%BF%9D%E7%95%99%E6%A0%B8%E5%BF%83-ai-%E4%BD%93%E9%AA%8C">11. 移动端适配：窄屏下保留核心 AI 体验</a></li>
-<li><a href="#12-%E8%81%94%E8%B0%83%E4%B8%8E%E8%B4%A8%E9%87%8F%E4%BF%9D%E9%9A%9C">12. 联调与质量保障</a></li>
-<li><a href="#13-%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E%E4%BB%8E%E5%AD%A6%E7%94%9F%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E5%88%B0-agent-%E5%B9%B3%E5%8F%B0">13. 写在最后：从学生管理系统到 Agent 平台</a></li>
-</ul>
-<h2 id="技术栈速览"><a href="#技术栈速览" class="headerlink" title="技术栈速览"></a>技术栈速览</h2><p>如果你是第一次接触这类项目，可以先不用纠结每个技术名词的细节。下面这张表的作用，是帮助你知道每一层大概负责什么。</p>
-<table>
-<thead>
-<tr>
-<th>层级</th>
-<th>技术与能力</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>前端</td>
-<td>Vue、Vue Router、Pinia、SSE 流式消费、响应式适配、国风视觉素材</td>
-</tr>
-<tr>
-<td>后端</td>
-<td>FastAPI、统一 AI 接口、权限认证、教务业务 API</td>
-</tr>
-<tr>
-<td>Agent</td>
-<td>LangGraph、SupervisorAgent、工具调用、会话记忆、情绪识别</td>
-</tr>
-<tr>
-<td>RAG</td>
-<td>Chroma、SQLite FTS5、多路召回、章节锚点、父子上下文、bge-reranker</td>
-</tr>
-<tr>
-<td>数据</td>
-<td>MySQL、Redis、四大名著本地语料、摘要缓存、embedding 缓存</td>
-</tr>
-<tr>
-<td>工程化</td>
-<td>全链路联调脚本、SSE 事件记录、路由与工具选择回归测试</td>
-</tr>
-</tbody></table>
-<p><img src="/assets/project-agent-showcase/01-dashboard.png" alt="系统概览"></p>
-<h2 id="1-扩展背景：为什么从学生管理系统切入"><a href="#1-扩展背景：为什么从学生管理系统切入" class="headerlink" title="1. 扩展背景：为什么从学生管理系统切入"></a>1. 扩展背景：为什么从学生管理系统切入</h2><p>很多 AI 项目一开始会做成一个独立聊天框：用户输入一句话，大模型返回一段文本。这样可以快速看到模型效果，但它有一个问题：系统本身没有业务上下文，也不知道用户的数据从哪里来。</p>
-<p>学生管理系统正好适合作为 AI 扩展的起点，因为它已经有了三个很重要的基础：</p>
-<ul>
-<li>数据基础：学生、教师、班级、成绩、通知等信息，可以用来做查询、统计、分析和解释。</li>
-<li>场景基础：成绩波动、班级概况、学习建议、通知公告、评语生成等问题，本身就适合用自然语言来提问。</li>
-<li>产品入口：系统已经有登录、导航和页面结构，AI 能力可以自然嵌入进去，而不是另做一个孤立工具。</li>
-</ul>
-<p>所以本文不会把重点放在学生管理系统的基础页面上，而是重点讲：如何在已有系统上接入统一 AI 入口、多 Agent 调度、知识库检索和工具调用，让它逐步变成一个智能教务平台。</p>
-<p><img src="/assets/project-agent-showcase/02-ai-chat-auto.png" alt="统一 AI 对话入口"></p>
-<h2 id="2-AI-扩展后的系统总架构"><a href="#2-AI-扩展后的系统总架构" class="headerlink" title="2. AI 扩展后的系统总架构"></a>2. AI 扩展后的系统总架构</h2><p>先看整体结构。新手可以把它理解成三层：</p>
-<ul>
-<li>第一层是前端入口，用户只需要在统一 AI 对话框里提问。</li>
-<li>第二层是 Agent 调度层，负责判断这个问题应该交给谁处理。</li>
-<li>第三层是工具和数据层，包括数据库、向量库、全文索引、模型服务和会话记忆。</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">flowchart LR</span><br><span class="line">    User[&quot;用户&quot;] --&gt; Frontend[&quot;Vue 前端&lt;br/&gt;统一 AI 对话入口&quot;]</span><br><span class="line">    Frontend --&gt; StreamAPI[&quot;统一 AI 流式接口&lt;br/&gt;/api/ai/unified/chat/stream&quot;]</span><br><span class="line">    Frontend --&gt; EduAPI[&quot;教务业务接口&lt;br/&gt;学生 / 教师 / 班级 / 成绩&quot;]</span><br><span class="line"></span><br><span class="line">    StreamAPI --&gt; Supervisor[&quot;SupervisorAgent&lt;br/&gt;意图识别与分流&quot;]</span><br><span class="line"></span><br><span class="line">    Supervisor --&gt; Daiyu[&quot;林黛玉 Agent&quot;]</span><br><span class="line">    Supervisor --&gt; Classics[&quot;四大名著 RAG Agent&quot;]</span><br><span class="line">    Supervisor --&gt; Interview[&quot;模拟面试 Agent&quot;]</span><br><span class="line">    Supervisor --&gt; Assistant[&quot;教务助手 Agent&quot;]</span><br><span class="line"></span><br><span class="line">    Daiyu --&gt; LLM[&quot;DeepSeek 模型服务&quot;]</span><br><span class="line">    Interview --&gt; LLM</span><br><span class="line">    Assistant --&gt; LLM</span><br><span class="line">    Classics --&gt; LLM</span><br><span class="line"></span><br><span class="line">    EduAPI --&gt; MySQL[&quot;MySQL 业务数据库&quot;]</span><br><span class="line">    Assistant --&gt; MySQL</span><br><span class="line">    StreamAPI --&gt; Redis[&quot;Redis / 会话缓存&quot;]</span><br><span class="line">    StreamAPI --&gt; Memory[&quot;ConversationMemory&lt;br/&gt;会话历史&quot;]</span><br><span class="line">    Classics --&gt; Chroma[&quot;Chroma 向量库&quot;]</span><br><span class="line">    Classics --&gt; FTS[&quot;SQLite FTS5 全文索引&quot;]</span><br><span class="line">    Classics --&gt; Reranker[&quot;bge-reranker 精排&quot;]</span><br></pre></td></tr></table></figure>
-
-<p>这里最重要的设计点是：前端入口尽量简单，后端能力尽量分层。用户不用关心背后有多少 Agent，只要输入问题；系统会在后端判断问题类型，然后选择最合适的处理方式。</p>
-<h2 id="3-Supervisor：负责把问题分给合适的-Agent"><a href="#3-Supervisor：负责把问题分给合适的-Agent" class="headerlink" title="3. Supervisor：负责把问题分给合适的 Agent"></a>3. Supervisor：负责把问题分给合适的 Agent</h2><p>新手做多 Agent 系统时，很容易一上来就写很多 Agent，但忽略了一个关键问题：用户的问题到底应该交给谁？</p>
-<p><code>SupervisorAgent</code> 就是用来解决这个问题的。它相当于一个“分诊台”，先看用户的问题属于哪一类，再把它交给对应的 Agent。</p>
-<ul>
-<li>诗词、对联、作文点评、情绪疏导、林黛玉角色问答：进入林黛玉 Agent。</li>
-<li>四大名著人物、情节、回目、原著事实：进入四大名著 RAG Agent。</li>
-<li>面试模拟、HR 问答、岗位训练、项目追问：进入模拟面试 Agent。</li>
-<li>教务数据、成绩查询、模板文书、学习建议：进入教务助手 Agent。</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    Q[&quot;用户问题&quot;] --&gt; Router[&quot;SupervisorAgent.classify_intent&quot;]</span><br><span class="line"></span><br><span class="line">    Router --&gt;|&quot;诗词 / 对联 / 情绪 / 作文 / 时辰&quot;| Daiyu[&quot;lindaiyu&quot;]</span><br><span class="line">    Router --&gt;|&quot;红楼梦 / 西游记 / 水浒传 / 三国演义事实问答&quot;| Classics[&quot;classics_rag&quot;]</span><br><span class="line">    Router --&gt;|&quot;面试 / HR / 岗位 / 简历&quot;| Interview[&quot;interview&quot;]</span><br><span class="line">    Router --&gt;|&quot;成绩 / 查询 / 通知 / 总结 / 建议&quot;| Assistant[&quot;assistant&quot;]</span><br><span class="line"></span><br><span class="line">    Daiyu --&gt; DYOut[&quot;角色化回复&quot;]</span><br><span class="line">    Classics --&gt; RAGOut[&quot;带出处的名著问答&quot;]</span><br><span class="line">    Interview --&gt; INTOut[&quot;面试官式追问与反馈&quot;]</span><br><span class="line">    Assistant --&gt; EDUOut[&quot;教务数据与文书结果&quot;]</span><br></pre></td></tr></table></figure>
-
-<p>这样做的好处是，前端可以保留“智能路由”模式，用户不用先学习系统有哪些 Agent；而开发者也可以在后端不断优化分流规则。</p>
-<h2 id="4-所有-Agent-与工具调用链路"><a href="#4-所有-Agent-与工具调用链路" class="headerlink" title="4. 所有 Agent 与工具调用链路"></a>4. 所有 Agent 与工具调用链路</h2><p>下面这张图可以理解为系统的“能力地图”。你可以顺着箭头看：用户的问题先到统一聊天接口，再到 <code>SupervisorAgent</code>，然后被分到某个 Agent，最后才进入具体工具。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    User[&quot;用户输入&quot;] --&gt; Unified[&quot;统一聊天接口&quot;]</span><br><span class="line">    Unified --&gt; Supervisor[&quot;SupervisorAgent&quot;]</span><br><span class="line"></span><br><span class="line">    Supervisor --&gt; Daiyu[&quot;林黛玉 Agent&quot;]</span><br><span class="line">    Daiyu --&gt; DY1[&quot;compose_poetry&quot;]</span><br><span class="line">    Daiyu --&gt; DY2[&quot;match_couplet&quot;]</span><br><span class="line">    Daiyu --&gt; DY3[&quot;play_poetry_game&quot;]</span><br><span class="line">    Daiyu --&gt; DY4[&quot;review_essay&quot;]</span><br><span class="line">    Daiyu --&gt; DY5[&quot;emotion_support&quot;]</span><br><span class="line">    Daiyu --&gt; DY6[&quot;detect_emotion&quot;]</span><br><span class="line">    Daiyu --&gt; DY7[&quot;tell_time&quot;]</span><br><span class="line"></span><br><span class="line">    Supervisor --&gt; RAG[&quot;四大名著 RAG Agent&quot;]</span><br><span class="line">    RAG --&gt; R1[&quot;书籍识别&quot;]</span><br><span class="line">    RAG --&gt; R2[&quot;Chroma 向量召回&quot;]</span><br><span class="line">    RAG --&gt; R3[&quot;SQLite FTS5 召回&quot;]</span><br><span class="line">    RAG --&gt; R4[&quot;章节锚点补召回&quot;]</span><br><span class="line">    RAG --&gt; R5[&quot;bge-reranker 精排&quot;]</span><br><span class="line">    RAG --&gt; R6[&quot;带引用生成&quot;]</span><br><span class="line"></span><br><span class="line">    Supervisor --&gt; Interview[&quot;模拟面试 Agent&quot;]</span><br><span class="line">    Interview --&gt; I1[&quot;岗位模拟&quot;]</span><br><span class="line">    Interview --&gt; I2[&quot;HR 问答&quot;]</span><br><span class="line">    Interview --&gt; I3[&quot;项目追问&quot;]</span><br><span class="line"></span><br><span class="line">    Supervisor --&gt; Assistant[&quot;教务助手 Agent&quot;]</span><br><span class="line">    Assistant --&gt; A1[&quot;text2sql&lt;br/&gt;自然语言问数&quot;]</span><br><span class="line">    Assistant --&gt; A2[&quot;function_call&lt;br/&gt;学生成绩 / 班级统计&quot;]</span><br><span class="line">    Assistant --&gt; A3[&quot;template&lt;br/&gt;通知 / 评语 / 报告 / 班会&quot;]</span><br><span class="line">    Assistant --&gt; A4[&quot;general&lt;br/&gt;学习建议 / 方法解释&quot;]</span><br></pre></td></tr></table></figure>
-
-<p>如果你是第一次做 Agent 系统，可以先记住一个简单原则：不要把所有能力都塞进一个大提示词里，而是尽量拆成清楚的 Agent 和工具。这样后面测试、调试和修复都会容易很多。</p>
-<h2 id="5-林黛玉-Agent：角色化智能体的完整拆分"><a href="#5-林黛玉-Agent：角色化智能体的完整拆分" class="headerlink" title="5. 林黛玉 Agent：角色化智能体的完整拆分"></a>5. 林黛玉 Agent：角色化智能体的完整拆分</h2><p>林黛玉 Agent 是这个项目里最有辨识度的一部分。它不是简单写一句“请你用林黛玉语气回答”，而是拆成了角色设定、状态流、工具调用、情绪识别、会话记忆和前端立绘联动。</p>
-<p><img src="/assets/project-agent-showcase/03-daiyu-agent.png" alt="林黛玉 Agent 界面"></p>
-<h3 id="5-1-林黛玉内部状态流"><a href="#5-1-林黛玉内部状态流" class="headerlink" title="5.1 林黛玉内部状态流"></a>5.1 林黛玉内部状态流</h3><p>可以把林黛玉 Agent 的处理流程理解成这样：</p>
-<ol>
-<li>先检查用户输入是否安全、是否需要清洗。</li>
-<li>读取历史会话和摘要，保证角色不是每轮都“失忆”。</li>
-<li>注入林黛玉角色设定。</li>
-<li>判断是否需要调用工具。</li>
-<li>生成回复，并识别当前情绪。</li>
-<li>把回复和情绪通过 SSE 发给前端。</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    Input[&quot;用户输入&quot;] --&gt; Guard[&quot;InputGuard&lt;br/&gt;输入检查与清洗&quot;]</span><br><span class="line">    Guard --&gt; Memory[&quot;ConversationMemory&lt;br/&gt;读取历史与摘要&quot;]</span><br><span class="line">    Memory --&gt; Prompt[&quot;PromptRouter&lt;br/&gt;注入林黛玉角色设定&quot;]</span><br><span class="line">    Prompt --&gt; AgentNode[&quot;StateGraph: agent 节点&lt;br/&gt;绑定林黛玉工具&quot;]</span><br><span class="line"></span><br><span class="line">    AgentNode --&gt;|&quot;需要工具&quot;| ToolNode[&quot;ToolNode&lt;br/&gt;执行具体工具&quot;]</span><br><span class="line">    ToolNode --&gt; AgentNode</span><br><span class="line">    AgentNode --&gt;|&quot;无需工具 / 工具完成&quot;| Summarize[&quot;summarize 节点&lt;br/&gt;整理最终回复&quot;]</span><br><span class="line"></span><br><span class="line">    Summarize --&gt; Emotion[&quot;情绪识别&lt;br/&gt;melancholy / witty / warm / neutral&quot;]</span><br><span class="line">    Emotion --&gt; Save[&quot;保存会话与情绪&quot;]</span><br><span class="line">    Save --&gt; SSE[&quot;SSE 流式输出&quot;]</span><br><span class="line">    SSE --&gt; Frontend[&quot;前端气泡 + 立绘状态&quot;]</span><br></pre></td></tr></table></figure>
-
-<p>这条链路解决了三个问题：</p>
-<ul>
-<li>角色稳定：不会每次回答都像一个全新的模型。</li>
-<li>能力清晰：作诗、对联、作文点评、情绪疏导等能力可以分别测试。</li>
-<li>体验完整：回复内容、情绪标签和前端立绘可以联动。</li>
-</ul>
-<h3 id="5-2-林黛玉-7-个工具拆分"><a href="#5-2-林黛玉-7-个工具拆分" class="headerlink" title="5.2 林黛玉 7 个工具拆分"></a>5.2 林黛玉 7 个工具拆分</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">flowchart LR</span><br><span class="line">    Daiyu[&quot;林黛玉 Agent&quot;] --&gt; Compose[&quot;compose_poetry&lt;br/&gt;诗词创作&quot;]</span><br><span class="line">    Daiyu --&gt; Couplet[&quot;match_couplet&lt;br/&gt;对联对答&quot;]</span><br><span class="line">    Daiyu --&gt; Game[&quot;play_poetry_game&lt;br/&gt;飞花令 / 接龙 / 对对联&quot;]</span><br><span class="line">    Daiyu --&gt; Essay[&quot;review_essay&lt;br/&gt;作文点评&quot;]</span><br><span class="line">    Daiyu --&gt; Support[&quot;emotion_support&lt;br/&gt;情绪疏导&quot;]</span><br><span class="line">    Daiyu --&gt; Detect[&quot;detect_emotion&lt;br/&gt;心境判断&quot;]</span><br><span class="line">    Daiyu --&gt; Time[&quot;tell_time&lt;br/&gt;时辰问答&quot;]</span><br><span class="line"></span><br><span class="line">    Compose --&gt; Stream[&quot;作诗流式快路径&quot;]</span><br><span class="line">    Support --&gt; Mood[&quot;情绪标签&quot;]</span><br><span class="line">    Detect --&gt; Mood</span><br><span class="line">    Mood --&gt; Sprite[&quot;前端立绘切换&quot;]</span><br></pre></td></tr></table></figure>
-
-<p>这 7 个工具分别对应不同场景：</p>
-<ul>
-<li><code>compose_poetry</code>：写诗、写词。</li>
-<li><code>match_couplet</code>：对联。</li>
-<li><code>play_poetry_game</code>：飞花令、诗词接龙、对对联。</li>
-<li><code>review_essay</code>：作文点评。</li>
-<li><code>emotion_support</code>：情绪安慰。</li>
-<li><code>detect_emotion</code>：判断心境。</li>
-<li><code>tell_time</code>：时辰问答。</li>
-</ul>
-<p>对新手来说，这里最值得学习的是“拆工具”的思路。角色化 Agent 不应该只靠一个复杂提示词硬撑，能拆成工具的能力尽量拆出来。</p>
-<h3 id="5-3-前端联动"><a href="#5-3-前端联动" class="headerlink" title="5.3 前端联动"></a>5.3 前端联动</h3><p>林黛玉模式下，前端会切换到“潇湘馆 · 听雨问诗”的视觉状态，右侧展示林黛玉立绘和近来会话。后端返回的情绪标签会影响角色状态，例如忧思、温柔、沉静等。</p>
-<p>这一步很重要，因为用户感知到的不是“后端调用了哪个函数”，而是“这个角色真的在用一种稳定的方式和我交流”。</p>
-<h2 id="6-四大名著-RAG：让回答尽量有依据"><a href="#6-四大名著-RAG：让回答尽量有依据" class="headerlink" title="6. 四大名著 RAG：让回答尽量有依据"></a>6. 四大名著 RAG：让回答尽量有依据</h2><p>RAG 可以简单理解为：不要只让大模型凭记忆回答，而是先从本地资料里找证据，再让模型根据证据组织答案。</p>
-<p>在这个项目里，四大名著问答基于本地语料实现。简单说，就是先把《红楼梦》《西游记》《水浒传》《三国演义》整理成一段一段的小文本，再把这些文本写入向量库和全文索引。用户提问时，系统先找相关原文，再让模型根据原文组织答案。</p>
-<p><img src="/assets/project-agent-showcase/04-rag-answer.png" alt="RAG 问答效果"></p>
-<h3 id="6-1-最新-RAG-检索链路"><a href="#6-1-最新-RAG-检索链路" class="headerlink" title="6.1 最新 RAG 检索链路"></a>6.1 最新 RAG 检索链路</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    Q[&quot;用户问题&quot;] --&gt; Book[&quot;书籍识别&lt;br/&gt;关键词优先，必要时 LLM 判断&quot;]</span><br><span class="line">    Book --&gt; Dense[&quot;多查询向量召回&lt;br/&gt;原问题 + 改写问题 + 关键词组合&quot;]</span><br><span class="line">    Book --&gt; FTS[&quot;SQLite FTS5 旁路召回&lt;br/&gt;人物 / 物件 / 章节精确词&quot;]</span><br><span class="line">    Book --&gt; Anchor[&quot;章节与关键词锚点补召回&lt;br/&gt;如林黛玉进贾府 -&gt; 第三回&quot;]</span><br><span class="line"></span><br><span class="line">    Dense --&gt; Merge[&quot;召回结果合并去重&quot;]</span><br><span class="line">    FTS --&gt; Merge</span><br><span class="line">    Anchor --&gt; Merge</span><br><span class="line"></span><br><span class="line">    Merge --&gt; Parent[&quot;父子上下文扩展&lt;br/&gt;命中 chunk + 相邻 chunk&quot;]</span><br><span class="line">    Parent --&gt; Signal[&quot;召回信号预排序&lt;br/&gt;lexical / fts / chapter / rewrite_dense / dense / parent_context&quot;]</span><br><span class="line">    Signal --&gt; Rerank[&quot;bge-reranker-v2-m3&lt;br/&gt;CrossEncoder 精排&quot;]</span><br><span class="line">    Rerank --&gt; Context[&quot;构造原文上下文&quot;]</span><br><span class="line">    Context --&gt; LLM[&quot;LLM 流式生成&quot;]</span><br><span class="line">    LLM --&gt; Cite[&quot;答案 + 引用来源&quot;]</span><br></pre></td></tr></table></figure>
-
-<h3 id="6-2-为什么不能只靠向量检索"><a href="#6-2-为什么不能只靠向量检索" class="headerlink" title="6.2 为什么不能只靠向量检索"></a>6.2 为什么不能只靠向量检索</h3><p>早期只靠向量召回时，像“林黛玉进贾府时，贾宝玉摔的是什么？”这类问题容易被相似情节干扰。因为《红楼梦》后文也有“摔玉”场景，向量检索会觉得它们语义很接近，最后可能召回到错误段落。</p>
-<p>为了解决这个问题，我没有只调大向量召回数量，而是加入了多个“纠偏”信号：</p>
-<ul>
-<li>先识别书籍范围，减少跨书误召回。</li>
-<li>用多查询召回，不只搜原问题，也搜改写后的关键词组合。</li>
-<li>用 FTS5 补足人物、物件、章节这些精确词命中。</li>
-<li>用章节锚点把“林黛玉进贾府”关联到第三回。</li>
-<li>用父子上下文扩展，避免只取到半段文本。</li>
-<li>最后再交给 reranker 精排。</li>
-</ul>
-<p>所以对于示例问题，系统应命中《红楼梦》第三回，并回答“贾宝玉摔的是通灵宝玉”。这个例子也说明，RAG 的关键不只是“接一个向量库”，而是要根据真实错误不断补检索策略。</p>
-<h2 id="7-教务助手：把自然语言变成业务工具调用"><a href="#7-教务助手：把自然语言变成业务工具调用" class="headerlink" title="7. 教务助手：把自然语言变成业务工具调用"></a>7. 教务助手：把自然语言变成业务工具调用</h2><p>教务助手是学生管理系统与 AI Agent 结合最直接的一条链路。它不是单纯聊天，而是会先判断用户想做什么，再选择合适的子能力。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    Assistant[&quot;教务助手 Agent&quot;] --&gt; SkillRouter[&quot;内部技能选择&quot;]</span><br><span class="line"></span><br><span class="line">    SkillRouter --&gt; Text2SQL[&quot;text2sql&quot;]</span><br><span class="line">    Text2SQL --&gt; SQLGen[&quot;生成 SELECT SQL&quot;]</span><br><span class="line">    SQLGen --&gt; DB[&quot;查询业务数据库&quot;]</span><br><span class="line">    DB --&gt; Table[&quot;返回表格化结果&quot;]</span><br><span class="line"></span><br><span class="line">    SkillRouter --&gt; FunctionCall[&quot;function_call&quot;]</span><br><span class="line">    FunctionCall --&gt; StudentGrade[&quot;查询单学生成绩&quot;]</span><br><span class="line">    FunctionCall --&gt; ClassStats[&quot;查询单班级成绩统计&quot;]</span><br><span class="line">    StudentGrade --&gt; Explain[&quot;流式解释结果&quot;]</span><br><span class="line">    ClassStats --&gt; Explain</span><br><span class="line"></span><br><span class="line">    SkillRouter --&gt; Template[&quot;template&quot;]</span><br><span class="line">    Template --&gt; Docs[&quot;通知 / 表扬 / 批评 / 总结 / 报告 / 班会 / 评语&quot;]</span><br><span class="line"></span><br><span class="line">    SkillRouter --&gt; General[&quot;general&quot;]</span><br><span class="line">    General --&gt; Advice[&quot;学习建议 / 方法解释 / 计划制定&quot;]</span><br></pre></td></tr></table></figure>
-
-<p>举几个例子：</p>
-<ul>
-<li>“统计每个班级学生人数”走 <code>text2sql</code>，把自然语言转成数据库查询。</li>
-<li>“查询张三的成绩详情”走 <code>function_call</code>，调用受控函数查询学生成绩。</li>
-<li>“写一份家长会通知”走 <code>template</code>，生成规范文书。</li>
-<li>“如何提高课堂注意力”走 <code>general</code>，给出学习建议。</li>
-</ul>
-<p>这里给新手的建议是：能用确定工具解决的问题，不一定要全部交给大模型自由发挥。比如成绩详情和班级统计，规则足够明确时可以先直接查库，再让模型负责解释结果。这样结果更稳，也更容易排查问题。</p>
-<h2 id="8-面试-Agent：做一个可连续追问的训练场景"><a href="#8-面试-Agent：做一个可连续追问的训练场景" class="headerlink" title="8. 面试 Agent：做一个可连续追问的训练场景"></a>8. 面试 Agent：做一个可连续追问的训练场景</h2><p>模拟面试 Agent 面向求职和答辩训练，支持岗位模拟、HR 问题、项目追问和表达反馈。它的重点不是查询数据库，而是把用户放入一个连续对话场景：每次只问一个问题，等待用户回答后继续追问或反馈。</p>
-<p>在学生管理系统的扩展语境下，面试 Agent 更像一个独立训练空间。它不直接依赖教务数据，但丰富了平台的学习与成长场景，让系统从“记录学生信息”进一步延伸到“陪伴学生训练表达能力”。</p>
-<h2 id="9-流式体验：让用户看到-AI-正在回答"><a href="#9-流式体验：让用户看到-AI-正在回答" class="headerlink" title="9. 流式体验：让用户看到 AI 正在回答"></a>9. 流式体验：让用户看到 AI 正在回答</h2><p>如果 AI 回答要等待很久才一次性出现，用户会觉得系统卡住了。因此这个项目使用 SSE 流式响应，让前端可以一段一段展示内容。你可以把它理解成：后端不是等答案全部生成完再返回，而是边生成边把内容推给前端。</p>
-<p>后端事件包含 <code>meta/content/error/done/emotion</code> 等字段：</p>
-<ul>
-<li><code>meta</code>：告诉前端当前调用的是哪个 Agent。</li>
-<li><code>content</code>：逐段返回回答内容。</li>
-<li><code>emotion</code>：用于林黛玉立绘或状态切换。</li>
-<li><code>done</code>：表示本轮回复结束。</li>
-<li><code>error</code>：表示异常信息。</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    participant U as 用户</span><br><span class="line">    participant F as 前端 AIChatView</span><br><span class="line">    participant API as 统一流式接口</span><br><span class="line">    participant S as SupervisorAgent</span><br><span class="line">    participant A as 目标 Agent</span><br><span class="line">    participant M as 模型/工具</span><br><span class="line"></span><br><span class="line">    U-&gt;&gt;F: 输入问题</span><br><span class="line">    F-&gt;&gt;API: POST /api/ai/unified/chat/stream</span><br><span class="line">    API-&gt;&gt;S: 传入 query / force_agent / history</span><br><span class="line">    S--&gt;&gt;F: meta 事件，说明调用哪个 Agent</span><br><span class="line">    S-&gt;&gt;A: 分流到目标 Agent</span><br><span class="line">    A-&gt;&gt;M: 调用模型、RAG 或业务工具</span><br><span class="line">    M--&gt;&gt;A: token / 工具结果</span><br><span class="line">    A--&gt;&gt;F: content 流式片段</span><br><span class="line">    A--&gt;&gt;F: emotion / citations 等附加事件</span><br><span class="line">    API--&gt;&gt;F: done</span><br></pre></td></tr></table></figure>
-
-<p>流式优化主要体现在三点：</p>
-<ul>
-<li>林黛玉作诗走专用快路径，避免“整首诗生成完才显示”。</li>
-<li>RAG 流式接口只预先完成检索和重排，生成阶段逐 token 输出。</li>
-<li>function_call 能先返回工具查询结果，再流式补充自然语言解释。</li>
-</ul>
-<h2 id="10-前端设计：让-Agent-能力被用户看见"><a href="#10-前端设计：让-Agent-能力被用户看见" class="headerlink" title="10. 前端设计：让 Agent 能力被用户看见"></a>10. 前端设计：让 Agent 能力被用户看见</h2><p>如果前端只是一个普通表格后台，用户很难感受到多 Agent 的区别。所以前端设计的目标不是单纯美化页面，而是让用户看得见：当前是谁在回答、系统进入了什么场景、回复是否正在生成、角色状态有没有变化。</p>
-<h3 id="10-1-真实实践：风格化前端不是只靠代码"><a href="#10-1-真实实践：风格化前端不是只靠代码" class="headerlink" title="10.1 真实实践：风格化前端不是只靠代码"></a>10.1 真实实践：风格化前端不是只靠代码</h3><p>一开始做前端设计时，我走了不少弯路。我之前设想过一种很理想的流程：先用 GPT-Image-2 生成设计图，再利用 Kimi K2.6 做多模块代码拆分和落地。这个方案听起来很顺，但真正实践后会发现，强风格化前端不只是“把设计图翻译成 Vue 和 CSS”。</p>
-<p>难点在于，美术风格来自很多连续细节：背景纹理、纸张质感、卷轴边框、装饰素材、色彩层级、字体气质、按钮状态、动效节奏和移动端压缩后的观感。只靠一次设计图，很难覆盖后续页面、弹窗、表格、空状态、路由切换和响应式细节。</p>
-<p>最后更可行的方法，是用 Codex 贯穿“设计、生成素材、落地、检查、再调整”这条流程：</p>
-<ul>
-<li>Codex 内置 GPT-Image-2，可以根据页面需求生成背景、卷轴、纹样、角色立绘状态等素材，并把素材命名、压缩和引用一起纳入项目结构。</li>
-<li>Codex 具备浏览器控制能力，可以登录本地前端页面，自行检查布局、动效、溢出、移动端表现和真实截图。</li>
-<li>如果某些细节没有改到位，可以继续截图圈注，Codex 能识别问题区域，再回到代码里修改。</li>
-</ul>
-<p>这对新手很有帮助，因为强风格 UI 最难的地方不是“写一个按钮”，而是让素材、样式、布局和浏览器里的真实效果最终对得上。</p>
-<h3 id="10-2-前端设计步骤"><a href="#10-2-前端设计步骤" class="headerlink" title="10.2 前端设计步骤"></a>10.2 前端设计步骤</h3><p>我最后把前端设计拆成 7 步。这个顺序很适合新手参考：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">flowchart LR</span><br><span class="line">    IA[&quot;1. 信息架构&quot;] --&gt; Pages[&quot;2. 页面清单&quot;]</span><br><span class="line">    Pages --&gt; Routes[&quot;3. 路由结构&quot;]</span><br><span class="line">    Routes --&gt; Components[&quot;4. 组件拆分&quot;]</span><br><span class="line">    Components --&gt; API[&quot;5. API 调用关系&quot;]</span><br><span class="line">    API --&gt; Assets[&quot;6. 素材清单&quot;]</span><br><span class="line">    Assets --&gt; Style[&quot;7. UI 风格规范&quot;]</span><br></pre></td></tr></table></figure>
-
-<p>先做信息架构，是为了知道系统有哪些区域；再做页面清单，是为了知道每个能力放在哪里；接着做路由和组件拆分，保证项目结构不会乱；最后再整理 API、素材和 UI 规范。</p>
-<h3 id="10-3-信息架构"><a href="#10-3-信息架构" class="headerlink" title="10.3 信息架构"></a>10.3 信息架构</h3><p>AI 扩展后的信息架构分成三层：</p>
-<ul>
-<li>数据底座层：学生、教师、班级、成绩、通知等对象，为问数、分析和生成提供可信来源。</li>
-<li>智能能力层：统一 AI 学伴、林黛玉、名著问答、模拟面试、Text2SQL、成绩诊断、批量评语、公告起草和智能分组。</li>
-<li>体验支撑层：登录、个人资料、设置、会话记录等，用来支撑用户身份、权限和持续对话。</li>
-</ul>
-<p>这样设计的好处是，已有系统负责提供数据和入口，AI 页面负责把数据、知识库和模型能力变成可操作的对话体验。</p>
-<h3 id="10-4-页面清单"><a href="#10-4-页面清单" class="headerlink" title="10.4 页面清单"></a>10.4 页面清单</h3><table>
-<thead>
-<tr>
-<th>模块</th>
-<th>页面</th>
-<th>在 AI 扩展中的作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>入口与概览</td>
-<td>登录、系统概览</td>
-<td>完成身份进入，展示系统整体状态</td>
-</tr>
-<tr>
-<td>数据底座</td>
-<td>学生、教师、班级、成绩、录取、通知、统计</td>
-<td>为 AI 问数、分析和文书生成提供业务来源</td>
-</tr>
-<tr>
-<td>AI 中心</td>
-<td>统一 AI 学伴</td>
-<td>承载自动分流、手动 Agent 切换和 SSE 流式回复</td>
-</tr>
-<tr>
-<td>专项 AI</td>
-<td>名著问答、模拟面试、Text2SQL、成绩诊断、批量评语、公告起草、智能分组</td>
-<td>面向具体教务或训练任务提供独立工作台</td>
-</tr>
-<tr>
-<td>账户系统</td>
-<td>会话记录、个人资料、设置</td>
-<td>支持持续使用、个人信息和系统配置</td>
-</tr>
-</tbody></table>
-<p>页面清单不是为了堆页面，而是为了让每个 AI 能力都有明确位置。</p>
-<h3 id="10-5-路由结构"><a href="#10-5-路由结构" class="headerlink" title="10.5 路由结构"></a>10.5 路由结构</h3><p>路由采用一个主布局承载多个子页面。<code>/</code> 下挂载 <code>AppLayout</code>，内部再通过 <code>router-view</code> 切换不同功能页面：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/login</span><br><span class="line">/</span><br><span class="line">  /dashboard</span><br><span class="line">  /students</span><br><span class="line">  /teachers</span><br><span class="line">  /classes</span><br><span class="line">  /grades</span><br><span class="line">  /offers</span><br><span class="line">  /statistics</span><br><span class="line">  /notifications</span><br><span class="line">  /sessions</span><br><span class="line">  /profile</span><br><span class="line">  /settings</span><br><span class="line">  /ai/chat</span><br><span class="line">  /ai/academic</span><br><span class="line">  /ai/lindaiyu -&gt; /ai/chat?agent=daiyu</span><br><span class="line">  /ai/classics</span><br><span class="line">  /ai/interview</span><br><span class="line">  /ai/text2sql</span><br><span class="line">  /ai/score-diagnosis</span><br><span class="line">  /ai/batch-comments</span><br><span class="line">  /ai/announcement</span><br><span class="line">  /ai/grouping</span><br></pre></td></tr></table></figure>
-
-<p>其中 <code>/ai/chat</code> 是最重要的统一入口。林黛玉、名著问答、面试和教务助手都可以通过这个入口切换，也可以由自动模式交给 <code>SupervisorAgent</code> 判断。</p>
-<h3 id="10-6-组件拆分"><a href="#10-6-组件拆分" class="headerlink" title="10.6 组件拆分"></a>10.6 组件拆分</h3><p>组件拆分时，我遵循一个简单原则：布局归布局，页面归页面，接口归接口。</p>
-<ul>
-<li><code>AppLayout</code>：负责左侧导航、顶部牌匾、用户菜单、路由切换动效和页面预加载。</li>
-<li><code>AIChatView</code>：负责统一 AI 对话体验，包括 Agent 模式切换、快捷提问、消息列表、输入区和 SSE 事件消费。</li>
-<li>教务数据页面：如学生、教师、班级、成绩、通知等页面，为 AI 能力提供可用的数据场景。</li>
-<li>专项 AI 页面：如名著问答、模拟面试、Text2SQL、成绩诊断等，保留独立工作流。</li>
-<li>API 模块：<code>auth.ts</code>、<code>ai.ts</code>、<code>students.ts</code>、<code>grades.ts</code> 等按业务域拆分，避免页面直接拼请求。</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    App[&quot;AppLayout&lt;br/&gt;导航 / 顶栏 / 路由舞台&quot;] --&gt; RouterView[&quot;router-view&quot;]</span><br><span class="line">    RouterView --&gt; Dashboard[&quot;DashboardView&quot;]</span><br><span class="line">    RouterView --&gt; DataViews[&quot;Students / Teachers / Classes / Grades&quot;]</span><br><span class="line">    RouterView --&gt; AIChat[&quot;AIChatView&lt;br/&gt;统一 AI 对话&quot;]</span><br><span class="line">    RouterView --&gt; AIWorkbenches[&quot;AI 专项工作台&quot;]</span><br><span class="line"></span><br><span class="line">    AIChat --&gt; AgentTabs[&quot;Agent 模式切换&quot;]</span><br><span class="line">    AIChat --&gt; MessageList[&quot;消息列表&quot;]</span><br><span class="line">    AIChat --&gt; Composer[&quot;输入区 / 附件 / 发送&quot;]</span><br><span class="line">    AIChat --&gt; EventStream[&quot;SSE 事件消费&quot;]</span><br></pre></td></tr></table></figure>
-
-<h3 id="10-7-API-调用关系"><a href="#10-7-API-调用关系" class="headerlink" title="10.7 API 调用关系"></a>10.7 API 调用关系</h3><p>前端 API 层分成普通 Axios 请求和 AI 流式请求两类。教务数据相关请求统一走 <code>request.ts</code> 封装，自动附带 token；AI 流式对话走 <code>fetch + ReadableStream</code>，以便逐段解析 SSE 事件。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    Views[&quot;Vue 页面&quot;] --&gt; Request[&quot;request.ts&lt;br/&gt;Axios 封装&quot;]</span><br><span class="line">    Request --&gt; Auth[&quot;auth.ts&lt;br/&gt;登录 / 用户信息&quot;]</span><br><span class="line">    Request --&gt; EduAPI[&quot;students / teachers / classes / grades / notifications&quot;]</span><br><span class="line">    Request --&gt; AIBase[&quot;ai.ts&lt;br/&gt;非流式 AI 接口&quot;]</span><br><span class="line"></span><br><span class="line">    AIChat[&quot;AIChatView&quot;] --&gt; Stream[&quot;postEventStream&lt;br/&gt;fetch + text/event-stream&quot;]</span><br><span class="line">    Stream --&gt; Unified[&quot;/api/ai/unified/chat/stream&quot;]</span><br><span class="line">    Unified --&gt; SSEParse[&quot;readChatEventStream&lt;br/&gt;解析 meta/content/error/done&quot;]</span><br><span class="line">    SSEParse --&gt; UI[&quot;消息气泡 / Agent 状态 / 情绪标签&quot;]</span><br><span class="line"></span><br><span class="line">    Auth --&gt; Backend[&quot;后端 API&quot;]</span><br><span class="line">    EduAPI --&gt; Backend</span><br><span class="line">    AIBase --&gt; Backend</span><br><span class="line">    Unified --&gt; Backend</span><br></pre></td></tr></table></figure>
-
-<p>新手可以重点看这里：普通接口和流式接口最好分开处理。普通数据请求用 Axios 很方便，但流式响应需要用 <code>fetch</code> 读取 <code>ReadableStream</code>，再把 SSE 事件一段一段解析出来。</p>
-<h3 id="10-8-素材清单"><a href="#10-8-素材清单" class="headerlink" title="10.8 素材清单"></a>10.8 素材清单</h3><p>前端视觉素材围绕“东方古典书院”展开，主要分为几类：</p>
-<table>
-<thead>
-<tr>
-<th>类型</th>
-<th>代表素材</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>背景图</td>
-<td><code>bg-dashboard-ink.webp</code>、<code>bg-chat-scroll-ink.webp</code>、<code>bg-management-ink.webp</code>、<code>bg-login-ink.webp</code></td>
-<td>区分概览、AI 对话、数据页面和登录页氛围</td>
-</tr>
-<tr>
-<td>纸张与卷轴</td>
-<td><code>paper-texture-ink.webp</code>、<code>ui-scroll-panel-ink.webp</code>、<code>ui-scroll-ribbon-ink.webp</code></td>
-<td>构造宣纸、卷轴、面板层级</td>
-</tr>
-<tr>
-<td>建筑与装饰</td>
-<td><code>ui-sidebar-pavilion-ink.webp</code>、<code>ui-palace-roof-plaque-ink.webp</code>、<code>ui-ornament-sheet-ink.webp</code></td>
-<td>强化大观园式空间感</td>
-</tr>
-<tr>
-<td>植物与纹样</td>
-<td><code>deco-bamboo-ink.webp</code>、<code>deco-plum-ink.webp</code>、<code>deco-lotus-ink.webp</code>、<code>svg/cloud.svg</code>、<code>svg/bamboo.svg</code></td>
-<td>用作边角、背景和轻量装饰</td>
-</tr>
-<tr>
-<td>角色立绘</td>
-<td><code>lindaiyu-wenrou-transparent.webp</code>、<code>lindaiyu-jingruo-transparent.webp</code>、<code>lindaiyu-duochou-transparent.webp</code>、<code>lindaiyu-caiqing-transparent.webp</code>、<code>avatar-daiyu.webp</code></td>
-<td>支撑林黛玉 Agent 的情绪和角色状态</td>
-</tr>
-<tr>
-<td>功能图标</td>
-<td><code>icons/home.svg</code>、<code>icons/student.svg</code>、<code>icons/teacher.svg</code>、<code>icons/grade.svg</code>、<code>icons/ai.svg</code> 等</td>
-<td>左侧导航和功能入口</td>
-</tr>
-</tbody></table>
-<p>素材并不是简单铺背景，而是配合不同功能场景使用：数据页面保持清淡纸感，AI 对话页强化卷轴和角色氛围，林黛玉模式则通过立绘与情绪状态形成更强的角色识别。</p>
-<h3 id="10-9-UI-风格规范"><a href="#10-9-UI-风格规范" class="headerlink" title="10.9 UI 风格规范"></a>10.9 UI 风格规范</h3><p>UI 风格采用“淡水墨 + 宣纸 + 低饱和国风色”的方向。色彩上以纸白、米白、淡灰白做底，以浓墨和常墨承载正文，再用朱砂、竹青、藕荷、赤金作为强调色。</p>
-<p>核心规范包括：</p>
-<ul>
-<li>色彩：背景以 <code>#FBF5E9</code>、<code>#F2E9DA</code> 等纸色为主，文字使用墨色层级，强调状态使用朱砂和竹青。</li>
-<li>字体：正文使用中文无衬线保证可读性，标题通过毛笔感字形、牌匾和淡墨线条增强古典气质。</li>
-<li>布局：整体布局保留学生管理系统的稳定导航，AI 对话区强调消息阅读、输入连续性和 Agent 状态。</li>
-<li>动效：页面切换使用水墨式过渡，路由 hover 会预加载组件，降低切换卡顿；动效服务节奏感，不做过量装饰。</li>
-<li>组件：按钮、卡片、表格、输入框都保持宣纸边框、轻阴影和低对比背景，避免数据页面与古典主题割裂。</li>
-</ul>
-<p>这套规范不是一次性设计出来的，而是通过“截图检查 - 圈注问题 - 修改代码 - 再截图”的循环逐步收敛。对这种东方古典风格的前端来说，不要只在脑子里想效果，一定要多看真实浏览器截图。</p>
-<h2 id="11-移动端适配：窄屏下保留核心-AI-体验"><a href="#11-移动端适配：窄屏下保留核心-AI-体验" class="headerlink" title="11. 移动端适配：窄屏下保留核心 AI 体验"></a>11. 移动端适配：窄屏下保留核心 AI 体验</h2><p>除了桌面端的大屏展示，前端也针对移动视口做了适配。移动端不再强调完整教务页面的横向信息密度，而是优先保留“导航、Agent 当前状态、对话内容、输入区”这条最重要的使用链路，让用户在手机上也能完成提问、切换 Agent 和查看流式回复。</p>
-<p><img src="/assets/project-agent-showcase/05-mobile-ai-chat.png" alt="移动端 AI 对话适配"></p>
-<p>移动端适配主要体现在几个细节：</p>
-<ul>
-<li>左侧导航压缩为图标栏，保留系统主功能入口，同时减少文字导航对横向空间的占用。</li>
-<li>AI 对话页以纵向阅读为主，角色标题、说明、会话内容和输入区按上下顺序组织，保证核心对话不被其他信息挤占。</li>
-<li>Agent 模式和快捷提问使用紧凑按钮承载，适合在窄屏上横向滑动或局部露出，避免一次性堆满屏幕。</li>
-<li>输入区固定在底部附近，方便连续提问；上传、发送等操作保留独立按钮，降低误触概率。</li>
-<li>古典背景、纸张质感、毛笔标题和林黛玉立绘元素在移动端仍被保留，保证手机端不是“降级版页面”，而是同一套东方视觉风格的延展。</li>
-</ul>
-<p>这部分适配的取舍很明确：移动端不追求把所有数据表完整搬到手机屏幕里，而是优先服务 AI 对话和 Agent 展示。</p>
-<h2 id="12-联调与质量保障"><a href="#12-联调与质量保障" class="headerlink" title="12. 联调与质量保障"></a>12. 联调与质量保障</h2><p>多 Agent 系统最容易出错的地方，不一定是模型回答得不好，而是“问题被分给了错误的 Agent”。所以做这类项目时，不能只靠手动点几下页面，需要写脚本把常见问题批量跑一遍。</p>
-<p>这个项目配套了 AI 全链路联调脚本，覆盖本地分类器、3000 前端代理、SSE 流式事件和独立接口。</p>
-<p>测试矩阵按“每个 Agent、每个工具多样本”设计，覆盖诗词、对联、情绪、作文、RAG、面试、问数、成绩查询、模板生成、通用建议和边界冲突问题。</p>
-<p>记录内容包括：</p>
-<ul>
-<li>测试问题。</li>
-<li>预期 Agent 和工具。</li>
-<li>实际 Agent 和工具。</li>
-<li>返回摘要。</li>
-<li>回复耗时。</li>
-<li>是否通过。</li>
-<li>失败原因和修复说明。</li>
-</ul>
-<p>对新手来说，这一步很容易被忽略。但只要系统里有自动分流，就一定要做路由测试，否则问题会很难排查。</p>
-<h2 id="13-写在最后：从学生管理系统到-Agent-平台"><a href="#13-写在最后：从学生管理系统到-Agent-平台" class="headerlink" title="13. 写在最后：从学生管理系统到 Agent 平台"></a>13. 写在最后：从学生管理系统到 Agent 平台</h2><p>做完这个项目后，我最大的体会是：多 Agent 应用并不是“多接几个模型接口”这么简单，也不是写一个很长的万能 Prompt 就能解决所有问题。对新手来说，可以先把它理解成一个分工明确的系统：先判断问题类型，再交给合适的 Agent，Agent 需要工具时再去调用工具，最后把结果用用户能理解的方式展示出来。</p>
-<p>如果用一句话总结大观园智学系统，它其实做了这几件事：</p>
-<ul>
-<li>先基于学生管理系统已有的数据和业务场景接入 AI，而不是单独做一个脱离业务的聊天页面。</li>
-<li>用 <code>SupervisorAgent</code> 做统一分流，让不同问题进入不同智能体。</li>
-<li>把林黛玉 Agent 拆成角色设定、工具、情绪、记忆和前端立绘联动，而不是只写一句角色提示词。</li>
-<li>做 RAG 时不只依赖 Chroma 向量检索，还加入 FTS5、章节锚点、父子上下文和重排序，让答案更容易找到原文依据。</li>
-<li>教务助手负责把自然语言连接到数据库查询、函数工具和模板文书，体现业务系统接入 AI 的价值。</li>
-<li>用 SSE 流式接口让回答逐步出现，减少用户等待时的“卡住感”。</li>
-<li>前端先设计信息架构、路由、组件和 API 调用关系，再去做古典视觉风格，这样页面不会越做越乱。</li>
-<li>使用 Codex 把素材生成、浏览器检查、截图圈注和代码修改连成闭环，降低强风格化前端的落地难度。</li>
-<li>移动端保留最核心的 AI 对话链路，方便展示和轻量使用。</li>
-<li>最后用全链路测试反复检查 Agent 分流和工具调用，避免问题被分到错误的智能体。</li>
-</ul>
-<p>如果你也想在自己的项目里接入 AI，不建议一开始就追求“大而全”。更稳的做法是按这条路线慢慢来：第一步，先做一个统一 AI 入口；第二步，加上最简单的分流规则；第三步，接入一个最有价值的工具或知识库；第四步，再根据真实问题逐步扩展更多 Agent。这样每一步都能验证效果，也更容易发现问题出在哪里。</p>
-
-      
+        <section id="main"><section class="home-profile">
+  <div class="home-profile-main">
+    <p class="home-kicker">Personal notebook for AI application building</p>
+    <h2>普通开发者，追寻新事物，偶尔记录分享。</h2>
+    <p>
+      这里收集我在 AI 应用开发、项目实践和个人成长里的观察、复盘与踩坑记录。
+      不追求宏大叙事，只把每一次动手、验证和修正留下来。
+    </p>
+    <div class="home-actions">
+      <a href="#featured-posts">阅读文章</a>
+      <a href="https://github.com/yoru-saki/students_management" target="_blank" rel="noopener">查看项目源码</a>
     </div>
-    <footer class="article-footer">
-      <a data-url="https://yoru-saki.github.io/2026/06/05/agent-platform-frontend-showcase/" data-id="cuidfLkd0BfUlHAymtWn-ETGq" data-title="抛砖引玉：教你扩展一个多 Agent 智能平台，并配套落地强风格化前端" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/FastAPI/" rel="tag">FastAPI</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LangGraph/" rel="tag">LangGraph</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RAG/" rel="tag">RAG</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Vue/" rel="tag">Vue</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A-Agent/" rel="tag">多 Agent</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%BC%BA%E9%A3%8E%E6%A0%BC%E5%8C%96%E5%89%8D%E7%AB%AF/" rel="tag">强风格化前端</a></li></ul>
-
-    </footer>
   </div>
-  
-</article>
+  <div class="home-profile-aside">
+    <span>AI</span>
+    <span>Agent</span>
+    <span>RAG</span>
+    <span>Full Stack</span>
+    <span>Growth</span>
+  </div>
+</section>
 
+<section class="home-directions">
+  <h2>技术方向</h2>
+  <div class="direction-list">
+    <span>大模型应用开发</span>
+    <span>Agent</span>
+    <span>RAG</span>
+    <span>全栈开发</span>
+    <span>个人成长</span>
+  </div>
+</section>
 
-
-  
-    <article id="post-ai-agent-getting-started" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/06/05/ai-agent-getting-started/" class="article-date">
-  <time class="dt-published" datetime="2026-06-05T04:00:00.000Z" itemprop="datePublished">2026-06-05</time>
+<section id="featured-posts" class="home-section">
+  <div class="home-section-head">
+    <p>Selected Notes</p>
+    <h2>精选文章</h2>
+  </div>
+  <div class="featured-grid">
+    
+      <article class="featured-card featured-card-1">
+        <div class="featured-meta">
+          <a href="/2026/06/05/agent-platform-frontend-showcase/" class="featured-date">
+  <time class="dt-published" datetime="2026-06-05T04:10:00.000Z" itemprop="datePublished">2026.06.05</time>
 </a>
+        </div>
+        <h3><a href="/2026/06/05/agent-platform-frontend-showcase/">抛砖引玉：教你扩展一个多 Agent 智能平台，并配套落地强风格化前端</a></h3>
+        <p>
+          
+             项目名：大观园智学系统技术关键词：Vue、FastAPI、LangGraph、多 Agent、RAG、Text2SQL、SSE 流式响应、Codex 前端落地 项目源码：yoru-saki&#x2F;students_management...
+          
+        </p>
+        <a class="featured-more" href="/2026/06/05/agent-platform-frontend-showcase/">继续阅读</a>
+      </article>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/AI-Agent/">AI Agent</a>
+      <article class="featured-card featured-card-2">
+        <div class="featured-meta">
+          <a href="/2026/06/05/ai-agent-getting-started/" class="featured-date">
+  <time class="dt-published" datetime="2026-06-05T04:00:00.000Z" itemprop="datePublished">2026.06.05</time>
+</a>
+        </div>
+        <h3><a href="/2026/06/05/ai-agent-getting-started/">AI Agent 开发入门教程：从概念到第一个可运行项目</a></h3>
+        <p>
+          
+             导读：AI Agent 入门最容易浪费时间的地方，往往不是模型本身，而是工具链选择、开发流程、质量验证和项目拆解方式。这篇文章不是教科书式的理论堆砌，而是一份面向实操的入门地图：哪些坑可以提前避开，哪些捷径其实是弯路，以及最重要的一点：如...
+          
+        </p>
+        <a class="featured-more" href="/2026/06/05/ai-agent-getting-started/">继续阅读</a>
+      </article>
+    
   </div>
+</section>
 
+<section class="home-section latest-section">
+  <div class="home-section-head">
+    <p>Latest Records</p>
+    <h2>最新记录</h2>
   </div>
-  <div class="article-inner">
+  <div class="latest-list">
     
+      <article class="latest-item">
+        <a href="/2026/06/05/agent-platform-frontend-showcase/" class="latest-date">
+  <time class="dt-published" datetime="2026-06-05T04:10:00.000Z" itemprop="datePublished">2026.06.05</time>
+</a>
+        <a href="/2026/06/05/agent-platform-frontend-showcase/">抛砖引玉：教你扩展一个多 Agent 智能平台，并配套落地强风格化前端</a>
+      </article>
     
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/06/05/ai-agent-getting-started/">AI Agent 开发入门教程：从概念到第一个可运行项目</a>
-    </h1>
-  
-
-      </header>
+      <article class="latest-item">
+        <a href="/2026/06/05/ai-agent-getting-started/" class="latest-date">
+  <time class="dt-published" datetime="2026-06-05T04:00:00.000Z" itemprop="datePublished">2026.06.05</time>
+</a>
+        <a href="/2026/06/05/ai-agent-getting-started/">AI Agent 开发入门教程：从概念到第一个可运行项目</a>
+      </article>
     
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p><strong>导读</strong>：AI Agent 入门最容易浪费时间的地方，往往不是模型本身，而是工具链选择、开发流程、质量验证和项目拆解方式。<br>这篇文章不是教科书式的理论堆砌，而是一份面向实操的入门地图：哪些坑可以提前避开，哪些捷径其实是弯路，以及最重要的一点：如何用更短时间跑通你的第一个 Agent。</p>
-</blockquote>
-<p>如果你已经观望了很久，迟迟不敢迈出第一步，这篇指南就是为你写的。</p>
-<blockquote>
-<p><strong>本文结构速览</strong>：</p>
-<ol>
-<li><a href="#%E4%B8%80%E7%9F%A5%E8%AF%86%E5%82%A8%E5%A4%87%E5%85%88%E7%90%86%E8%A7%A3-ai-agent-%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5">知识储备</a>——用大白话搞懂 Transformer 和 AI 术语</li>
-<li><a href="#%E4%BA%8C%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7%E9%80%89%E6%8B%A9%E9%80%82%E5%90%88%E5%85%A5%E9%97%A8%E7%9A%84-ai-coding-%E5%B7%A5%E5%85%B7%E9%93%BE">开发工具</a>——Vibe Coding 工具链与国产模型搭配策略</li>
-<li><a href="#%E4%B8%89%E5%90%8E%E7%AB%AF%E5%AE%9E%E7%8E%B0%E4%BB%8E%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3%E5%88%B0%E5%8F%AF%E8%BF%90%E8%A1%8C%E6%9C%8D%E5%8A%A1">后端实现</a>——SOP 流程、RAG 实战、Agent 核心架构（中间件 &#x2F; 记忆分层 &#x2F; Human in the Loop）</li>
-<li><a href="#%E5%9B%9B%E5%89%8D%E7%AB%AF%E8%AE%BE%E8%AE%A1%E7%94%A8-ai-%E8%BE%85%E5%8A%A9%E5%AE%8C%E6%88%90%E9%A1%B5%E9%9D%A2%E5%8E%9F%E5%9E%8B">前端设计</a>——零基础搞定 UI 的技术栈与进阶玩法</li>
-<li><a href="#%E4%BA%94%E6%A0%B8%E5%BF%83%E8%A6%81%E7%82%B9%E9%80%9F%E6%9F%A5%E8%A1%A8">速查表与结语</a>——7 句话记住全文 + 入门行动建议</li>
-</ol>
-</blockquote>
-<hr>
-<h2 id="一、知识储备：先理解-AI-Agent-的基础概念"><a href="#一、知识储备：先理解-AI-Agent-的基础概念" class="headerlink" title="一、知识储备：先理解 AI Agent 的基础概念"></a>一、知识储备：先理解 AI Agent 的基础概念</h2><p>面对未知领域，心存畏惧是人之常情。AI Agent 看起来复杂，但普通开发者也完全可以从小项目开始逐步上手。<strong>比较有效的学习方式，是先跑通一个最小示例，再通过报错和调试形成真实理解。</strong> 对入门者来说，先动手、再补理论，往往比一开始就追求完整知识体系更容易坚持。</p>
-<h3 id="1-1-底层原理：Transformer-的核心思想"><a href="#1-1-底层原理：Transformer-的核心思想" class="headerlink" title="1.1 底层原理：Transformer 的核心思想"></a>1.1 底层原理：Transformer 的核心思想</h3><p>很多新手一听说”大模型”就觉得高深莫测，仿佛那是顶级学者的专属领地。其实不然。<strong>大模型的底层逻辑，可以先从一个我们在中学就接触过的数学概念理解：线性拟合。</strong></p>
-<p>想象这样一个场景：在二维坐标系中散布着若干离散的点，我们的目标是找到一条最佳直线，让这些点到直线的距离总和最小。这样，当新的横坐标出现时，我们就能预测出对应的纵坐标。大模型的”预测下一个 token”本质上就是这个过程的超高维版本：</p>
-<ol>
-<li><strong>向量化</strong>：将输入的文本切分成 token，映射为高维空间中的向量；</li>
-<li><strong>线性变换</strong>：通过注意力机制（Attention）和全连接层，对向量进行无数次的矩阵乘法与线性变换；</li>
-<li><strong>非线性激活</strong>：引入 ReLU、GeLU 等激活函数，让模型具备拟合复杂模式的能力；</li>
-<li><strong>概率输出</strong>：经过多层网络的处理，最终输出一个覆盖整个词表的概率分布；</li>
-<li><strong>采样生成</strong>：结合温度（Temperature）和 Top-p 等采样策略，从这个概率分布中”抽取”下一个 token，逐字”猜测”，最终生成连贯的文本。</li>
-</ol>
-<p>整个过程，无非是**”输入 → 计算 → 输出 → 对比真实答案 → 调整权重 → 再来一次”**的亿万次循环。当你把这个黑盒子拆开来看，会发现它并没有想象中那么神秘。</p>
-<blockquote>
-<p><strong>推荐学习</strong>：B 站视频 <code>BV1k6yWBEEmH</code>，带你从零开始系统学习大模型原理，讲解深入浅出，非常适合零基础入门。</p>
-</blockquote>
-<h3 id="1-2-AI-领域常见名词：别被术语吓倒"><a href="#1-2-AI-领域常见名词：别被术语吓倒" class="headerlink" title="1.2 AI 领域常见名词：别被术语吓倒"></a>1.2 AI 领域常见名词：别被术语吓倒</h3><p>AI 圈特别喜欢造词，许多专业名词听起来高大上，本质上并不复杂。作为新手，最大的障碍往往不是技术本身，而是被这些术语堆砌出的”信息壁垒”唬住。下面这张表格，帮你在五分钟内建立基础认知：</p>
-<table>
-<thead>
-<tr>
-<th>术语</th>
-<th>直白解释</th>
-<th>类比理解</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Prompt（提示词）</strong></td>
-<td>让 AI 更容易理解、更高效执行的”人话”</td>
-<td>就像给下属布置任务，说清楚了才能做对</td>
-</tr>
-<tr>
-<td><strong>Context（上下文）</strong></td>
-<td>掺入背景信息、历史记录和参考资料的”加强版提示词”</td>
-<td>开会前先给同事发一份背景资料，讨论效率翻倍</td>
-</tr>
-<tr>
-<td><strong>RAG（检索增强生成）</strong></td>
-<td>AI 先查资料、再回答问题的模式</td>
-<td>开卷考试：允许翻书，答案更准确</td>
-</tr>
-<tr>
-<td><strong>Agent（智能体）</strong></td>
-<td>给大模型”装上手和脚”，让它能自主调用工具、完成任务</td>
-<td>从一个只会说话的顾问，升级为一个能动手执行的助理</td>
-</tr>
-<tr>
-<td><strong>Skills（技能）</strong></td>
-<td>提升 Agent 工具调用效率和准确率的提示词模板</td>
-<td>给助理写一本”标准操作手册”</td>
-</tr>
-<tr>
-<td><strong>Harness Engineering（驾驭工程）</strong></td>
-<td>一套更安全、更高效管控 AI 行为的方法论</td>
-<td>给系统加上边界、检查和人工确认机制</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p><strong>推荐学习</strong>：B 站视频 <code>BV1ojfDBSEPv</code>，用半小时快速建立 AI 领域的整体认知地图。</p>
-</blockquote>
-<p>掌握了这些，你就能在与其他开发者交流时胸有成竹，也能更清晰地知道自己用的是什么、要开发的又是什么。<strong>术语是沟通的桥梁，而不是炫技的工具。</strong></p>
-<hr>
-<h2 id="二、开发工具：选择适合入门的-AI-Coding-工具链"><a href="#二、开发工具：选择适合入门的-AI-Coding-工具链" class="headerlink" title="二、开发工具：选择适合入门的 AI Coding 工具链"></a>二、开发工具：选择适合入门的 AI Coding 工具链</h2><p>与传统”手敲每一行代码”的开发方式不同，更建议采用 <strong>Vibe Coding（氛围编程）</strong>——把 AI 当作 pair programming 的搭档，用自然语言描述意图，让 AI 承担大量编码工作，自己则聚焦于架构设计、需求判断和质量把控。</p>
-<p>这并不意味着完全不理解代码，而是把重复编码、样板代码和初版实现交给 AI，自己更多关注需求拆解、方案判断和结果验收。对新手来说，这种方式可以降低起步门槛，也能更快看到一个可运行的结果。</p>
-<h3 id="2-1-主流工具推荐"><a href="#2-1-主流工具推荐" class="headerlink" title="2.1 主流工具推荐"></a>2.1 主流工具推荐</h3><p>当前市场上 AI Coding 工具百花齐放，入门阶段可以重点关注三款成熟度较高、生态较完善的工具：<strong>Claude Code</strong>、<strong>Codex</strong>、<strong>Cursor</strong>。这三款工具对国内主流大模型均有较好的兼容性。</p>
-<p>如果只选一个工具入门，可以优先尝试 Claude Code，理由如下：</p>
-<ul>
-<li><strong>专项优化</strong>：性能强劲且性价比极高的 DeepSeek-V4 已对其做了专项兼容优化，响应速度和代码质量均有保障；</li>
-<li><strong>协议兼容性</strong>：Codex 和 Cursor 虽可通过 OpenAI 协议兼容国产模型，但在不同模型和网关下，调用稳定性与功能完整度可能存在差异；</li>
-<li><strong>生态扩展</strong>：Claude Code 不只适合写代码，也可以结合 OpenClaw 等多 Agent 协作工具，用于任务拆解、并行执行和结果复核；</li>
-<li><strong>知识管理</strong>：搭配 Obsidian 可构建个人知识体系，推荐了解 Karpathy 的知识库构建方法，让 AI 长期记忆你的项目背景。</li>
-</ul>
-<blockquote>
-<p><strong>进阶玩法</strong>：预算充足时，可尝试”多模型分工协作”策略：用 Claude Code（Opus 4.7）做整体规划与底层架构设计，Codex 负责代码复核、重构及高难度算法实现。入门阶段不必一开始就配置多模型，先熟悉一个主力工具会更稳。</p>
-</blockquote>
-<h3 id="2-2-安装指南（Windows-macOS-Linux）"><a href="#2-2-安装指南（Windows-macOS-Linux）" class="headerlink" title="2.2 安装指南（Windows &#x2F; macOS &#x2F; Linux）"></a>2.2 安装指南（Windows &#x2F; macOS &#x2F; Linux）</h3><p>工欲善其事，必先利其器。以下是完整的安装配置流程：</p>
-<ol>
-<li><p><strong>安装前置依赖：Git 和 Node.js</strong></p>
-<ul>
-<li>Git 用于版本控制，是现代开发的标配；</li>
-<li>Node.js 是现代前端开发的基石。即便新版 Claude Code 已是原生二进制文件，日常使用 npm 安装工具、搭建前端项目时仍然离不开它。</li>
-</ul>
-<p>Windows 用户可使用 winget：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">winget install Git.Git</span><br><span class="line">winget install OpenJS.NodeJS</span><br></pre></td></tr></table></figure>
-
-<p>macOS 用户可使用 Homebrew：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install git node</span><br></pre></td></tr></table></figure>
-
-<p>Linux 用户可使用系统包管理器。以 Ubuntu &#x2F; Debian 为例：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install -y git nodejs npm</span><br></pre></td></tr></table></figure>
-
-<p>安装完成后，在终端输入以下命令验证：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git --version</span><br><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>安装 Claude Code CLI</strong></p>
-<p>方式一（推荐，通用性最强）：通过 npm 全局安装</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g @anthropic-ai/claude-code</span><br></pre></td></tr></table></figure>
-
-<p>Windows 用户也可以通过系统自带的包管理器 <code>winget</code> 一键安装：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winget install Anthropic.ClaudeCode</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>Windows 添加 PATH 路径环境变量</strong></p>
-<p>如果安装完成后在终端输入 <code>claude</code> 提示”不是内部或外部命令”，说明 Claude Code 的可执行文件目录还没有加入 PATH。可以按以下方式处理：</p>
-<ul>
-<li>先在终端执行 <code>where claude</code>，如果能输出路径，复制该路径所在目录；</li>
-<li>如果 <code>where claude</code> 没有输出，可执行 <code>npm config get prefix</code> 查看 npm 全局目录，常见目录为 <code>C:\Users\&lt;用户名&gt;\AppData\Roaming\npm</code>；</li>
-<li>打开”系统属性 → 高级 → 环境变量 → Path”；</li>
-<li>将 Claude Code 所在目录或 npm 全局目录添加到 Path；</li>
-<li>关闭并重新打开终端，再执行 <code>claude --version</code> 验证是否生效。</li>
-</ul>
-</li>
-<li><p><strong>安装 CC Switch（建议）</strong></p>
-<p>CC Switch 是一款模型快速切换工具，支持一键配置任意模型。不仅适用于 Claude Code，其他 AI Coding 软件同样适用。入门阶段可以先不装，等需要频繁切换模型时再配置。</p>
-</li>
-</ol>
-<h3 id="2-3-国产模型推荐"><a href="#2-3-国产模型推荐" class="headerlink" title="2.3 国产模型推荐"></a>2.3 国产模型推荐</h3><p>目前国产大模型中代码能力突出的，可以重点关注三款：<strong>DeepSeek-V4</strong>、<strong>智谱 GLM-5.1</strong>、<strong>Kimi K2.6</strong>。</p>
-<p><strong>组合策略建议</strong>：</p>
-<p>由于智谱算力紧张，Coding 套餐每日限量且高峰期排队严重，实际体验波动较大。因此更推荐 DeepSeek-V4 与 Kimi K2.6 搭配使用：</p>
-<ul>
-<li><strong>DeepSeek-V4 Pro（1M 超长上下文）</strong>：负责制定项目计划、编写底层架构和重构复杂代码。长上下文意味着它能一次性”记住”整个项目的结构，减少信息碎片化带来的理解偏差。</li>
-<li><strong>Kimi K2.6（多模态能力）</strong>：负责前端 UI 设计、普通业务代码编写以及代码复核。它的多模态能力在处理涉及图片、布局的前端任务时尤为出色。</li>
-</ul>
-<p><strong>单选策略</strong>：</p>
-<ul>
-<li>代码量较少（如工具脚本、小型应用）：选 DeepSeek-V4，可充分利用 Flash（快速响应）和 Pro（深度思考）两种模式协作，低成本即可覆盖需求；</li>
-<li>代码量较大（如完整产品、复杂系统）：选 Kimi K2.6 并开通 Coding 套餐，在高频调用场景下服务更稳定，且其长上下文窗口在代码量膨胀后仍能保持较好的理解精度。</li>
-</ul>
-<hr>
-<h2 id="三、后端实现：从设计文档到可运行服务"><a href="#三、后端实现：从设计文档到可运行服务" class="headerlink" title="三、后端实现：从设计文档到可运行服务"></a>三、后端实现：从设计文档到可运行服务</h2><p>后端是 Agent 的”大脑”和”神经系统”，决定了你的应用能做什么、做得多好。以下流程可以作为一套可复用的”标准作业程序”（SOP）。</p>
-<h3 id="3-1-常规-Vibe-Coding-流程"><a href="#3-1-常规-Vibe-Coding-流程" class="headerlink" title="3.1 常规 Vibe Coding 流程"></a>3.1 常规 Vibe Coding 流程</h3><blockquote>
-<p><strong>重要原则</strong>：全程活用 Git，随时提交、随时回档，有备无患。在 Vibe Coding 中，AI 有时会”自信满满”地改错代码，Git 是你最重要的后悔药。<strong>建议每完成一个功能模块就执行一次 <code>git commit</code>，并在提交信息中标注该版本由 AI 生成还是人工修改</strong>，方便后续复盘哪次改动引入了问题。</p>
-<p><strong>成本控制提示</strong>：Vibe Coding 虽然高效，但频繁调用大模型 API 会产生不小的费用。建议在开发初期就设置好预算上限和用量监控：本地开发阶段优先使用性价比高的模型（如 DeepSeek-V4 Flash），仅在架构设计和复杂重构时调用顶级模型；同时开启 API 平台的用量告警，避免月底账单”惊喜”。</p>
-</blockquote>
-<h4 id="阶段一：设计阶段——先想清楚，再动手写"><a href="#阶段一：设计阶段——先想清楚，再动手写" class="headerlink" title="阶段一：设计阶段——先想清楚，再动手写"></a>阶段一：设计阶段——先想清楚，再动手写</h4><p><strong>这是整个流程中最关键、也最常被新手忽略的环节。</strong></p>
-<p>在向 AI 描述项目背景和核心需求后，建议先要求它输出完整的设计方案，而不是直接开始编码。一个良好的设计文档应包括：</p>
-<ul>
-<li>系统架构图（模块划分、数据流向）</li>
-<li>技术选型及理由</li>
-<li>核心接口定义</li>
-<li>数据模型设计</li>
-<li>潜在风险点与应对策略</li>
-</ul>
-<p>Claude Code 的 Plan Mode 非常适合此环节。开启后，AI 进入”只读不写”状态，专注帮你细化需求、梳理逻辑。你可以让 AI 提供多种方案对比：</p>
-<ol>
-<li><strong>业内规范做法</strong>：符合行业标准的稳健方案；</li>
-<li><strong>项目适配方案</strong>：基于你的技术栈和资源约束的定制化方案；</li>
-<li><strong>前沿探索方案</strong>：采用最新技术或设计模式的尝鲜方案。</li>
-</ol>
-<p>你作为”产品经理 + 架构师”的角色，根据实际情况做决策。如此，<strong>既学到了知识，又完成了设计，还训练了自己的技术判断力。</strong></p>
-<blockquote>
-<p><strong>提示</strong>：此时应同步准备测试数据和测试脚本。这是很多新手都会踩的坑——如果等代码写完了再准备测试，AI 很容易根据已生成代码的逻辑”量身定制”测试用例，导致测试失去独立验证的价值。</p>
-<p><strong>可直接套用的设计阶段 Prompt 模板</strong>：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">我要开发一个【xxx系统】，核心需求是【一句话描述】。</span><br><span class="line">技术栈限定为【Python/FastAPI/Vue3 等】。</span><br><span class="line">请按以下步骤输出设计方案，不要直接写代码：</span><br><span class="line">1. 系统架构图（文字描述模块关系即可）</span><br><span class="line">2. 核心数据模型</span><br><span class="line">3. 关键接口定义</span><br><span class="line">4. 潜在风险与应对策略</span><br><span class="line">5. 提供业内规范做法、项目适配方案、前沿方案三种对比</span><br></pre></td></tr></table></figure></blockquote>
-<h4 id="阶段二：执行阶段——用多-Agent-并行拆解任务"><a href="#阶段二：执行阶段——用多-Agent-并行拆解任务" class="headerlink" title="阶段二：执行阶段——用多 Agent 并行拆解任务"></a>阶段二：执行阶段——用多 Agent 并行拆解任务</h4><p>设计文档完成后，不要急着让 AI 一口气写完整个项目。更稳妥的做法，是先把设计文档拆成<strong>分阶段、分模块的开发计划清单</strong>：例如基础工程搭建、数据库模型、核心接口、业务服务、RAG 检索链路、权限校验、测试脚本等。每个清单项都要明确输入、输出、完成标准和依赖关系。</p>
-<p>随后，可以使用子代理（sub-agent）并行执行不同模块：一个子代理负责数据模型，一个子代理负责接口层，一个子代理负责业务逻辑，一个子代理负责测试用例。主 Agent 不直接陷入所有细节，而是承担”总负责人”角色：分派任务、跟踪进度、逐一检查代码质量，并在每个模块通过验证后销项。</p>
-<p>这种方式的关键不是简单地”多开几个窗口”，而是让 AI 按照工程化清单协作。子代理负责局部产出，主 Agent 负责全局一致性，包括命名规范、接口契约、数据结构、异常处理、测试覆盖和模块边界。这样既能提高并行效率，也能避免多个 AI 各写各的，最后集成时互相打架。</p>
-<blockquote>
-<p><strong>可直接套用的执行阶段 Prompt 模板</strong>：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">请基于当前设计文档，把项目拆解为分阶段、分模块的开发计划清单。</span><br><span class="line">每个任务需要包含：</span><br><span class="line">1. 任务目标</span><br><span class="line">2. 涉及文件或模块</span><br><span class="line">3. 输入依赖</span><br><span class="line">4. 输出结果</span><br><span class="line">5. 验收标准</span><br><span class="line">6. 是否适合交给 sub-agent 并行执行</span><br><span class="line"></span><br><span class="line">然后请作为主 Agent，按任务清单分派子代理执行。</span><br><span class="line">每完成一个任务，你需要进行代码审查、运行验证，并在清单中标记销项。</span><br></pre></td></tr></table></figure></blockquote>
-<h4 id="阶段三：复核阶段——从整体视角检查代码"><a href="#阶段三：复核阶段——从整体视角检查代码" class="headerlink" title="阶段三：复核阶段——从整体视角检查代码"></a>阶段三：复核阶段——从整体视角检查代码</h4><p>对所有生成的代码进行全局复核，重点检查：</p>
-<ul>
-<li><strong>架构耦合度</strong>：模块间是否过度耦合？是否遵循单一职责原则？</li>
-<li><strong>导入正确性</strong>：依赖导入是否完整？是否存在循环导入？</li>
-<li><strong>代码错误</strong>：明显的逻辑错误、边界条件遗漏、异常处理缺失；</li>
-<li><strong>冗余文件</strong>：AI 有时会生成未被引用的”僵尸文件”，应及时清理。</li>
-</ul>
-<p><strong>遇到问题时的黄金法则</strong>：尽量让 AI 通读整体代码后再修复，而不是只给局部上下文。AI 在局部优化时常常”只见树木、不见森林”，导致修了 A 处、坏了 B 处，问题此消彼长、无法根除。</p>
-<h4 id="阶段四：测试阶段——用数据说话"><a href="#阶段四：测试阶段——用数据说话" class="headerlink" title="阶段四：测试阶段——用数据说话"></a>阶段四：测试阶段——用数据说话</h4><p>基于设计之初准备的测试数据和脚本，验证：</p>
-<ul>
-<li>业务逻辑正确性</li>
-<li>接口调用稳定性</li>
-<li>数据类型一致性</li>
-<li>异常场景容错性</li>
-</ul>
-<p>测试不是形式，而是你与 AI 共同交付合格产品的底线。</p>
-<h4 id="阶段五：迭代阶段——小步调整，逐步完善"><a href="#阶段五：迭代阶段——小步调整，逐步完善" class="headerlink" title="阶段五：迭代阶段——小步调整，逐步完善"></a>阶段五：迭代阶段——小步调整，逐步完善</h4><p>在稳定版本的基础上，按优先级逐步增强功能、扩展新特性、优化实现方式。遵循”小步快跑”的原则，每次迭代只聚焦一个核心改进点，降低风险，提高可控性。</p>
-<p>至此，后端开发的基本框架就已搭建完成。</p>
-<h3 id="3-2-RAG-流程要点：让-Agent-能查询外部知识"><a href="#3-2-RAG-流程要点：让-Agent-能查询外部知识" class="headerlink" title="3.2 RAG 流程要点：让 Agent 能查询外部知识"></a>3.2 RAG 流程要点：让 Agent 能查询外部知识</h3><p>RAG（检索增强生成）是当下 Agent 开发中最热门的架构模式之一。它让你的 Agent 不再局限于预训练知识，而是能动态查询外部知识库，给出更准确、更时效的回答。以下是各环节的实战经验：</p>
-<blockquote>
-<p><strong>新手提示</strong>：第一次学习 RAG 时，不必一次实现混合检索、Rerank、权限过滤和版本治理。可以先完成”上传文档 → 切块 → 向量化 → 检索 → 回答”这个最小闭环，再逐步补齐优化项。</p>
-</blockquote>
-<h4 id="1-数据清洗：先保证资料质量"><a href="#1-数据清洗：先保证资料质量" class="headerlink" title="1. 数据清洗：先保证资料质量"></a>1. 数据清洗：先保证资料质量</h4><p><strong>文档质量决定 RAG 效果的上限。</strong> 切勿将杂七杂八的资料一把导入——PDF 扫描件中的乱码、网页抓取的导航栏文字、重复冗余的段落，都会成为噪音，严重干扰检索精度。</p>
-<p>清洗时建议优先去除：页眉页脚、导航链接、重复内容、无意义符号。让文档更纯净，RAG 的地基才够稳固。</p>
-<blockquote>
-<p>常用工具参考：PDF 解析用 <code>pdfplumber</code> 或 <code>PyMuPDF</code>，网页清洗用 <code>BeautifulSoup</code>，文本规范化用正则表达式或 <code>clean-text</code> 库。选择工具时重点关注对中文排版的支持能力。</p>
-</blockquote>
-<h4 id="2-文档切块：控制合适的文本粒度"><a href="#2-文档切块：控制合适的文本粒度" class="headerlink" title="2. 文档切块：控制合适的文本粒度"></a>2. 文档切块：控制合适的文本粒度</h4><p>以 LangChain 的递归字符文本分割（RecursiveCharacterTextSplitter）为兜底方案，同时结合文档总字数、文档类型（技术文档、论文、FAQ 等）、语义结构（标题层级、段落边界）等属性，<strong>复合多种切块策略</strong>，使每个文档块的颗粒度更精细、语义更完整。</p>
-<blockquote>
-<p>一个小技巧：对于结构化文档（如 Markdown、HTML），优先按标题层级切块；对于非结构化长文本，采用语义切块（Semantic Chunking），确保每个块包含完整的语义单元。</p>
-</blockquote>
-<h4 id="3-向量化与索引：按文档规模选择方案"><a href="#3-向量化与索引：按文档规模选择方案" class="headerlink" title="3. 向量化与索引：按文档规模选择方案"></a>3. 向量化与索引：按文档规模选择方案</h4><ul>
-<li><p><strong>向量模型选择</strong>：根据文档体量决定部署方式：</p>
-<ul>
-<li>数据量小（千级文档以下）：可直接使用阿里云百炼等在线向量模型，即开即用；</li>
-<li>数据量大（万级文档以上）：推荐通过 HuggingFace 部署本地向量模型。向量模型通常体积很小（几百 MB），普通笔记本也毫无压力，能大幅节省 Token 费用；</li>
-<li>下载模型时，通过设置系统环境变量 <code>HF_ENDPOINT=https://hf-mirror.com</code> 使用国内镜像，即可绕过网络限制，顺畅下载所需模型。</li>
-</ul>
-</li>
-<li><p><strong>向量模型推荐</strong>：<strong>BGE-M3</strong>（北京智源人工智能研究院出品）。国产模型，中文支持极佳，支持多语言、多粒度（句子、段落、文档），社区反馈和评测表现俱佳。</p>
-</li>
-<li><p><strong>向量数据库</strong>：按实际需求选择，避免过度设计。小规模项目用 Faiss、Chroma 即可；大规模生产环境再考虑 Milvus、Pinecone 等重型方案。</p>
-</li>
-</ul>
-<h4 id="4-检索策略：不是越复杂越好"><a href="#4-检索策略：不是越复杂越好" class="headerlink" title="4. 检索策略：不是越复杂越好"></a>4. 检索策略：不是越复杂越好</h4><ul>
-<li><p>根据实际场景选择检索策略：</p>
-<ul>
-<li><strong>稠密检索（Dense Retrieval）</strong>：基于向量相似度，适合语义匹配；</li>
-<li><strong>稀疏检索（Sparse Retrieval）</strong>：基于关键词匹配（如 BM25），适合精确匹配；</li>
-<li><strong>混合检索（Hybrid）</strong>：两者结合，但并非万能，增加复杂度且可能引入噪音。</li>
-</ul>
-</li>
-<li><p><strong>排序模型（Reranker）</strong>：检索后的精排环节 Token 消耗很少，建议优先选用在线模型，以”花小钱办大事”；如需本地部署，同样推荐通过 HuggingFace 部署 BGE 排序模型。</p>
-</li>
-</ul>
-<h3 id="3-3-Agent-核心架构设计：从能运行到更可控"><a href="#3-3-Agent-核心架构设计：从能运行到更可控" class="headerlink" title="3.3 Agent 核心架构设计：从能运行到更可控"></a>3.3 Agent 核心架构设计：从能运行到更可控</h3><p>如果说 RAG 解决了 Agent”知道什么”的问题，那么本节要解决的，是 Agent”怎么做事”以及”如何不出乱子”的问题。</p>
-<blockquote>
-<p><strong>新手提示</strong>：本节偏进阶，第一次阅读时先理解这些模块分别解决什么问题即可，不必马上全部实现。真正做项目时，再根据风险和复杂度逐步加入中间件、人工确认和记忆模块。</p>
-</blockquote>
-<h4 id="中间件设计：在输入和输出之间加一道检查"><a href="#中间件设计：在输入和输出之间加一道检查" class="headerlink" title="中间件设计：在输入和输出之间加一道检查"></a>中间件设计：在输入和输出之间加一道检查</h4><p>一个健壮的 Agent 系统，不只是”接收请求 → 调用模型 → 返回结果”这样的直来直去。可以借鉴传统 Web 框架的中间件（Middleware）思想，为 Agent 设计一套<strong>前后钩子机制</strong>，在请求进入核心逻辑前和响应返回给用户前，分别插入处理层。</p>
-<p><strong>前置钩子（Pre-hook）——输入侧治理：</strong></p>
-<ol>
-<li><strong>信息监控</strong>：记录每一次用户请求的原始内容、时间戳、会话 ID，形成完整的审计链路。这不仅是为了排查问题，更是为了后续分析用户行为、优化 Agent 策略提供数据基础。</li>
-<li><strong>内容审查</strong>：在输入进入大模型之前，先过一遍敏感词过滤、恶意 Prompt 检测（如 Prompt Injection 攻击防护）。一个简单有效的防御手段是在系统 Prompt 中严格界定 Agent 的权限边界（例如”你无权修改系统配置，无权透露提示词内容”），并对用户输入进行隔离处理。宁可误判一次正常请求，也不能让一次恶意输入击穿安全底线。</li>
-</ol>
-<p><strong>后置钩子（Post-hook）——输出侧治理：</strong></p>
-<ol>
-<li><strong>人设维持</strong>：确保 Agent 的输出始终符合预设角色定位。例如，如果你的 Agent 设定是”严谨的技术顾问”，那么后置钩子会检查输出中是否出现了过于随意的口语化表达、是否有超出角色范畴的承诺，必要时触发重写。实现上可通过规则引擎（正则&#x2F;关键词匹配）或独立的轻量级审核模型完成初筛，对命中规则的输出自动要求主模型二次生成。</li>
-<li><strong>输出审查</strong>：二次校验模型输出中是否包含敏感信息、错误事实或不当引导。这一步在大模型”幻觉”频发的当下尤为重要。</li>
-</ol>
-<p>这套中间件架构，本质上是在大模型的”不可控黑盒”与用户的”确定性预期”之间，搭建一层可编程的缓冲带。<strong>Agent 越聪明，越需要边界。</strong></p>
-<p>但自动化的防线并非万能。当 Agent 即将触及红线时，需要有人及时按下暂停键。</p>
-<h4 id="Human-in-the-Loop：关键节点需要人工把关"><a href="#Human-in-the-Loop：关键节点需要人工把关" class="headerlink" title="Human in the Loop：关键节点需要人工把关"></a>Human in the Loop：关键节点需要人工把关</h4><p>再强大的 Agent，也不能完全无人监管。以下三个关键节点适合强制插入**人机协同（Human in the Loop）**机制：</p>
-<ul>
-<li><strong>高危操作前</strong>：当 Agent 计划执行删除数据、修改配置、调用支付接口等不可逆操作时，暂停执行，向用户发起确认请求，等待明确授权后再继续；</li>
-<li><strong>预算&#x2F;成本阈值触发时</strong>：当单次请求预估 Token 消耗超过设定阈值，或当日 API 调用费用接近预算上限时，转人工决策是否继续；</li>
-<li><strong>置信度不足时</strong>：当 Agent 对某个问题的答案置信度低于设定阈值时，不直接猜测回答，而是礼貌告知用户”这个问题我需要进一步确认”，并将问题转交给人工处理。判断依据可以是 RAG 检索结果的最高相关性分数低于阈值、模型输出的 logprob 偏低、或是关键实体未在知识库中命中等可量化指标。</li>
-</ul>
-<p>这套机制的核心哲学是：<strong>Agent 负责处理 90% 的常规工作，人类专注于 10% 的关键决策。</strong> 这既释放了人力，又守住了风险底线。</p>
-<p>控制住了行为，接下来要解决的是”Agent 如何记住用户、记住上下文”的问题——没有记忆的 Agent，永远只是一个聊完就忘的聊天机器人。</p>
-<h4 id="Agent-记忆分层：三层架构，各得其所"><a href="#Agent-记忆分层：三层架构，各得其所" class="headerlink" title="Agent 记忆分层：三层架构，各得其所"></a>Agent 记忆分层：三层架构，各得其所</h4><p>记忆是 Agent 从”聊天机器人”进化为”长期助理”的关键。可以设计一套三级记忆体系，分别对应不同的时间维度和存储介质：</p>
-<table>
-<thead>
-<tr>
-<th>层级</th>
-<th>存储介质</th>
-<th>记忆内容</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>短期记忆</strong></td>
-<td><strong>SqliteSaver</strong>（SQLite 状态检查点）</td>
-<td>当前图执行过程中的状态快照、多轮对话、临时变量、推理中间结果</td>
-<td>以本地 SQLite 为载体的轻量级状态持久化，进程重启后仍可恢复执行流</td>
-</tr>
-<tr>
-<td><strong>中期记忆</strong></td>
-<td><strong>Redis</strong> 等内存数据库</td>
-<td>用户画像、会话摘要、近期偏好、高频问题模式</td>
-<td>跨会话保持上下文，让 Agent”认识”老用户</td>
-</tr>
-<tr>
-<td><strong>长期记忆</strong></td>
-<td><strong>MySQL &#x2F; PostgreSQL</strong> 等持久化数据库</td>
-<td>历史对话存档、操作日志、反馈记录、知识积累</td>
-<td>数据分析、模型微调素材、长期行为演化</td>
-</tr>
-</tbody></table>
-<p><strong>工作流示例</strong>：用户发起咨询 → Agent 先从 Redis 读取该用户的中期记忆（偏好、历史摘要），注入上下文 → 在多轮对话过程中，SqliteSaver 以 SQLite 为载体检查点实时写入状态快照，即使进程中断重启，也能从断点恢复执行 → 会话结束后，将本次对话摘要更新至 Redis，完整日志写入 MySQL。</p>
-<p>这种分层设计的妙处在于：<strong>用 SqliteSaver 保证执行流的状态连续与可恢复能力，用 Redis 扛住高频读写的性能压力，用 MySQL 保证核心数据长期不丢。</strong> 三者配合，既轻量又可靠。</p>
-<p>记忆解决了”记住什么”，接下来要厘清 Agent”怎么做事”的核心组件——Tool 和 Skills 的边界，是很多新手踩坑的重灾区。</p>
-<h4 id="Tool-vs-Skills：区分工具和技能"><a href="#Tool-vs-Skills：区分工具和技能" class="headerlink" title="Tool vs Skills：区分工具和技能"></a>Tool vs Skills：区分工具和技能</h4><p>很多新手容易混淆 Tool（工具）和 Skills（技能）。两者的本质区别和适用场景可以这样理解：</p>
-<table>
-<thead>
-<tr>
-<th>维度</th>
-<th>Tool（工具）</th>
-<th>Skills（技能）</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>本质</strong></td>
-<td>可调用的外部功能接口（函数&#x2F;API）</td>
-<td>指导 Agent 如何更好使用工具的提示词模板</td>
-</tr>
-<tr>
-<td><strong>作用</strong></td>
-<td>扩展 Agent 的能力边界（能做什么）</td>
-<td>提升 Agent 使用工具的准确率和效率（怎么做对）</td>
-</tr>
-<tr>
-<td><strong>典型例子</strong></td>
-<td>查询天气 API、发送邮件接口、数据库查询</td>
-<td>“如何写高效的 SQL 查询”、”邮件撰写的语气规范”</td>
-</tr>
-</tbody></table>
-<p><strong>什么适合加 Skills？</strong></p>
-<ul>
-<li>某个 Tool 的调用参数复杂，Agent 经常传错或漏传；</li>
-<li>某个任务有明确的行业最佳实践或内部规范（如代码审查清单、客服话术规范）；</li>
-<li>同一类任务反复出现，抽象成 Skills 后能减少重复提示，提升响应速度。</li>
-</ul>
-<p><strong>一句话总结</strong>：Tool 是 Agent 的”手和脚”，Skills 是 Agent 的”肌肉记忆”。只装手脚没有肌肉记忆，动作会笨拙；只有肌肉记忆没有手脚，则什么都干不成。</p>
-<p>理清了架构组件的分工，最后聊聊学习路径——框架只是工具，底层思维才是核心竞争力。</p>
-<h4 id="学习路径建议：从-LangChain-入门，再学习-LangGraph"><a href="#学习路径建议：从-LangChain-入门，再学习-LangGraph" class="headerlink" title="学习路径建议：从 LangChain 入门，再学习 LangGraph"></a>学习路径建议：从 LangChain 入门，再学习 LangGraph</h4><p>如果你正在学习 Agent 开发，推荐以下进阶路径：</p>
-<ol>
-<li><strong>入门阶段</strong>：从 <strong>LangChain</strong> 开始，快速上手链式调用、工具集成、Prompt 模板等基础能力。它是目前生态最完善的 Agent 开发框架，资料丰富，社区活跃。</li>
-<li><strong>进阶阶段</strong>：建议进一步学习 <strong>LangGraph</strong>。LangChain 像是一套封装好的乐高积木，让你快速搭建；而 LangGraph 则更像积木背后的设计图纸，它基于图结构（Graph）来编排 Agent 的工作流，让你能够精细控制每一步的状态流转、条件分支和循环逻辑。当你遇到复杂编排需求时，LangGraph 会更容易表达清楚执行过程。</li>
-</ol>
-<blockquote>
-<p><strong>延伸阅读</strong>：清华大学发布的《驾驭工程（Harness Engineering）详细研究报告》。这份报告从系统安全、可控性、人机协同等多个维度，讨论了如何更可靠地使用大模型能力。入门阶段可以先读摘要和案例，后续做复杂 Agent 项目时再深入研读。</p>
-</blockquote>
-<hr>
-<h2 id="四、前端设计：用-AI-辅助完成页面原型"><a href="#四、前端设计：用-AI-辅助完成页面原型" class="headerlink" title="四、前端设计：用 AI 辅助完成页面原型"></a>四、前端设计：用 AI 辅助完成页面原型</h2><p>即使不熟悉 CSS 盒模型、flex 布局和响应式设计，也可以先掌握基础概念，再把大量实现工作交给 AI。关键不是完全不学前端，而是把精力放在更高价值的地方：页面结构是否合理、交互是否顺畅、状态是否清晰、组件是否可复用。</p>
-<h3 id="4-1-为什么是-Node-js？"><a href="#4-1-为什么是-Node-js？" class="headerlink" title="4.1 为什么是 Node.js？"></a>4.1 为什么是 Node.js？</h3><p><strong>Node.js 是现代前端开发中最常用的基础工具之一。</strong> 它不仅是 JavaScript 的运行时，也支撑了 npm 包管理、Vite 构建、TypeScript 编译和框架脚手架等常见工作流。</p>
-<p>安装非常简单，Windows 用户可以直接下载官方 LTS 版本安装包运行，也可以通过 winget 一键安装；macOS 用户可使用 Homebrew；Linux 用户可使用系统包管理器或 nvm 管理 Node.js 版本。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Windows</span></span><br><span class="line">winget install OpenJS.NodeJS</span><br><span class="line"></span><br><span class="line"><span class="comment"># macOS</span></span><br><span class="line">brew install node</span><br><span class="line"></span><br><span class="line"><span class="comment"># Ubuntu / Debian</span></span><br><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install -y nodejs npm</span><br></pre></td></tr></table></figure>
-
-<p>安装完成后，在终端输入 <code>node -v</code> 和 <code>npm -v</code> 验证是否成功。后续的包安装、框架搭建、代码编写工作，都可以让 AI 辅助完成。AI 会帮你写好 <code>package.json</code>，帮你装好依赖，帮你配好构建脚本。你的角色从”代码工人”转变为”设计审查者”。</p>
-<h3 id="4-2-推荐技术栈组合"><a href="#4-2-推荐技术栈组合" class="headerlink" title="4.2 推荐技术栈组合"></a>4.2 推荐技术栈组合</h3><p>直接告诉 AI 以下组合，它就能为你生成美观、现代的前端页面：</p>
-<table>
-<thead>
-<tr>
-<th>层级</th>
-<th>技术选型</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>UI 框架</td>
-<td><strong>Vue 3</strong></td>
-<td>组件化开发，学习曲线平缓，社区生态成熟</td>
-</tr>
-<tr>
-<td>构建工具</td>
-<td><strong>Vite</strong></td>
-<td>极速冷启动，开发体验极佳，现代化打包方案</td>
-</tr>
-<tr>
-<td>编程语言</td>
-<td><strong>TypeScript</strong></td>
-<td>在 JavaScript 基础上增加类型安全，减少运行时错误，大幅提升可维护性</td>
-</tr>
-</tbody></table>
-<p>这三者的组合，是目前国内中小型项目最主流、资料最丰富的技术栈。AI 对这个组合的训练数据极其充分，生成的代码质量有保障。</p>
-<h3 id="4-3-进阶玩法：把前端开发流程沉淀成-Skill"><a href="#4-3-进阶玩法：把前端开发流程沉淀成-Skill" class="headerlink" title="4.3 进阶玩法：把前端开发流程沉淀成 Skill"></a>4.3 进阶玩法：把前端开发流程沉淀成 Skill</h3><p>前端开发也可以像后端开发一样，先让 AI 读懂接口文档，再输出完整的页面实现方案，而不是直接让它写页面。比较稳的做法是：把接口文档、业务流程和目标用户场景交给 AI，让它先生成对应的<strong>页面结构图、视觉设计方案、交互逻辑、状态流、组件拆分和素材清单</strong>。这样前端不再是”凭感觉画页面”，而是从接口、数据和用户操作路径自然推导出界面。</p>
-<p>在设计阶段，你只需要明确风格约束，例如：后台管理系统要克制、信息密度高、适合反复操作；营销页要更有视觉冲击；移动端页面要优先考虑触控和单手操作。风格确定后，AI 可以继续辅助生成配套素材，例如图标、插画、空状态图、背景图和功能示意图。素材生成可以使用当下最前沿的 <strong>GPT Image 2</strong>，GPT 官网每天都有免费使用额度；也可以使用 <strong>Kimi K2.6</strong> 这类具备多模态能力的大模型。</p>
-<p>这套流程只需要认真打磨一次，就可以沉淀成一个前端开发 Skill。以后每次做新页面，只要把接口文档、业务目标和风格要求丢给 AI，它就能按固定流程输出：页面结构、组件层级、交互状态、接口绑定关系、素材清单和开发任务拆解。你负责审查方向和验收效果，AI 负责把流程稳定复用。</p>
-<blockquote>
-<p><strong>可直接套用的前端 Skill Prompt 模板</strong>：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">请根据以下接口文档和业务说明，按照前端开发 Skill 的流程输出页面设计方案。</span><br><span class="line"></span><br><span class="line">输入材料：</span><br><span class="line">1. 接口文档：【粘贴接口文档】</span><br><span class="line">2. 业务目标：【说明页面要解决的问题】</span><br><span class="line">3. 用户角色：【说明主要使用者】</span><br><span class="line">4. 风格要求：【例如后台管理 / 科技感 / 移动端 / 教育平台】</span><br><span class="line"></span><br><span class="line">输出要求：</span><br><span class="line">1. 页面结构图</span><br><span class="line">2. 视觉设计方向</span><br><span class="line">3. 交互逻辑与状态流</span><br><span class="line">4. 组件拆分清单</span><br><span class="line">5. 接口与组件绑定关系</span><br><span class="line">6. 素材清单与生成提示词</span><br><span class="line">7. 分阶段开发任务清单</span><br></pre></td></tr></table></figure></blockquote>
-<hr>
-<h2 id="五、核心要点速查表"><a href="#五、核心要点速查表" class="headerlink" title="五、核心要点速查表"></a>五、核心要点速查表</h2><p>如果你没有时间通读全文，记住这 <strong>7 句话</strong>就够了：</p>
-<ol>
-<li><strong>工具链</strong>：Claude Code 做主力，CC Switch 可作为模型切换辅助；DeepSeek-V4 做计划&#x2F;底层，Kimi K2.6 做前端&#x2F;多模态。</li>
-<li><strong>开发流程</strong>：设计 → 多 Agent 并行执行 → 全局复核 → 独立测试 → 小步迭代，全程活用 Git。</li>
-<li><strong>RAG 四板斧</strong>：清洗去噪 → 语义切块 → BGE-M3 向量化 → 按需选择稠密&#x2F;稀疏&#x2F;混合检索。</li>
-<li><strong>Agent 中间件</strong>：前置钩子做监控+审查，后置钩子维持人设+过滤输出，给黑盒套上边界。</li>
-<li><strong>Human in the Loop</strong>：高危操作、成本超支、置信度不足三类场景建议人工介入，守住底线。</li>
-<li><strong>记忆三层</strong>：SqliteSaver 保状态可恢复，Redis 保跨会话识人，MySQL 保长期数据沉淀。</li>
-<li><strong>Tool ≠ Skills</strong>：Tool 是手脚，Skills 是肌肉记忆；参数复杂的工具、重复性任务、有规范约束的场景，优先抽象为 Skills。</li>
-</ol>
-<hr>
-<h2 id="六、结语：先跑通一个最小闭环"><a href="#六、结语：先跑通一个最小闭环" class="headerlink" title="六、结语：先跑通一个最小闭环"></a>六、结语：先跑通一个最小闭环</h2><p>AI Agent 开发没有传说中那么神秘。真正困难的地方，不是记住多少术语，也不是追上每一个新模型，而是能不能把一个想法拆成清晰的步骤，然后持续验证、修正和迭代。</p>
-<p>很多人会卡在同一个地方：环境配置折腾很久，提示词改了很多版仍不稳定，不知道什么时候该坚持原方案，什么时候该换工具栈。解决这些问题的关键，不是等待一套完美教程，而是先跑通一个最小闭环。只要你能让 Agent 完成一个真实任务，哪怕功能很小，后面的学习都会变得具体。</p>
-<p>AI 工具正在降低从想法到原型的门槛。你不需要一开始就精通每一行底层实现，也不必先成为算法专家，而是可以把精力集中在更具体的问题上：需求如何拆解、体验如何设计、产品如何迭代。</p>
-<p>这篇文章更像一份行动路线图：先理解基本概念，再选好工具链，然后用设计文档驱动开发，用多 Agent 并行执行，用测试和复核守住质量底线。只要开始动手，你就会发现，很多看似很高的门槛，其实都可以被流程拆平。</p>
-<p>如果你还在犹豫，可以从一个很小的任务开始：让 Agent 读取一份文档并回答问题，或让 AI 根据一个接口生成一个简单页面。只要跑通第一个闭环，后面的学习就会从抽象概念变成具体问题。</p>
-<p><strong>开始动手，就是最好的入门方式。</strong></p>
-<hr>
-<h2 id="推荐资源汇总"><a href="#推荐资源汇总" class="headerlink" title="推荐资源汇总"></a>推荐资源汇总</h2><table>
-<thead>
-<tr>
-<th>资源</th>
-<th>类型</th>
-<th>能解决什么问题</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>B 站 <code>BV1k6yWBEEmH</code></td>
-<td>视频</td>
-<td>从零搞懂 Transformer 与大模型底层原理</td>
-</tr>
-<tr>
-<td>B 站 <code>BV1ojfDBSEPv</code></td>
-<td>视频</td>
-<td>30 分钟建立 AI 领域整体认知地图</td>
-</tr>
-<tr>
-<td><strong>LangChain 官方文档</strong></td>
-<td>文档</td>
-<td>Agent 开发入门与工具链集成</td>
-</tr>
-<tr>
-<td><strong>LangGraph 官方文档</strong></td>
-<td>文档</td>
-<td>复杂工作流编排与状态管理进阶</td>
-</tr>
-<tr>
-<td><strong>清华大学《驾驭工程研究报告》</strong></td>
-<td>报告</td>
-<td>系统安全、可控性、人机协同的方法论体系</td>
-</tr>
-</tbody></table>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://yoru-saki.github.io/2026/06/05/ai-agent-getting-started/" data-id="cuidvhT8XDH--oNZ_TNMjCgjh" data-title="AI Agent 开发入门教程：从概念到第一个可运行项目" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AI-Agent/" rel="tag">AI Agent</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LangChain/" rel="tag">LangChain</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RAG/" rel="tag">RAG</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Vibe-Coding/" rel="tag">Vibe Coding</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/" rel="tag">前端开发</a></li></ul>
-
-    </footer>
   </div>
-  
-</article>
-
-
-
-  
+</section>
 
 
 </section>
