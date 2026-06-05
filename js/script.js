@@ -173,7 +173,10 @@
       $entry.find('h2[id], h3[id], h4[id]').each(function(){
         var $heading = $(this);
         $heading.addClass('copyable-heading');
-        $heading.find('.headerlink').attr('aria-label', '复制此段链接').attr('title', '复制链接');
+        $heading.find('.headerlink').attr('aria-hidden', 'true').attr('tabindex', '-1');
+        if (!$heading.children('.heading-copy').length) {
+          $heading.append('<button class="heading-copy" type="button" aria-label="复制此段链接" title="复制链接"><span class="fa fa-link"></span></button>');
+        }
       });
     });
   };
@@ -247,20 +250,29 @@
   };
 
   var copyText = function(text, callback){
+    var fallbackCopy = function(){
+      var textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.setAttribute('readonly', 'readonly');
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+      } catch (error) {
+        if (window.console) console.warn('复制回退失败:', error);
+      }
+      document.body.removeChild(textarea);
+      callback();
+    };
+
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(callback);
+      navigator.clipboard.writeText(text).then(callback).catch(fallbackCopy);
       return;
     }
-    var textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.setAttribute('readonly', 'readonly');
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
-    callback();
+
+    fallbackCopy();
   };
 
   var initCodeCopy = function(){
@@ -283,21 +295,30 @@
   };
 
   var initHeadingCopy = function(){
-    $('.article-entry').on('click', '.headerlink', function(event){
-      var href = this.getAttribute('href');
-      if (!href) return;
+    var handleHeadingCopy = function(event){
+      var button = event.target && event.target.closest ? event.target.closest('.article-entry .heading-copy') : this;
+      if (!button) return;
+
+      var heading = button.closest('h2[id], h3[id], h4[id]');
+      if (!heading) return;
 
       event.preventDefault();
+      event.stopPropagation();
+      var href = '#' + heading.id;
       var url = window.location.origin + window.location.pathname + href;
-      copyText(url, function(){
-        var $link = $(event.currentTarget);
-        $link.addClass('is-copied');
-        window.history.replaceState(null, '', href);
-        window.setTimeout(function(){
-          $link.removeClass('is-copied');
-        }, 1200);
-      });
-    });
+      var $button = $(button);
+      var $icon = $button.find('.fa');
+      $button.addClass('is-copied');
+      $icon.removeClass('fa-link').addClass('fa-check');
+      window.history.replaceState(null, '', href);
+      window.setTimeout(function(){
+        $button.removeClass('is-copied');
+        $icon.removeClass('fa-check').addClass('fa-link');
+      }, 6000);
+      copyText(url, function(){});
+    };
+
+    $('.article-entry').off('click.blogcopy', '.heading-copy').on('click.blogcopy', '.heading-copy', handleHeadingCopy);
   };
 
   var initBackToTop = function(){
