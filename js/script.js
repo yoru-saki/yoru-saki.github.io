@@ -42,9 +42,6 @@
   };
 
   var initSearch = function(){
-    var $legacyWrap = $('#search-form-wrap');
-    var $legacyInput = $('.search-form-input');
-
     var $dialog = $(
       '<div class="search-dialog" role="dialog" aria-modal="true" aria-label="站内搜索">' +
         '<div class="search-dialog-panel">' +
@@ -106,7 +103,6 @@
     };
 
     var openSearch = function(seed){
-      $legacyWrap.removeClass('on');
       $dialog.addClass('is-open');
       $('body').addClass('search-open');
       renderResults(seed || '');
@@ -126,8 +122,6 @@
       event.stopPropagation();
       openSearch('');
     });
-
-    $legacyInput.off('blur');
 
     $dialog.find('.search-dialog-close').on('click', closeSearch);
     $dialog.on('click', function(event){
