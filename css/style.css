@@ -21,6 +21,8 @@
   --accent: #0a7080;
   --accent-2: #80685d;
   --accent-3: #8d7b49;
+  --display-hover: #80685d;
+  --display-hover-shadow: rgba(128, 104, 93, 0.14);
   --focus: #b18d34;
   --paper-cut: rgba(255, 255, 250, 0.76);
   --paper-blue: rgba(93, 194, 205, 0.12);
@@ -78,6 +80,8 @@ html[data-theme="dark"] {
   --accent: #82d3d7;
   --accent-2: #d8b2a0;
   --accent-3: #d7c58d;
+  --display-hover: #82d3d7;
+  --display-hover-shadow: rgba(130, 211, 215, 0.18);
   --focus: #f0c86c;
   --paper-cut: rgba(32, 50, 57, 0.72);
   --paper-blue: rgba(121, 210, 217, 0.1);
@@ -800,8 +804,8 @@ input:focus-visible {
 .archive-article-title:focus-visible,
 .article-title:hover,
 a.article-title:hover {
-  color: var(--accent-2);
-  text-shadow: 0 10px 28px var(--warm-soft);
+  color: var(--display-hover);
+  text-shadow: 0 10px 28px var(--display-hover-shadow);
   text-decoration: none;
 }
 
