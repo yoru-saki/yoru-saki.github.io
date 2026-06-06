@@ -1360,7 +1360,12 @@ figure.highlight .code {
 
 .article-entry .mermaid-static {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
+  height: clamp(240px, 34vw, 340px);
+  margin: 1.6em 0;
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -1368,6 +1373,14 @@ figure.highlight .code {
     linear-gradient(135deg, var(--paper-gold), transparent 54%),
     var(--surface-solid);
   box-shadow: var(--shadow-1);
+}
+
+.article-entry .mermaid-static.diagram-portrait {
+  height: clamp(260px, 38vw, 360px);
+}
+
+.article-entry .mermaid-static.diagram-wide {
+  height: clamp(160px, 24vw, 240px);
 }
 
 .article-entry .mermaid-static.is-zoomable {
@@ -1413,11 +1426,13 @@ figure.highlight .code {
 .article-entry .mermaid-static img {
   width: 100%;
   max-width: 100%;
+  height: 100%;
   margin: 0 auto;
   border: 0;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
+  object-fit: contain;
 }
 
 html[data-theme="dark"] .article-entry .mermaid-static img {
@@ -2313,7 +2328,16 @@ body.reveal-fallback .latest-item {
   }
 
   .article-entry .mermaid-static {
+    height: 240px;
     padding: 12px;
+  }
+
+  .article-entry .mermaid-static.diagram-portrait {
+    height: 260px;
+  }
+
+  .article-entry .mermaid-static.diagram-wide {
+    height: 160px;
   }
 
   .article-entry .mermaid-static.is-zoomable::after {

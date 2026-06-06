@@ -180,12 +180,8 @@
 <li>第二层是 Agent 调度层，负责判断这个问题应该交给谁处理。</li>
 <li>第三层是工具和数据层，包括数据库、向量库、全文索引、模型服务和会话记忆。</li>
 </ul>
-<figure class="diagram-card is-fit" data-diagram-index="1">
-  <div class="diagram-viewport">
-    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/ac08d46b4cd2.svg">
+<figure class="diagram-card mermaid-static diagram-standard" data-diagram-src="/assets/diagrams/ac08d46b4cd2.svg">
   <img src="/assets/diagrams/ac08d46b4cd2.svg" alt="Mermaid 结构图" loading="lazy">
-</figure>
-  </div>
 </figure>
 
 <p>这里最重要的设计点是：前端入口尽量简单，后端能力尽量分层。用户不用关心背后有多少 Agent，只要输入问题；系统会在后端判断问题类型，然后选择最合适的处理方式。</p>
@@ -197,22 +193,14 @@
 <li>面试模拟、HR 问答、岗位训练、项目追问：进入模拟面试 Agent。</li>
 <li>教务数据、成绩查询、模板文书、学习建议：进入教务助手 Agent。</li>
 </ul>
-<figure class="diagram-card is-fit" data-diagram-index="2">
-  <div class="diagram-viewport">
-    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/a5abec7c9e3e.svg">
+<figure class="diagram-card mermaid-static diagram-standard" data-diagram-src="/assets/diagrams/a5abec7c9e3e.svg">
   <img src="/assets/diagrams/a5abec7c9e3e.svg" alt="Mermaid 结构图" loading="lazy">
-</figure>
-  </div>
 </figure>
 
 <p>这样做的好处是，前端可以保留“智能路由”模式，用户不用先学习系统有哪些 Agent；而开发者也可以在后端不断优化分流规则。</p>
 <h2 id="4-所有-Agent-与工具调用链路"><a href="#4-所有-Agent-与工具调用链路" class="headerlink" title="4. 所有 Agent 与工具调用链路"></a>4. 所有 Agent 与工具调用链路</h2><p>下面这张图可以理解为系统的“能力地图”。你可以顺着箭头看：用户的问题先到统一聊天接口，再到 <code>SupervisorAgent</code>，然后被分到某个 Agent，最后才进入具体工具。</p>
-<figure class="diagram-card is-fit" data-diagram-index="3">
-  <div class="diagram-viewport">
-    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/f938a1763cd4.svg">
+<figure class="diagram-card mermaid-static diagram-wide" data-diagram-src="/assets/diagrams/f938a1763cd4.svg">
   <img src="/assets/diagrams/f938a1763cd4.svg" alt="Mermaid 结构图" loading="lazy">
-</figure>
-  </div>
 </figure>
 
 <p>如果你是第一次做 Agent 系统，可以先记住一个简单原则：不要把所有能力都塞进一个大提示词里，而是尽量拆成清楚的 Agent 和工具。这样后面测试、调试和修复都会容易很多。</p>
@@ -227,12 +215,8 @@
 <li>生成回复，并识别当前情绪。</li>
 <li>把回复和情绪通过 SSE 发给前端。</li>
 </ol>
-<figure class="diagram-card is-fit" data-diagram-index="4">
-  <div class="diagram-viewport">
-    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/952d9eca70ea.svg">
+<figure class="diagram-card mermaid-static diagram-portrait" data-diagram-src="/assets/diagrams/952d9eca70ea.svg">
   <img src="/assets/diagrams/952d9eca70ea.svg" alt="Mermaid 结构图" loading="lazy">
-</figure>
-  </div>
 </figure>
 
 <p>这条链路解决了三个问题：</p>
@@ -241,12 +225,8 @@
 <li>能力清晰：作诗、对联、作文点评、情绪疏导等能力可以分别测试。</li>
 <li>体验完整：回复内容、情绪标签和前端立绘可以联动。</li>
 </ul>
-<h3 id="5-2-林黛玉-7-个工具拆分"><a href="#5-2-林黛玉-7-个工具拆分" class="headerlink" title="5.2 林黛玉 7 个工具拆分"></a>5.2 林黛玉 7 个工具拆分</h3><figure class="diagram-card is-fit" data-diagram-index="5">
-  <div class="diagram-viewport">
-    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/6231566dad80.svg">
+<h3 id="5-2-林黛玉-7-个工具拆分"><a href="#5-2-林黛玉-7-个工具拆分" class="headerlink" title="5.2 林黛玉 7 个工具拆分"></a>5.2 林黛玉 7 个工具拆分</h3><figure class="diagram-card mermaid-static diagram-standard" data-diagram-src="/assets/diagrams/6231566dad80.svg">
   <img src="/assets/diagrams/6231566dad80.svg" alt="Mermaid 结构图" loading="lazy">
-</figure>
-  </div>
 </figure>
 
 <p>这 7 个工具分别对应不同场景：</p>
@@ -265,12 +245,8 @@
 <h2 id="6-四大名著-RAG：让回答尽量有依据"><a href="#6-四大名著-RAG：让回答尽量有依据" class="headerlink" title="6. 四大名著 RAG：让回答尽量有依据"></a>6. 四大名著 RAG：让回答尽量有依据</h2><p>RAG 可以简单理解为：不要只让大模型凭记忆回答，而是先从本地资料里找证据，再让模型根据证据组织答案。</p>
 <p>在这个项目里，四大名著问答基于本地语料实现。简单说，就是先把《红楼梦》《西游记》《水浒传》《三国演义》整理成一段一段的小文本，再把这些文本写入向量库和全文索引。用户提问时，系统先找相关原文，再让模型根据原文组织答案。</p>
 <p><img src="/assets/project-agent-showcase/04-rag-answer.png" alt="RAG 问答效果"></p>
-<h3 id="6-1-最新-RAG-检索链路"><a href="#6-1-最新-RAG-检索链路" class="headerlink" title="6.1 最新 RAG 检索链路"></a>6.1 最新 RAG 检索链路</h3><figure class="diagram-card is-fit" data-diagram-index="6">
-  <div class="diagram-viewport">
-    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/237e925a885d.svg">
+<h3 id="6-1-最新-RAG-检索链路"><a href="#6-1-最新-RAG-检索链路" class="headerlink" title="6.1 最新 RAG 检索链路"></a>6.1 最新 RAG 检索链路</h3><figure class="diagram-card mermaid-static diagram-portrait" data-diagram-src="/assets/diagrams/237e925a885d.svg">
   <img src="/assets/diagrams/237e925a885d.svg" alt="Mermaid 结构图" loading="lazy">
-</figure>
-  </div>
 </figure>
 
 <h3 id="6-2-为什么不能只靠向量检索"><a href="#6-2-为什么不能只靠向量检索" class="headerlink" title="6.2 为什么不能只靠向量检索"></a>6.2 为什么不能只靠向量检索</h3><p>早期只靠向量召回时，像“林黛玉进贾府时，贾宝玉摔的是什么？”这类问题容易被相似情节干扰。因为《红楼梦》后文也有“摔玉”场景，向量检索会觉得它们语义很接近，最后可能召回到错误段落。</p>
@@ -285,12 +261,8 @@
 </ul>
 <p>所以对于示例问题，系统应命中《红楼梦》第三回，并回答“贾宝玉摔的是通灵宝玉”。这个例子也说明，RAG 的关键不只是“接一个向量库”，而是要根据真实错误不断补检索策略。</p>
 <h2 id="7-教务助手：把自然语言变成业务工具调用"><a href="#7-教务助手：把自然语言变成业务工具调用" class="headerlink" title="7. 教务助手：把自然语言变成业务工具调用"></a>7. 教务助手：把自然语言变成业务工具调用</h2><p>教务助手是学生管理系统与 AI Agent 结合最直接的一条链路。它不是单纯聊天，而是会先判断用户想做什么，再选择合适的子能力。</p>
-<figure class="diagram-card is-fit" data-diagram-index="7">
-  <div class="diagram-viewport">
-    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/5d3e79877003.svg">
+<figure class="diagram-card mermaid-static diagram-standard" data-diagram-src="/assets/diagrams/5d3e79877003.svg">
   <img src="/assets/diagrams/5d3e79877003.svg" alt="Mermaid 结构图" loading="lazy">
-</figure>
-  </div>
 </figure>
 
 <p>举几个例子：</p>
@@ -312,12 +284,8 @@
 <li><code>done</code>：表示本轮回复结束。</li>
 <li><code>error</code>：表示异常信息。</li>
 </ul>
-<figure class="diagram-card is-fit" data-diagram-index="8">
-  <div class="diagram-viewport">
-    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/2d9842ec720b.svg">
+<figure class="diagram-card mermaid-static diagram-standard" data-diagram-src="/assets/diagrams/2d9842ec720b.svg">
   <img src="/assets/diagrams/2d9842ec720b.svg" alt="Mermaid 结构图" loading="lazy">
-</figure>
-  </div>
 </figure>
 
 <p>流式优化主要体现在三点：</p>
@@ -337,12 +305,8 @@
 </ul>
 <p>这对新手很有帮助，因为强风格 UI 最难的地方不是“写一个按钮”，而是让素材、样式、布局和浏览器里的真实效果最终对得上。</p>
 <h3 id="10-2-前端设计步骤"><a href="#10-2-前端设计步骤" class="headerlink" title="10.2 前端设计步骤"></a>10.2 前端设计步骤</h3><p>我最后把前端设计拆成 7 步。这个顺序很适合新手参考：</p>
-<figure class="diagram-card is-fit" data-diagram-index="9">
-  <div class="diagram-viewport">
-    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/2aaf1b307698.svg">
+<figure class="diagram-card mermaid-static diagram-wide" data-diagram-src="/assets/diagrams/2aaf1b307698.svg">
   <img src="/assets/diagrams/2aaf1b307698.svg" alt="Mermaid 结构图" loading="lazy">
-</figure>
-  </div>
 </figure>
 
 <p>先做信息架构，是为了知道系统有哪些区域；再做页面清单，是为了知道每个能力放在哪里；接着做路由和组件拆分，保证项目结构不会乱；最后再整理 API、素材和 UI 规范。</p>
@@ -400,21 +364,13 @@
 <li>专项 AI 页面：如名著问答、模拟面试、Text2SQL、成绩诊断等，保留独立工作流。</li>
 <li>API 模块：<code>auth.ts</code>、<code>ai.ts</code>、<code>students.ts</code>、<code>grades.ts</code> 等按业务域拆分，避免页面直接拼请求。</li>
 </ul>
-<figure class="diagram-card is-fit" data-diagram-index="10">
-  <div class="diagram-viewport">
-    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/353c57413b40.svg">
+<figure class="diagram-card mermaid-static diagram-standard" data-diagram-src="/assets/diagrams/353c57413b40.svg">
   <img src="/assets/diagrams/353c57413b40.svg" alt="Mermaid 结构图" loading="lazy">
-</figure>
-  </div>
 </figure>
 
 <h3 id="10-7-API-调用关系"><a href="#10-7-API-调用关系" class="headerlink" title="10.7 API 调用关系"></a>10.7 API 调用关系</h3><p>前端 API 层分成普通 Axios 请求和 AI 流式请求两类。教务数据相关请求统一走 <code>request.ts</code> 封装，自动附带 token；AI 流式对话走 <code>fetch + ReadableStream</code>，以便逐段解析 SSE 事件。</p>
-<figure class="diagram-card is-fit" data-diagram-index="11">
-  <div class="diagram-viewport">
-    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/79bc119cfb30.svg">
+<figure class="diagram-card mermaid-static diagram-standard" data-diagram-src="/assets/diagrams/79bc119cfb30.svg">
   <img src="/assets/diagrams/79bc119cfb30.svg" alt="Mermaid 结构图" loading="lazy">
-</figure>
-  </div>
 </figure>
 
 <p>新手可以重点看这里：普通接口和流式接口最好分开处理。普通数据请求用 Axios 很方便，但流式响应需要用 <code>fetch</code> 读取 <code>ReadableStream</code>，再把 SSE 事件一段一段解析出来。</p>
@@ -514,7 +470,7 @@
     
       <footer class="article-footer">
         <div class="article-tag-list" aria-label="文章标签">
-          <a class="article-tag-list-link" href="/tags/FastAPI/">FastAPI</a><a class="article-tag-list-link" href="/tags/LangGraph/">LangGraph</a><a class="article-tag-list-link" href="/tags/RAG/">RAG</a><a class="article-tag-list-link" href="/tags/Vue/">Vue</a><a class="article-tag-list-link" href="/tags/%E5%A4%9A-Agent/">多 Agent</a><a class="article-tag-list-link" href="/tags/%E5%BC%BA%E9%A3%8E%E6%A0%BC%E5%8C%96%E5%89%8D%E7%AB%AF/">强风格化前端</a>
+          <a class="article-tag-list-link" href="/tags/RAG/">RAG</a><a class="article-tag-list-link" href="/tags/FastAPI/">FastAPI</a><a class="article-tag-list-link" href="/tags/LangGraph/">LangGraph</a><a class="article-tag-list-link" href="/tags/Vue/">Vue</a><a class="article-tag-list-link" href="/tags/%E5%A4%9A-Agent/">多 Agent</a><a class="article-tag-list-link" href="/tags/%E5%BC%BA%E9%A3%8E%E6%A0%BC%E5%8C%96%E5%89%8D%E7%AB%AF/">强风格化前端</a>
         </div>
       </footer>
     
@@ -534,7 +490,7 @@
     </div>
   </div>
   <script>
-    window.__BLOG_POSTS__ = [{"title":"抛砖引玉：教你扩展一个多 Agent 智能平台，并配套落地强风格化前端","url":"/2026/05/23/agent-platform-frontend-showcase/","excerpt":"项目名：大观园智学系统技术关键词：Vue、FastAPI、LangGraph、多 Agent、RAG、Text2SQL、SSE 流式响应、Codex 前端落地 摘要这篇文章适合想把普通业务系统改造成 AI 应用的同学阅读。项目的起点是一个学","tags":["FastAPI","LangGraph","RAG","Vue","多 Agent","强风格化前端"]},{"title":"AI Agent 开发入门教程：从概念到第一个可运行项目","url":"/2026/05/10/ai-agent-getting-started/","excerpt":"导读：AI Agent 入门最容易浪费时间的地方，往往不是模型本身，而是工具链选择、开发流程、质量验证和项目拆解方式。这篇文章不是教科书式的理论堆砌，而是一份面向实操的入门地图：哪些坑可以提前避开，哪些捷径其实是弯路，以及最重要的一点：如何","tags":["RAG","AI Agent","LangChain","Vibe Coding","前端开发"]}];
+    window.__BLOG_POSTS__ = [{"title":"抛砖引玉：教你扩展一个多 Agent 智能平台，并配套落地强风格化前端","url":"/2026/05/23/agent-platform-frontend-showcase/","excerpt":"项目名：大观园智学系统技术关键词：Vue、FastAPI、LangGraph、多 Agent、RAG、Text2SQL、SSE 流式响应、Codex 前端落地 摘要这篇文章适合想把普通业务系统改造成 AI 应用的同学阅读。项目的起点是一个学","tags":["RAG","FastAPI","LangGraph","Vue","多 Agent","强风格化前端"]},{"title":"AI Agent 开发入门教程：从概念到第一个可运行项目","url":"/2026/05/10/ai-agent-getting-started/","excerpt":"导读：AI Agent 入门最容易浪费时间的地方，往往不是模型本身，而是工具链选择、开发流程、质量验证和项目拆解方式。这篇文章不是教科书式的理论堆砌，而是一份面向实操的入门地图：哪些坑可以提前避开，哪些捷径其实是弯路，以及最重要的一点：如何","tags":["AI Agent","LangChain","RAG","Vibe Coding","前端开发"]}];
   </script>
   <script src="/js/script.js?v=20260606-hexo-collage10"></script>
 </body>
