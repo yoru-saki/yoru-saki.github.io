@@ -30,8 +30,9 @@
     var sync = function() {
       var isDark = html.getAttribute("data-theme") === "dark";
       button.title = isDark ? "切换到浅色" : "切换到深色";
+      button.setAttribute("aria-label", isDark ? "切换到浅色主题" : "切换到深色主题");
       button.setAttribute("aria-pressed", isDark ? "true" : "false");
-      symbol.textContent = isDark ? "日" : "月";
+      symbol.dataset.themeIcon = isDark ? "sun" : "moon";
     };
 
     button.addEventListener("click", function(event) {
@@ -43,6 +44,7 @@
         localStorage.setItem("blog-theme", next);
       } catch (error) {}
       sync();
+      window.dispatchEvent(new CustomEvent("yoru:theme-change", { detail: { theme: next } }));
     });
 
     sync();
@@ -211,6 +213,7 @@
     });
 
     document.querySelectorAll(".article-entry figure.highlight, .article-entry > pre").forEach(function(block) {
+      if (block.classList.contains("mermaid") || block.querySelector("pre.mermaid")) return;
       if (block.querySelector(".code-copy")) return;
       block.classList.add("code-copy-wrap");
       var button = create("button", "code-copy", "复制");
@@ -243,6 +246,180 @@
       window.setTimeout(function() {
         button.classList.remove("is-copied");
       }, 1400);
+    });
+  };
+
+  var initMermaid = function() {
+    var blocks = Array.from(document.querySelectorAll(".article-entry pre.mermaid"));
+    if (!blocks.length) return;
+
+    var cleanLabel = function(value) {
+      return (value || "")
+        .replace(/&gt;/g, ">")
+        .replace(/<br\s*\/?>/gi, " / ")
+        .replace(/\s+/g, " ")
+        .replace(/^["']|["']$/g, "")
+        .trim();
+    };
+
+    var escapeHtml = function(value) {
+      return cleanLabel(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    };
+
+    var collectFlow = function(source) {
+      var nodes = {};
+      var order = [];
+      var edges = [];
+      var addNode = function(id, label) {
+        if (!id) return;
+        if (!nodes[id]) {
+          nodes[id] = cleanLabel(label || id);
+          order.push(id);
+          return;
+        }
+        if (label && nodes[id] === id) nodes[id] = cleanLabel(label);
+      };
+
+      source.split(/\n/).forEach(function(raw) {
+        var line = raw.trim();
+        if (!line || /^(flowchart|graph|subgraph|end\b)/i.test(line)) return;
+        line.replace(/([A-Za-z][\w]*)\["([^"]+)"\]/g, function(_, id, label) {
+          addNode(id, label);
+          return _;
+        });
+        var edge = line.match(/^([A-Za-z][\w]*)(?:\[[^\]]+\])?\s*[-=.]+>\s*(?:\|"([^"]+)"\|\s*)?([A-Za-z][\w]*)/);
+        if (!edge) edge = line.match(/^([A-Za-z][\w]*)(?:\[[^\]]+\])?\s*[-=.]+(?:\|"([^"]+)"\|\s*)?>\s*([A-Za-z][\w]*)/);
+        if (edge) {
+          addNode(edge[1]);
+          addNode(edge[3]);
+          edges.push({ from: edge[1], to: edge[3], label: edge[2] || "" });
+        }
+      });
+
+      return { nodes: nodes, order: order, edges: edges };
+    };
+
+    var collectSequence = function(source) {
+      var participants = {};
+      var order = [];
+      var messages = [];
+      var addParticipant = function(id, label) {
+        if (!id || participants[id]) return;
+        participants[id] = cleanLabel(label || id);
+        order.push(id);
+      };
+
+      source.split(/\n/).forEach(function(raw) {
+        var line = raw.trim();
+        if (!line || /^sequenceDiagram/i.test(line)) return;
+        var participant = line.match(/^participant\s+([A-Za-z][\w]*)\s+as\s+(.+)$/i);
+        if (participant) {
+          addParticipant(participant[1], participant[2]);
+          return;
+        }
+        var message = line.match(/^([A-Za-z][\w]*)\s*-{1,2}>{1,2}\s*([A-Za-z][\w]*)\s*:\s*(.+)$/);
+        if (message) {
+          addParticipant(message[1]);
+          addParticipant(message[2]);
+          messages.push({ from: message[1], to: message[2], label: message[3] });
+        }
+      });
+
+      return { participants: participants, order: order, messages: messages };
+    };
+
+    var renderFallback = function(diagram) {
+      var source = diagram.dataset.source || "";
+      var isSequence = /^sequenceDiagram/m.test(source.trim());
+      if (isSequence) {
+        var sequence = collectSequence(source);
+        diagram.classList.add("is-fallback");
+        diagram.classList.remove("is-error");
+        diagram.innerHTML =
+          '<div class="diagram-fallback-head"><span>Sequence</span><strong>时序结构</strong></div>' +
+          '<div class="diagram-node-grid">' + sequence.order.map(function(id) {
+            return '<span>' + escapeHtml(sequence.participants[id] || id) + '</span>';
+          }).join("") + '</div>' +
+          '<ol class="diagram-edge-list">' + sequence.messages.map(function(edge) {
+            return '<li><span>' + escapeHtml(sequence.participants[edge.from] || edge.from) + '</span><b aria-hidden="true">→</b><span>' + escapeHtml(sequence.participants[edge.to] || edge.to) + '</span><em>' + escapeHtml(edge.label) + '</em></li>';
+          }).join("") + '</ol>';
+        return;
+      }
+
+      var flow = collectFlow(source);
+      diagram.classList.add("is-fallback");
+      diagram.classList.remove("is-error");
+      diagram.innerHTML =
+        '<div class="diagram-fallback-head"><span>Flowchart</span><strong>系统结构</strong></div>' +
+        '<div class="diagram-node-grid">' + flow.order.map(function(id) {
+          return '<span>' + escapeHtml(flow.nodes[id] || id) + '</span>';
+        }).join("") + '</div>' +
+        '<ol class="diagram-edge-list">' + flow.edges.map(function(edge) {
+          return '<li><span>' + escapeHtml(flow.nodes[edge.from] || edge.from) + '</span><b aria-hidden="true">→</b><span>' + escapeHtml(flow.nodes[edge.to] || edge.to) + '</span>' + (edge.label ? '<em>' + escapeHtml(edge.label) + '</em>' : "") + '</li>';
+        }).join("") + '</ol>';
+    };
+
+    blocks.forEach(function(block, index) {
+      var host = create("div", "mermaid yoru-mermaid");
+      host.id = "mermaid-diagram-" + index;
+      host.dataset.source = block.textContent.replace(/\u00a0/g, " ");
+      host.textContent = host.dataset.source;
+      block.replaceWith(host);
+    });
+
+    var render = function() {
+      if (!window.mermaid) return;
+      var isDark = html.getAttribute("data-theme") === "dark";
+      var diagrams = Array.from(document.querySelectorAll(".yoru-mermaid"));
+      diagrams.forEach(function(diagram) {
+        diagram.removeAttribute("data-processed");
+        diagram.innerHTML = "";
+        diagram.textContent = diagram.dataset.source || "";
+      });
+      window.mermaid.initialize({
+        startOnLoad: false,
+        theme: "base",
+        securityLevel: "loose",
+        htmlLabels: true,
+        themeVariables: {
+          background: isDark ? "#17272d" : "#fffaf2",
+          primaryColor: isDark ? "#1c363d" : "#f8f0df",
+          primaryTextColor: isDark ? "#f2f8f7" : "#0f2732",
+          primaryBorderColor: isDark ? "#79d2d9" : "#096f83",
+          lineColor: isDark ? "#e4c173" : "#9f413d",
+          secondaryColor: isDark ? "#223f46" : "#edf7f4",
+          tertiaryColor: isDark ? "#2b3330" : "#fbf1dc",
+          fontFamily: getComputedStyle(document.documentElement).getPropertyValue("--font-sans").trim()
+        }
+      });
+      window.mermaid.run({ nodes: diagrams }).catch(function(error) {
+        diagrams.forEach(function(diagram) {
+          renderFallback(diagram);
+        });
+      });
+    };
+
+    var wait = function(attempts) {
+      if (window.mermaid) {
+        render();
+        return;
+      }
+      if (attempts <= 0) {
+        document.querySelectorAll(".yoru-mermaid").forEach(function(diagram) {
+          renderFallback(diagram);
+        });
+        return;
+      }
+      window.setTimeout(function() { wait(attempts - 1); }, 120);
+    };
+
+    wait(30);
+    window.addEventListener("yoru:theme-change", function() {
+      window.setTimeout(render, 80);
     });
   };
 
@@ -283,11 +460,15 @@
     var button = create("button", "back-to-top");
     button.type = "button";
     button.setAttribute("aria-label", "回到顶部");
-    button.innerHTML = '<span class="back-to-top-arrow" aria-hidden="true"></span><span class="back-to-top-label" aria-hidden="true">TOP</span>';
+    button.innerHTML = '<span class="back-to-top-progress" aria-hidden="true"></span><span class="back-to-top-arrow" aria-hidden="true"></span><span class="back-to-top-label" aria-hidden="true">回到顶部</span>';
     body.appendChild(button);
 
     var sync = function() {
+      var scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      var progress = Math.min(1, Math.max(0, window.pageYOffset / scrollable));
+      button.style.setProperty("--scroll-progress", Math.round(progress * 100) + "%");
       button.classList.toggle("is-visible", window.pageYOffset > 480);
+      button.classList.toggle("is-near-end", progress > 0.72);
     };
 
     button.addEventListener("click", function() {
@@ -391,6 +572,7 @@
   initTheme();
   initSearch();
   initArticleEnhancements();
+  initMermaid();
   initToc();
   initBackToTop();
   initLibraryFilter();
