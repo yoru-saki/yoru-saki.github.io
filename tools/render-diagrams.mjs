@@ -34,6 +34,44 @@ const escapeAttr = value => value
   .replace(/</g, "&lt;")
   .replace(/>/g, "&gt;");
 
+const readSvgMeta = file => {
+  const svg = readFileSync(file, "utf8");
+  const viewBox = svg.match(/viewBox="([^"]+)"/);
+  if (!viewBox) return { aspect: 1 };
+  const parts = viewBox[1].split(/\s+/).map(Number);
+  if (parts.length !== 4 || parts.some(value => !Number.isFinite(value)) || !parts[3]) return { aspect: 1 };
+  return { aspect: parts[2] / parts[3] };
+};
+
+const polishSvg = file => {
+  const pad = 32;
+  let svg = readFileSync(file, "utf8");
+  svg = svg.replace(/viewBox="([^"]+)"/, (match, value) => {
+    const parts = value.split(/\s+/).map(Number);
+    if (parts.length !== 4 || parts.some(part => !Number.isFinite(part))) return match;
+    const next = [parts[0] - pad, parts[1] - pad, parts[2] + pad * 2, parts[3] + pad * 2];
+    return `viewBox="${next.join(" ")}"`;
+  });
+  svg = svg.replace(/max-width:\s*([0-9.]+)px/, (match, value) => {
+    const width = Number.parseFloat(value);
+    return Number.isFinite(width) ? `max-width: ${width + pad * 2}px` : match;
+  });
+  svg = svg.replace("</style>", [
+    "#my-svg foreignObject{overflow:visible;}",
+    "#my-svg .label,#my-svg .nodeLabel,#my-svg .edgeLabel{overflow:visible;}",
+    "#my-svg .nodeLabel,#my-svg .edgeLabel{line-height:1.28;}",
+    "</style>"
+  ].join(""));
+  writeFileSync(file, svg);
+  return readSvgMeta(file);
+};
+
+const classForAspect = aspect => {
+  if (aspect < 0.78) return "diagram-portrait";
+  if (aspect > 4.2) return "diagram-wide";
+  return "diagram-standard";
+};
+
 const listHtml = dir => {
   if (!existsSync(dir)) return [];
   return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
@@ -47,7 +85,10 @@ const render = source => {
   const hash = createHash("sha1").update(source).digest("hex").slice(0, 12);
   const fileName = `${hash}.svg`;
   const output = join(diagramsDir, fileName);
-  if (existsSync(output)) return `/assets/diagrams/${fileName}`;
+  if (existsSync(output)) {
+    const meta = readSvgMeta(output);
+    return { url: `/assets/diagrams/${fileName}`, ...meta };
+  }
 
   const temp = mkdtempSync(join(tmpdir(), "yoru-mermaid-"));
   const input = join(temp, "diagram.mmd");
@@ -60,7 +101,10 @@ const render = source => {
     securityLevel: "loose",
     flowchart: {
       htmlLabels: true,
-      curve: "basis"
+      curve: "basis",
+      nodeSpacing: 58,
+      rankSpacing: 64,
+      padding: 18
     },
     sequence: {
       mirrorActors: false
@@ -74,7 +118,7 @@ const render = source => {
       secondaryColor: "#eef7f5",
       tertiaryColor: "#f8f0df",
       fontFamily: "Inter, Arial, sans-serif",
-      fontSize: "16px"
+      fontSize: "14px"
     }
   }));
   writeFileSync(puppeteer, JSON.stringify({
@@ -89,7 +133,8 @@ const render = source => {
       "-c", config,
       "-p", puppeteer,
       "-b", "transparent",
-      "-w", "1600"
+      "-w", "2400",
+      "-H", "1800"
     ], {
       cwd: root,
       stdio: "pipe"
@@ -97,28 +142,41 @@ const render = source => {
   } finally {
     rmSync(temp, { recursive: true, force: true });
   }
-  return `/assets/diagrams/${fileName}`;
+  const meta = polishSvg(output);
+  return { url: `/assets/diagrams/${fileName}`, ...meta };
 };
 
 mkdirSync(diagramsDir, { recursive: true });
 
 let rendered = 0;
+const renderFigure = source => {
+  const result = render(source);
+  rendered += 1;
+  const aspectClass = classForAspect(result.aspect);
+  return [
+    `<figure class="diagram-card mermaid-static ${aspectClass}" data-diagram-src="${escapeAttr(result.url)}">`,
+    `  <img src="${escapeAttr(result.url)}" alt="Mermaid 结构图" loading="lazy">`,
+    `</figure>`
+  ].join("\n");
+};
+
+const wrappedPattern = /<figure class="diagram-card is-fit"[^>]*>\s*<div class="diagram-viewport">\s*<pre class="mermaid">([\s\S]*?)<\/pre>\s*<\/div>\s*<\/figure>/g;
 const pattern = /<pre class="mermaid">([\s\S]*?)<\/pre>/g;
 
 for (const file of listHtml(publicDir)) {
   const html = readFileSync(file, "utf8");
   let changed = false;
-  const next = html.replace(pattern, (match, raw) => {
+  const withoutWrappers = html.replace(wrappedPattern, (match, raw) => {
     const source = decodeEntities(raw).replace(/\u00a0/g, " ").trim();
     if (!source) return match;
-    const url = render(source);
-    rendered += 1;
     changed = true;
-    return [
-      `<figure class="diagram-card mermaid-static" data-diagram-src="${escapeAttr(url)}">`,
-      `  <img src="${escapeAttr(url)}" alt="Mermaid 结构图" loading="lazy">`,
-      `</figure>`
-    ].join("\n");
+    return renderFigure(source);
+  });
+  const next = withoutWrappers.replace(pattern, (match, raw) => {
+    const source = decodeEntities(raw).replace(/\u00a0/g, " ").trim();
+    if (!source) return match;
+    changed = true;
+    return renderFigure(source);
   });
   if (changed) writeFileSync(file, next);
 }
