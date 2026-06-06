@@ -17,9 +17,11 @@
   var initTheme = function(){
     var savedTheme = window.localStorage && localStorage.getItem('blog-theme');
     var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    var theme = savedTheme || (prefersDark ? 'dark' : 'light');
+    var bootTheme = $('html').attr('data-theme');
+    var theme = bootTheme || savedTheme || (prefersDark ? 'dark' : 'light');
 
     $('html').attr('data-theme', theme);
+    document.documentElement.style.colorScheme = theme;
 
     var $button = $('<button class="nav-icon theme-toggle" type="button" aria-label="切换深浅色"><span class="theme-symbol" aria-hidden="true"></span></button>');
     $('#sub-nav .nav-search-btn').before($button);
@@ -34,6 +36,7 @@
       event.stopPropagation();
       var nextTheme = $('html').attr('data-theme') === 'dark' ? 'light' : 'dark';
       $('html').attr('data-theme', nextTheme);
+      document.documentElement.style.colorScheme = nextTheme;
       if (window.localStorage) localStorage.setItem('blog-theme', nextTheme);
       syncButton();
     });

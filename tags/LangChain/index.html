@@ -2,6 +2,29 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <script>
+    (function(){
+      try {
+        var savedTheme = window.localStorage && localStorage.getItem('blog-theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = savedTheme || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.style.colorScheme = theme;
+      } catch (error) {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.style.colorScheme = 'light';
+      }
+    })();
+  </script>
+  <style>
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      background: #0f1c21;
+    }
+    html[data-theme="dark"] body {
+      background: #0f1c21;
+    }
+  </style>
   
   
   <title>标签: LangChain | 海马成长痛</title>
@@ -20,7 +43,7 @@
     <link rel="shortcut icon" href="/images/seahorse-hero.png">
   
   
-  <link rel="stylesheet" href="/css/style.css?v=20260606-article-display">
+  <link rel="stylesheet" href="/css/style.css?v=20260606-theme-boot">
   
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
 
@@ -121,7 +144,7 @@
 
 
 
-<script src="/js/script.js?v=20260606-article-display"></script>
+<script src="/js/script.js?v=20260606-theme-boot"></script>
 
 
 
