@@ -1230,6 +1230,25 @@ a.article-title:hover {
 .article-entry h3 {
   color: var(--aqua-deep);
 }
+html[data-theme="dark"] .article-entry h1,
+html[data-theme="dark"] .article-entry h2,
+html[data-theme="dark"] .article-entry h3,
+html[data-theme="dark"] .article-entry h4,
+html[data-theme="dark"] .article-entry h5,
+html[data-theme="dark"] .article-entry h6 {
+  color: #d7f2f0;
+  text-shadow: 0 8px 24px rgba(0,0,0,0.28);
+}
+html[data-theme="dark"] .article-entry h2 {
+  border-left-color: var(--washi-aqua-soft);
+  background:
+    linear-gradient(90deg, rgba(112,203,211,0.22), rgba(112,203,211,0.08) 42%, transparent),
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+html[data-theme="dark"] .article-entry h3 {
+  color: var(--washi-aqua-soft);
+}
 .article-entry a {
   color: #d76462;
   border-bottom: 1px dotted rgba(215,100,98,0.5);
@@ -1656,7 +1675,28 @@ pre,
 .featured-more {
   display: inline-block;
   margin-top: 12px;
+  color: var(--washi-aqua);
+  border: 0;
+  background: transparent;
+  box-shadow: none;
   text-decoration: none;
+  font-weight: 800;
+  transition: color 0.18s ease, transform 0.18s ease, text-shadow 0.18s ease;
+}
+.featured-more:hover,
+.featured-more:focus-visible {
+  color: var(--washi-coral);
+  transform: translateX(3px);
+  text-shadow: 0 8px 20px rgba(217,120,114,0.16);
+  text-decoration: none;
+}
+html[data-theme="dark"] .featured-more {
+  color: var(--washi-aqua-soft);
+}
+html[data-theme="dark"] .featured-more:hover,
+html[data-theme="dark"] .featured-more:focus-visible {
+  color: #fff;
+  text-shadow: 0 0 18px rgba(157,228,231,0.2);
 }
 .latest-list {
   position: relative;
@@ -2147,9 +2187,6 @@ body:before {
 .featured-card p {
   color: var(--ink-soft);
 }
-.featured-more {
-  color: var(--accent-warm);
-}
 .latest-item:hover,
 .archive-article-inner:hover {
   -webkit-transform: translateY(-2px);
@@ -2562,11 +2599,11 @@ button:focus-visible {
   font-weight: 800;
 }
 .article-reading-grid {
-  max-width: 1120px;
+  max-width: 1180px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 220px minmax(0, 780px);
-  gap: 42px;
+  grid-template-columns: 300px minmax(0, 780px);
+  gap: 34px;
   -webkit-box-align: start;
   -moz-box-align: start;
   -ms-flex-align: start;
@@ -2577,12 +2614,12 @@ button:focus-visible {
   max-width: 780px;
 }
 .article-toc {
-  position: sticky;
-  top: 24px;
-  max-height: calc(100vh - 48px);
-  overflow: auto;
-  padding: 18px 0 18px 16px;
-  border-left: 1px solid rgba(43,128,148,0.18);
+  position: relative;
+  top: auto;
+  max-height: none;
+  overflow: visible;
+  padding: 18px 14px;
+  border: 0;
 }
 .article-toc p {
   margin: 0 0 12px;
@@ -2594,13 +2631,20 @@ button:focus-visible {
 }
 .article-toc a {
   display: block;
-  padding: 7px 0;
+  padding: 7px 8px;
   color: var(--ink-soft);
   font-size: 14px;
   line-height: 1.45;
+  border: 0;
+  text-decoration: none;
+  white-space: normal;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 .article-toc a:hover {
   color: var(--accent);
+  text-decoration: none;
 }
 .article-toc .toc-level-3 {
   padding-left: 12px;
@@ -2798,7 +2842,7 @@ button:focus-visible {
   position: relative;
   max-width: 100%;
   margin: 30px 0;
-  border: 1px solid rgba(43,128,148,0.2);
+  border: 1px solid rgba(43,128,148,0.18);
   border-radius: 16px;
   overflow: hidden;
   background: -webkit-linear-gradient(315deg, rgba(255,253,247,0.96), rgba(241,253,252,0.92)), -webkit-repeating-linear-gradient(0deg, rgba(43,128,148,0.05) 0, rgba(43,128,148,0.05) 1px, transparent 1px, transparent 36px);
@@ -2823,10 +2867,28 @@ button:focus-visible {
   z-index: 1;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 24px;
+  padding: 22px;
   background: rgba(255,253,247,0.62);
   scrollbar-color: rgba(43,128,148,0.42) rgba(255,255,255,0.58);
   scrollbar-width: thin;
+}
+html[data-theme="dark"] .diagram-card {
+  border-color: rgba(112,203,211,0.2);
+  background:
+    linear-gradient(135deg, rgba(14,29,35,0.96), rgba(22,39,46,0.9)),
+    repeating-linear-gradient(90deg, rgba(112,203,211,0.045) 0, rgba(112,203,211,0.045) 1px, transparent 1px, transparent 36px);
+  box-shadow:
+    0 22px 64px rgba(0,0,0,0.32),
+    inset 0 0 0 1px rgba(255,255,255,0.035);
+}
+html[data-theme="dark"] .diagram-card:before {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(112,203,211,0.1), transparent 24%),
+    radial-gradient(circle at 82% 18%, rgba(240,154,143,0.08), transparent 26%);
+}
+html[data-theme="dark"] .diagram-viewport {
+  background: rgba(10,24,30,0.34);
+  scrollbar-color: rgba(112,203,211,0.36) rgba(10,24,30,0.62);
 }
 .diagram-card pre.mermaid {
   margin: 0;
@@ -2848,6 +2910,39 @@ button:focus-visible {
 .diagram-card svg .background,
 .diagram-card svg rect.background {
   fill: transparent !important;
+}
+html[data-theme="dark"] .diagram-card svg,
+html[data-theme="dark"] .diagram-card svg g,
+html[data-theme="dark"] .diagram-card svg text,
+html[data-theme="dark"] .diagram-card svg tspan {
+  color: #d9efed;
+}
+html[data-theme="dark"] .diagram-card svg text,
+html[data-theme="dark"] .diagram-card svg tspan {
+  fill: #d9efed !important;
+}
+html[data-theme="dark"] .diagram-card svg .node rect,
+html[data-theme="dark"] .diagram-card svg .node polygon,
+html[data-theme="dark"] .diagram-card svg .node circle,
+html[data-theme="dark"] .diagram-card svg .node ellipse {
+  fill: rgba(244,255,252,0.96) !important;
+  stroke: rgba(112,203,211,0.68) !important;
+  stroke-width: 1.4px !important;
+}
+html[data-theme="dark"] .diagram-card svg .node text,
+html[data-theme="dark"] .diagram-card svg .node tspan,
+html[data-theme="dark"] .diagram-card svg .nodeLabel {
+  color: #446d74 !important;
+  fill: #446d74 !important;
+}
+html[data-theme="dark"] .diagram-card svg .edgePath path,
+html[data-theme="dark"] .diagram-card svg path.flowchart-link {
+  stroke: rgba(112,203,211,0.72) !important;
+}
+html[data-theme="dark"] .diagram-card svg marker path,
+html[data-theme="dark"] .diagram-card svg .arrowheadPath {
+  fill: rgba(112,203,211,0.78) !important;
+  stroke: rgba(112,203,211,0.78) !important;
 }
 .diagram-card.is-fit svg {
   width: 100% !important;
@@ -2909,12 +3004,8 @@ figure.highlight,
     max-height: none;
     margin: 0 auto 18px;
     padding: 16px 18px;
-    border: 1px solid var(--line-soft);
     border-radius: 14px;
     background: rgba(255,255,255,0.58);
-  }
-  .article-toc nav {
-    columns: 2;
   }
 }
 @media (max-width: 760px) {
@@ -2966,9 +3057,6 @@ figure.highlight,
     -ms-flex: 1 1 140px;
     flex: 1 1 140px;
     text-align: center;
-  }
-  .article-toc nav {
-    columns: 1;
   }
   .diagram-viewport {
     padding: 18px 14px;
@@ -3616,14 +3704,11 @@ html[data-theme="dark"] .search-result-item {
   font-weight: 800;
 }
 .article-toc a {
-  border-left: 2px solid transparent;
-  padding-left: 10px;
-  transition: color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+  transition: color 0.18s ease, background 0.18s ease, transform 0.18s ease;
 }
 .article-toc a.is-active {
   color: var(--accent);
-  border-left-color: var(--accent);
-  transform: translateX(2px);
+  background: rgba(43,128,148,0.08);
 }
 
 .code-copy-wrap {
@@ -4039,7 +4124,6 @@ html[data-theme="dark"] .article-entry li {
 }
 .article-table-wrap,
 .article-entry table,
-.diagram-card,
 figure.highlight,
 .article-entry pre,
 .article-entry .highlight {
@@ -4084,7 +4168,6 @@ html[data-theme="dark"] .article-entry blockquote strong {
 }
 html[data-theme="dark"] .article-table-wrap,
 html[data-theme="dark"] .article-entry table,
-html[data-theme="dark"] .diagram-card,
 html[data-theme="dark"] figure.highlight,
 html[data-theme="dark"] .article-entry pre,
 html[data-theme="dark"] .article-entry .highlight {
@@ -4106,16 +4189,12 @@ html[data-theme="dark"] .article-entry code {
   background: rgba(112,203,211,0.12);
 }
 
-.article-toc {
-  border-left-color: var(--washi-line);
-}
 .article-toc a {
   color: var(--washi-ink-soft);
 }
 .article-toc a:hover,
 .article-toc a.is-active {
   color: var(--washi-aqua);
-  border-left-color: var(--washi-coral);
 }
 html[data-theme="dark"] .article-toc a {
   color: #a8c4c1;
@@ -4123,7 +4202,6 @@ html[data-theme="dark"] .article-toc a {
 html[data-theme="dark"] .article-toc a:hover,
 html[data-theme="dark"] .article-toc a.is-active {
   color: var(--washi-aqua-soft);
-  border-left-color: var(--washi-coral);
 }
 
 .back-to-top {
@@ -4228,7 +4306,6 @@ html[data-theme="dark"] .latest-item:hover h3 a {
 .article-toc a:not(.is-active):hover,
 .article-toc a:not(.is-active):focus-visible {
   color: var(--washi-coral);
-  border-left-color: var(--washi-coral);
   background: linear-gradient(90deg, rgba(217,120,114,0.08), transparent 72%);
   transform: translateX(3px);
   text-decoration: none;
@@ -4236,7 +4313,6 @@ html[data-theme="dark"] .latest-item:hover h3 a {
 html[data-theme="dark"] .article-toc a:not(.is-active):hover,
 html[data-theme="dark"] .article-toc a:not(.is-active):focus-visible {
   color: var(--washi-aqua-soft);
-  border-left-color: var(--washi-coral);
   background: linear-gradient(90deg, rgba(112,203,211,0.08), transparent 72%);
 }
 
@@ -4257,7 +4333,6 @@ html[data-theme="dark"] .article-toc a:not(.is-active):focus-visible {
 .home-actions a,
 .article-link-actions a,
 .article-more-link a,
-.featured-more,
 .latest-tags a,
 .article-tag-list-link,
 .search-quick-tags button,
@@ -4282,7 +4357,6 @@ html[data-theme="dark"] .article-toc a:not(.is-active):focus-visible {
 .home-actions a,
 .article-link-actions a,
 .article-more-link a,
-.featured-more,
 .latest-tags a,
 .article-tag-list-link,
 .search-quick-tags button,
@@ -4307,7 +4381,6 @@ html[data-theme="dark"] .home-profile-aside span,
 html[data-theme="dark"] .home-actions a,
 html[data-theme="dark"] .article-link-actions a,
 html[data-theme="dark"] .article-more-link a,
-html[data-theme="dark"] .featured-more,
 html[data-theme="dark"] .latest-tags a,
 html[data-theme="dark"] .article-tag-list-link,
 html[data-theme="dark"] .search-quick-tags button,
@@ -4340,8 +4413,6 @@ html[data-theme="dark"] .heading-copy {
 .article-link-actions a:focus-visible,
 .article-more-link a:hover,
 .article-more-link a:focus-visible,
-.featured-more:hover,
-.featured-more:focus-visible,
 .latest-tags a:hover,
 .latest-tags a:focus-visible,
 .article-tag-list-link:hover,
@@ -4385,8 +4456,6 @@ html[data-theme="dark"] .article-link-actions a:hover,
 html[data-theme="dark"] .article-link-actions a:focus-visible,
 html[data-theme="dark"] .article-more-link a:hover,
 html[data-theme="dark"] .article-more-link a:focus-visible,
-html[data-theme="dark"] .featured-more:hover,
-html[data-theme="dark"] .featured-more:focus-visible,
 html[data-theme="dark"] .latest-tags a:hover,
 html[data-theme="dark"] .latest-tags a:focus-visible,
 html[data-theme="dark"] .article-tag-list-link:hover,
@@ -4423,7 +4492,6 @@ html[data-theme="dark"] .heading-copy.is-copied {
   .home-actions a,
   .article-link-actions a,
   .article-more-link a,
-  .featured-more,
   .latest-tags a,
   .article-tag-list-link,
   .search-quick-tags button,
