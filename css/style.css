@@ -3393,16 +3393,16 @@ html[data-theme="dark"] #subtitle {
   border-color: rgba(114,196,206,0.22);
   text-shadow: none;
 }
-html[data-theme="dark"] .main-nav-link,
-html[data-theme="dark"] #main-nav-toggle {
+html[data-theme="dark"] #main-nav .main-nav-link,
+html[data-theme="dark"] #main-nav .nav-icon {
   color: #e8f3f2;
   border-color: rgba(114,196,206,0.24);
   background: linear-gradient(145deg, rgba(31,49,57,0.98), rgba(17,31,37,0.94));
   -webkit-box-shadow: 0 14px 32px rgba(0,0,0,0.24), inset 0 0 0 1px rgba(255,255,255,0.08);
   box-shadow: 0 14px 32px rgba(0,0,0,0.24), inset 0 0 0 1px rgba(255,255,255,0.08);
 }
-html[data-theme="dark"] .main-nav-link:hover,
-html[data-theme="dark"] #main-nav-toggle:hover {
+html[data-theme="dark"] #main-nav .main-nav-link:hover,
+html[data-theme="dark"] #main-nav .nav-icon:hover {
   color: #101b20;
   border-color: rgba(100,208,220,0.48);
   background: linear-gradient(145deg, var(--accent), #f5d37b);
