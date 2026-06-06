@@ -5,7 +5,7 @@
   "scripts": {
     "migrate": "node tools/migrate-posts.mjs",
     "prepare:posts": "node tools/prepare-post-dates.mjs",
-    "build": "node tools/prepare-post-dates.mjs && node tools/build.mjs",
+    "build": "node tools/prepare-post-dates.mjs && node tools/build.mjs && node tools/render-diagrams.mjs",
     "server": "node tools/server.mjs"
   },
   "dependencies": {
@@ -18,5 +18,8 @@
     "hexo-renderer-ejs": "2.0.0",
     "hexo-renderer-marked": "7.0.1",
     "mermaid": "10.9.3"
+  },
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "10.9.1"
   }
 }

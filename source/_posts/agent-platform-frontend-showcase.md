@@ -95,19 +95,15 @@ tags:
     User["用户"] --&gt; Frontend["Vue 前端&lt;br/&gt;统一 AI 对话入口"]
     Frontend --&gt; StreamAPI["统一 AI 流式接口&lt;br/&gt;/api/ai/unified/chat/stream"]
     Frontend --&gt; EduAPI["教务业务接口&lt;br/&gt;学生 / 教师 / 班级 / 成绩"]
-
     StreamAPI --&gt; Supervisor["SupervisorAgent&lt;br/&gt;意图识别与分流"]
-
     Supervisor --&gt; Daiyu["林黛玉 Agent"]
     Supervisor --&gt; Classics["四大名著 RAG Agent"]
     Supervisor --&gt; Interview["模拟面试 Agent"]
     Supervisor --&gt; Assistant["教务助手 Agent"]
-
     Daiyu --&gt; LLM["DeepSeek 模型服务"]
     Interview --&gt; LLM
     Assistant --&gt; LLM
     Classics --&gt; LLM
-
     EduAPI --&gt; MySQL["MySQL 业务数据库"]
     Assistant --&gt; MySQL
     StreamAPI --&gt; Redis["Redis / 会话缓存"]
@@ -131,12 +127,10 @@ tags:
   <div class="diagram-viewport">
     <pre class="mermaid">flowchart TD
     Q["用户问题"] --&gt; Router["SupervisorAgent.classify_intent"]
-
     Router --&gt;|"诗词 / 对联 / 情绪 / 作文 / 时辰"| Daiyu["lindaiyu"]
     Router --&gt;|"红楼梦 / 西游记 / 水浒传 / 三国演义事实问答"| Classics["classics_rag"]
     Router --&gt;|"面试 / HR / 岗位 / 简历"| Interview["interview"]
     Router --&gt;|"成绩 / 查询 / 通知 / 总结 / 建议"| Assistant["assistant"]
-
     Daiyu --&gt; DYOut["角色化回复"]
     Classics --&gt; RAGOut["带出处的名著问答"]
     Interview --&gt; INTOut["面试官式追问与反馈"]
@@ -151,7 +145,6 @@ tags:
     <pre class="mermaid">flowchart TD
     User["用户输入"] --&gt; Unified["统一聊天接口"]
     Unified --&gt; Supervisor["SupervisorAgent"]
-
     Supervisor --&gt; Daiyu["林黛玉 Agent"]
     Daiyu --&gt; DY1["compose_poetry"]
     Daiyu --&gt; DY2["match_couplet"]
@@ -160,7 +153,6 @@ tags:
     Daiyu --&gt; DY5["emotion_support"]
     Daiyu --&gt; DY6["detect_emotion"]
     Daiyu --&gt; DY7["tell_time"]
-
     Supervisor --&gt; RAG["四大名著 RAG Agent"]
     RAG --&gt; R1["书籍识别"]
     RAG --&gt; R2["Chroma 向量召回"]
@@ -168,12 +160,10 @@ tags:
     RAG --&gt; R4["章节锚点补召回"]
     RAG --&gt; R5["bge-reranker 精排"]
     RAG --&gt; R6["带引用生成"]
-
     Supervisor --&gt; Interview["模拟面试 Agent"]
     Interview --&gt; I1["岗位模拟"]
     Interview --&gt; I2["HR 问答"]
     Interview --&gt; I3["项目追问"]
-
     Supervisor --&gt; Assistant["教务助手 Agent"]
     Assistant --&gt; A1["text2sql&lt;br/&gt;自然语言问数"]
     Assistant --&gt; A2["function_call&lt;br/&gt;学生成绩 / 班级统计"]
@@ -201,11 +191,9 @@ tags:
     Guard --&gt; Memory["ConversationMemory&lt;br/&gt;读取历史与摘要"]
     Memory --&gt; Prompt["PromptRouter&lt;br/&gt;注入林黛玉角色设定"]
     Prompt --&gt; AgentNode["StateGraph: agent 节点&lt;br/&gt;绑定林黛玉工具"]
-
     AgentNode --&gt;|"需要工具"| ToolNode["ToolNode&lt;br/&gt;执行具体工具"]
     ToolNode --&gt; AgentNode
     AgentNode --&gt;|"无需工具 / 工具完成"| Summarize["summarize 节点&lt;br/&gt;整理最终回复"]
-
     Summarize --&gt; Emotion["情绪识别&lt;br/&gt;melancholy / witty / warm / neutral"]
     Emotion --&gt; Save["保存会话与情绪"]
     Save --&gt; SSE["SSE 流式输出"]
@@ -229,7 +217,6 @@ tags:
     Daiyu --&gt; Support["emotion_support&lt;br/&gt;情绪疏导"]
     Daiyu --&gt; Detect["detect_emotion&lt;br/&gt;心境判断"]
     Daiyu --&gt; Time["tell_time&lt;br/&gt;时辰问答"]
-
     Compose --&gt; Stream["作诗流式快路径"]
     Support --&gt; Mood["情绪标签"]
     Detect --&gt; Mood
@@ -260,11 +247,9 @@ tags:
     Book --&gt; Dense["多查询向量召回&lt;br/&gt;原问题 + 改写问题 + 关键词组合"]
     Book --&gt; FTS["SQLite FTS5 旁路召回&lt;br/&gt;人物 / 物件 / 章节精确词"]
     Book --&gt; Anchor["章节与关键词锚点补召回&lt;br/&gt;如林黛玉进贾府 -&gt; 第三回"]
-
     Dense --&gt; Merge["召回结果合并去重"]
     FTS --&gt; Merge
     Anchor --&gt; Merge
-
     Merge --&gt; Parent["父子上下文扩展&lt;br/&gt;命中 chunk + 相邻 chunk"]
     Parent --&gt; Signal["召回信号预排序&lt;br/&gt;lexical / fts / chapter / rewrite_dense / dense / parent_context"]
     Signal --&gt; Rerank["bge-reranker-v2-m3&lt;br/&gt;CrossEncoder 精排"]
@@ -290,21 +275,17 @@ tags:
   <div class="diagram-viewport">
     <pre class="mermaid">flowchart TD
     Assistant["教务助手 Agent"] --&gt; SkillRouter["内部技能选择"]
-
     SkillRouter --&gt; Text2SQL["text2sql"]
     Text2SQL --&gt; SQLGen["生成 SELECT SQL"]
     SQLGen --&gt; DB["查询业务数据库"]
     DB --&gt; Table["返回表格化结果"]
-
     SkillRouter --&gt; FunctionCall["function_call"]
     FunctionCall --&gt; StudentGrade["查询单学生成绩"]
     FunctionCall --&gt; ClassStats["查询单班级成绩统计"]
     StudentGrade --&gt; Explain["流式解释结果"]
     ClassStats --&gt; Explain
-
     SkillRouter --&gt; Template["template"]
     Template --&gt; Docs["通知 / 表扬 / 批评 / 总结 / 报告 / 班会 / 评语"]
-
     SkillRouter --&gt; General["general"]
     General --&gt; Advice["学习建议 / 方法解释 / 计划制定"]</pre>
   </div>
@@ -338,7 +319,6 @@ tags:
     participant S as SupervisorAgent
     participant A as 目标 Agent
     participant M as 模型/工具
-
     U-&gt;&gt;F: 输入问题
     F-&gt;&gt;API: POST /api/ai/unified/chat/stream
     API-&gt;&gt;S: 传入 query / force_agent / history
@@ -444,7 +424,6 @@ tags:
     RouterView --&gt; DataViews["Students / Teachers / Classes / Grades"]
     RouterView --&gt; AIChat["AIChatView&lt;br/&gt;统一 AI 对话"]
     RouterView --&gt; AIWorkbenches["AI 专项工作台"]
-
     AIChat --&gt; AgentTabs["Agent 模式切换"]
     AIChat --&gt; MessageList["消息列表"]
     AIChat --&gt; Composer["输入区 / 附件 / 发送"]
@@ -460,12 +439,10 @@ tags:
     Request --&gt; Auth["auth.ts&lt;br/&gt;登录 / 用户信息"]
     Request --&gt; EduAPI["students / teachers / classes / grades / notifications"]
     Request --&gt; AIBase["ai.ts&lt;br/&gt;非流式 AI 接口"]
-
     AIChat["AIChatView"] --&gt; Stream["postEventStream&lt;br/&gt;fetch + text/event-stream"]
     Stream --&gt; Unified["/api/ai/unified/chat/stream"]
     Unified --&gt; SSEParse["readChatEventStream&lt;br/&gt;解析 meta/content/error/done"]
     SSEParse --&gt; UI["消息气泡 / Agent 状态 / 情绪标签"]
-
     Auth --&gt; Backend["后端 API"]
     EduAPI --&gt; Backend
     AIBase --&gt; Backend

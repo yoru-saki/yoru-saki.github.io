@@ -550,15 +550,11 @@
     var button = create("button", "back-to-top");
     button.type = "button";
     button.setAttribute("aria-label", "回到顶部");
-    button.innerHTML = '<span class="back-to-top-progress" aria-hidden="true"></span><span class="back-to-top-arrow" aria-hidden="true"></span><span class="back-to-top-label" aria-hidden="true">回到顶部</span>';
+    button.innerHTML = '<span class="back-to-top-arrow" aria-hidden="true"></span><span class="back-to-top-label" aria-hidden="true">回顶部</span>';
     body.appendChild(button);
 
     var sync = function() {
-      var scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      var progress = Math.min(1, Math.max(0, window.pageYOffset / scrollable));
-      button.style.setProperty("--scroll-progress", Math.round(progress * 100) + "%");
       button.classList.toggle("is-visible", window.pageYOffset > 480);
-      button.classList.toggle("is-near-end", progress > 0.72);
     };
 
     button.addEventListener("click", function() {
@@ -566,6 +562,214 @@
     });
     window.addEventListener("scroll", sync, { passive: true });
     sync();
+  };
+
+  var initDiagramPreview = function() {
+    var figures = Array.from(document.querySelectorAll(".article-entry .mermaid-static"));
+    if (!figures.length) return;
+
+    var overlay = create("div", "diagram-preview");
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "查看结构图大图");
+    overlay.innerHTML =
+      '<button class="diagram-preview-close" type="button" aria-label="关闭结构图预览"><span aria-hidden="true">×</span></button>' +
+      '<div class="diagram-preview-panel"><img alt=""></div>';
+    body.appendChild(overlay);
+
+    var previewImage = overlay.querySelector("img");
+    var previewPanel = overlay.querySelector(".diagram-preview-panel");
+    var closeButton = overlay.querySelector(".diagram-preview-close");
+    var previousFocus = null;
+    var transformState = {
+      scale: 1,
+      x: 0,
+      y: 0,
+      startScale: 1,
+      startX: 0,
+      startY: 0,
+      startDistance: 0,
+      startMidX: 0,
+      startMidY: 0,
+      mode: "",
+      dragging: false
+    };
+
+    var clamp = function(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    };
+
+    var distance = function(touches) {
+      var dx = touches[0].clientX - touches[1].clientX;
+      var dy = touches[0].clientY - touches[1].clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    };
+
+    var midpoint = function(touches) {
+      return {
+        x: (touches[0].clientX + touches[1].clientX) / 2,
+        y: (touches[0].clientY + touches[1].clientY) / 2
+      };
+    };
+
+    var applyTransform = function() {
+      var rect = previewPanel.getBoundingClientRect();
+      var maxX = rect.width * (transformState.scale - 1) * 0.52;
+      var maxY = rect.height * (transformState.scale - 1) * 0.52;
+      transformState.x = clamp(transformState.x, -maxX, maxX);
+      transformState.y = clamp(transformState.y, -maxY, maxY);
+      previewImage.style.transform = "translate3d(" + transformState.x + "px, " + transformState.y + "px, 0) scale(" + transformState.scale + ")";
+      previewPanel.classList.toggle("is-panned", transformState.scale > 1.02);
+      previewPanel.classList.toggle("is-dragging", transformState.dragging);
+    };
+
+    var resetTransform = function() {
+      transformState.scale = 1;
+      transformState.x = 0;
+      transformState.y = 0;
+      transformState.mode = "";
+      transformState.dragging = false;
+      applyTransform();
+    };
+
+    var open = function(image) {
+      previousFocus = document.activeElement;
+      previewImage.src = image.currentSrc || image.src;
+      previewImage.alt = image.alt || "结构图";
+      overlay.classList.add("is-open");
+      body.classList.add("diagram-preview-open");
+      resetTransform();
+      closeButton.focus();
+    };
+
+    var close = function() {
+      overlay.classList.remove("is-open");
+      body.classList.remove("diagram-preview-open");
+      previewImage.removeAttribute("src");
+      resetTransform();
+      if (previousFocus && previousFocus.focus) previousFocus.focus();
+    };
+
+    figures.forEach(function(figure) {
+      var image = figure.querySelector("img");
+      if (!image) return;
+      figure.classList.add("is-zoomable");
+      figure.setAttribute("role", "button");
+      figure.setAttribute("tabindex", "0");
+      figure.setAttribute("aria-label", "点击放大结构图");
+      figure.addEventListener("click", function() {
+        open(image);
+      });
+      figure.addEventListener("keydown", function(event) {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        open(image);
+      });
+    });
+
+    closeButton.addEventListener("click", close);
+    overlay.addEventListener("click", function(event) {
+      if (event.target === overlay) close();
+    });
+    previewPanel.addEventListener("click", function(event) {
+      event.stopPropagation();
+    });
+    previewPanel.addEventListener("wheel", function(event) {
+      if (!overlay.classList.contains("is-open")) return;
+      event.preventDefault();
+      var rect = previewPanel.getBoundingClientRect();
+      var previousScale = transformState.scale;
+      var scaleStep = event.deltaY < 0 ? 1.14 : 0.88;
+      var nextScale = clamp(previousScale * scaleStep, 1, 5);
+      var focalX = event.clientX - rect.left - rect.width / 2;
+      var focalY = event.clientY - rect.top - rect.height / 2;
+      if (nextScale <= 1.02) {
+        resetTransform();
+        return;
+      }
+      transformState.scale = nextScale;
+      transformState.x = focalX - (focalX - transformState.x) * (nextScale / previousScale);
+      transformState.y = focalY - (focalY - transformState.y) * (nextScale / previousScale);
+      applyTransform();
+    }, { passive: false });
+    previewPanel.addEventListener("mousedown", function(event) {
+      if (event.button !== 0 || !overlay.classList.contains("is-open")) return;
+      event.preventDefault();
+      transformState.mode = "mouse";
+      transformState.dragging = true;
+      transformState.startX = event.clientX - transformState.x;
+      transformState.startY = event.clientY - transformState.y;
+      applyTransform();
+    });
+    previewPanel.addEventListener("touchstart", function(event) {
+      if (event.touches.length === 1) {
+        transformState.mode = "pan";
+        transformState.startX = event.touches[0].clientX - transformState.x;
+        transformState.startY = event.touches[0].clientY - transformState.y;
+        return;
+      }
+      if (event.touches.length === 2) {
+        event.preventDefault();
+        var mid = midpoint(event.touches);
+        transformState.mode = "pinch";
+        transformState.startDistance = distance(event.touches);
+        transformState.startScale = transformState.scale;
+        transformState.startX = transformState.x;
+        transformState.startY = transformState.y;
+        transformState.startMidX = mid.x;
+        transformState.startMidY = mid.y;
+      }
+    }, { passive: false });
+    previewPanel.addEventListener("touchmove", function(event) {
+      if (!overlay.classList.contains("is-open")) return;
+      if (event.touches.length === 1 && transformState.mode === "pan") {
+        event.preventDefault();
+        transformState.x = event.touches[0].clientX - transformState.startX;
+        transformState.y = event.touches[0].clientY - transformState.startY;
+        applyTransform();
+        return;
+      }
+      if (event.touches.length === 2) {
+        event.preventDefault();
+        var mid = midpoint(event.touches);
+        var nextScale = transformState.startScale * (distance(event.touches) / Math.max(1, transformState.startDistance));
+        transformState.scale = clamp(nextScale, 1, 4);
+        transformState.x = transformState.startX + (mid.x - transformState.startMidX);
+        transformState.y = transformState.startY + (mid.y - transformState.startMidY);
+        applyTransform();
+      }
+    }, { passive: false });
+    previewPanel.addEventListener("touchend", function(event) {
+      if (event.touches.length === 0) transformState.mode = "";
+      if (transformState.scale < 1.03) resetTransform();
+    });
+    previewPanel.addEventListener("dblclick", function(event) {
+      event.preventDefault();
+      transformState.scale = transformState.scale > 1.05 ? 1 : 2;
+      transformState.x = 0;
+      transformState.y = 0;
+      applyTransform();
+    });
+    document.addEventListener("mousemove", function(event) {
+      if (transformState.mode !== "mouse" || !transformState.dragging) return;
+      event.preventDefault();
+      transformState.x = event.clientX - transformState.startX;
+      transformState.y = event.clientY - transformState.startY;
+      applyTransform();
+    });
+    document.addEventListener("mouseup", function() {
+      if (transformState.mode !== "mouse") return;
+      transformState.mode = "";
+      transformState.dragging = false;
+      if (transformState.scale < 1.03) resetTransform();
+      else applyTransform();
+    });
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape" && overlay.classList.contains("is-open")) close();
+    });
+    window.addEventListener("resize", function() {
+      if (overlay.classList.contains("is-open")) applyTransform();
+    });
   };
 
   var initLibraryFilter = function() {
@@ -663,6 +867,7 @@
   initSearch();
   initArticleEnhancements();
   initMermaid();
+  initDiagramPreview();
   initToc();
   initBackToTop();
   initLibraryFilter();

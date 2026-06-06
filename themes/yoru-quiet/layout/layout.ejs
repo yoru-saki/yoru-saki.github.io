@@ -26,7 +26,6 @@ const searchPosts = site.posts.sort("date", -1).map(function(post) {
   <script>
     window.__BLOG_POSTS__ = <%- JSON.stringify(searchPosts) %>;
   </script>
-  <script src="<%- url_for('/vendor/mermaid.min.js') %>?v=10.9.3"></script>
   <script src="<%- url_for('/js/script.js') %>?v=20260606-hexo-collage10"></script>
 </body>
 </html>
