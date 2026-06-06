@@ -1,0 +1,31 @@
+<header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-inner" class="inner">
+      <nav id="main-nav" aria-label="主导航">
+        <button id="main-nav-toggle" class="nav-icon" type="button" aria-label="展开导航" aria-expanded="false">
+          <span class="nav-bars" aria-hidden="true"></span>
+        </button>
+        <% Object.keys(theme.nav || {}).forEach(function(name) { %>
+          <a class="main-nav-link" href="<%- url_for(theme.nav[name]) %>"><%= name %></a>
+        <% }) %>
+      </nav>
+      <nav id="sub-nav" aria-label="辅助导航">
+        <a class="nav-icon" target="_blank" rel="noopener" href="<%- theme.github_url %>" aria-label="GitHub 主页">
+          <span class="nav-github" aria-hidden="true"></span>
+        </a>
+        <button class="nav-icon nav-search-btn" type="button" aria-label="搜索">
+          <span class="nav-search" aria-hidden="true"></span>
+        </button>
+      </nav>
+    </div>
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="<%- url_for('/') %>" id="logo"><%= config.title %></a>
+      </h1>
+      <h2 id="subtitle-wrap">
+        <a href="<%- url_for('/') %>" id="subtitle"><%= config.subtitle %></a>
+      </h2>
+    </div>
+  </div>
+</header>

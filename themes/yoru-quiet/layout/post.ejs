@@ -1,0 +1,42 @@
+<%
+const plain = strip_html(page.content || "").replace(/\s+/g, " ").trim();
+const minutes = Math.max(1, Math.ceil(plain.length / 450));
+%>
+<article id="<%= page.slug %>" class="h-entry article article-type-post" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="<%- url_for(page.path) %>" class="article-date"><time datetime="<%= page.date.toISOString() %>" itemprop="datePublished"><%= date(page.date, "YYYY-MM-DD") %></time></a>
+    <% if (page.categories && page.categories.length) { %>
+      <div class="article-category">
+        <% page.categories.forEach(function(category) { %><a class="article-category-link" href="<%- url_for(category.path) %>"><%= category.name %></a><% }) %>
+      </div>
+    <% } %>
+  </div>
+  <div class="article-inner">
+    <header class="article-header">
+      <h1 class="p-name article-title" itemprop="headline name"><%= page.title %></h1>
+    </header>
+    <section class="article-brief" aria-label="文章阅读概览">
+      <div><span>Reading Brief</span><strong><%= minutes %> 分钟阅读</strong></div>
+      <div><span>Category</span><strong><%= page.categories && page.categories.length ? page.categories.map(function(category) { return category.name; }).join(" / ") : "未分类" %></strong></div>
+      <div><span>Keywords</span><strong><%= page.tags ? page.tags.length : 0 %> 个标签</strong></div>
+    </section>
+    <aside class="article-source-card" aria-label="文章链接">
+      <div><span>Article Links</span><strong>作者 GitHub 主页</strong></div>
+      <div class="article-link-actions"><a href="<%- theme.github_url %>" target="_blank" rel="noopener">GitHub 主页</a></div>
+    </aside>
+    <div class="article-reading-grid">
+      <aside class="article-toc" aria-label="文章目录">
+        <p>On this page</p>
+        <nav><%- toc(page.content, { list_number: false, max_depth: 3 }) %></nav>
+      </aside>
+      <div class="e-content article-entry" itemprop="articleBody"><%- page.content %></div>
+    </div>
+    <% if (page.tags && page.tags.length) { %>
+      <footer class="article-footer">
+        <div class="article-tag-list" aria-label="文章标签">
+          <% page.tags.forEach(function(tag) { %><a class="article-tag-list-link" href="<%- url_for(tag.path) %>"><%= tag.name %></a><% }) %>
+        </div>
+      </footer>
+    <% } %>
+  </div>
+</article>

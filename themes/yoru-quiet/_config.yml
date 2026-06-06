@@ -1,0 +1,11 @@
+github_url: https://github.com/yoru-saki
+favicon: /images/seahorse-hero.png
+nav:
+  首页: /
+  归档: /archives/
+focus:
+  - 大模型应用开发
+  - Agent
+  - RAG
+  - 全栈开发
+  - 个人成长

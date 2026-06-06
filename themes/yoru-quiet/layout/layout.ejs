@@ -1,0 +1,32 @@
+<%
+const bodyClasses = [is_home() ? "is-home" : "is-inner-page"];
+if (page.layout === "post") bodyClasses.push("is-post-page");
+const searchPosts = site.posts.sort("date", -1).map(function(post) {
+  return {
+    title: post.title,
+    url: url_for(post.path),
+    excerpt: strip_html(post.excerpt || post.content || "").replace(/\s+/g, " ").trim().slice(0, 120),
+    tags: post.tags ? post.tags.map(function(tag) { return tag.name; }) : []
+  };
+});
+%>
+<!DOCTYPE html>
+<html lang="<%= config.language || 'zh-CN' %>">
+<%- partial("partial/head") %>
+<body class="<%= bodyClasses.join(' ') %>">
+  <div id="container">
+    <div id="wrap">
+      <%- partial("partial/header") %>
+      <div class="outer">
+        <section id="main"><%- body %></section>
+      </div>
+      <%- partial("partial/footer") %>
+    </div>
+  </div>
+  <script>
+    window.__BLOG_POSTS__ = <%- JSON.stringify(searchPosts) %>;
+  </script>
+  <script src="<%- url_for('/vendor/mermaid.min.js') %>?v=10.9.3"></script>
+  <script src="<%- url_for('/js/script.js') %>?v=20260606-hexo-collage10"></script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<%
+const posts = page.posts.sort("date", -1).map(function(post) { return post; });
+const selected = posts.slice(0, 4);
+const focus = theme.focus || [];
+%>
+<section class="home-profile reveal-panel" aria-labelledby="home-profile-title">
+  <div class="home-profile-main">
+    <p class="home-kicker">AI Application Notes</p>
+    <h2 id="home-profile-title">普通开发者，追寻新事物，偶尔记录分享。</h2>
+    <p>这里收集我在 AI 应用开发、项目实践和个人成长里的观察、复盘与踩坑记录。不追求宏大叙事，只把每一次动手、验证和修正留下来。</p>
+    <div class="home-actions">
+      <a href="#featured-posts">阅读文章</a>
+      <a href="<%- theme.github_url %>" target="_blank" rel="noopener">GitHub 主页</a>
+    </div>
+  </div>
+  <div class="home-profile-aside" aria-label="内容关键词">
+    <span>LLM App</span>
+    <span>Agent</span>
+    <span>RAG</span>
+  </div>
+</section>
+
+<section class="home-directions reveal-panel" aria-labelledby="home-directions-title">
+  <div class="home-section-head compact">
+    <p>Focus Areas</p>
+    <h2 id="home-directions-title">技术方向</h2>
+  </div>
+  <div class="direction-list">
+    <% focus.forEach(function(item) { %><span><%= item %></span><% }) %>
+  </div>
+</section>
+
+<section id="featured-posts" class="home-section reveal-panel" aria-labelledby="featured-posts-title">
+  <div class="home-section-head">
+    <p>Selected Notes</p>
+    <h2 id="featured-posts-title">精选文章</h2>
+  </div>
+  <div class="featured-grid featured-grid-four">
+    <% selected.forEach(function(post, index) { %>
+      <article class="featured-card featured-card-<%= index + 1 %>">
+        <div class="featured-meta"><a href="<%- url_for(post.path) %>" class="featured-date"><time datetime="<%= post.date.toISOString() %>"><%= date(post.date, "YYYY.MM.DD") %></time></a></div>
+        <h3><a href="<%- url_for(post.path) %>"><%= post.title %></a></h3>
+        <p><%= strip_html(post.excerpt || post.content || "").replace(/\s+/g, " ").trim().slice(0, 126) %>...</p>
+        <a class="featured-more" href="<%- url_for(post.path) %>" aria-label="继续阅读：<%= post.title %>">继续阅读</a>
+      </article>
+    <% }) %>
+  </div>
+</section>
+
+<section class="home-section latest-section article-library reveal-panel" aria-labelledby="latest-posts-title">
+  <div class="home-section-head">
+    <p>Article Library</p>
+    <h2 id="latest-posts-title">文章库</h2>
+  </div>
+  <div class="library-stats" aria-label="内容统计">
+    <span><strong><%= site.posts.length %></strong> 篇文章</span>
+    <span><strong><%= site.categories.length %></strong> 个分类</span>
+    <span><strong><%= site.tags.length %></strong> 个标签</span>
+  </div>
+  <div class="latest-list library-list">
+    <% posts.forEach(function(post) { %>
+      <article class="latest-item">
+        <div class="latest-row-main">
+          <a href="<%- url_for(post.path) %>" class="latest-date"><time datetime="<%= post.date.toISOString() %>"><%= date(post.date, "YYYY.MM.DD") %></time></a>
+          <h3><a href="<%- url_for(post.path) %>"><%= post.title %></a></h3>
+          <p><%= strip_html(post.excerpt || post.content || "").replace(/\s+/g, " ").trim().slice(0, 120) %>...</p>
+        </div>
+        <div class="latest-tags" aria-label="文章标签">
+          <% post.categories.forEach(function(category) { %><a href="<%- url_for(category.path) %>"><%= category.name %></a><% }) %>
+          <% post.tags.slice(0, 3).forEach(function(tag) { %><a href="<%- url_for(tag.path) %>"><%= tag.name %></a><% }) %>
+        </div>
+      </article>
+    <% }) %>
+  </div>
+</section>
