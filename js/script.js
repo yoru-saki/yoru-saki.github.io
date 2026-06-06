@@ -322,7 +322,7 @@
   };
 
   var initBackToTop = function(){
-    var $button = $('<button class="back-to-top" type="button" aria-label="回到顶部"><span class="fa fa-long-arrow-up"></span></button>');
+    var $button = $('<button class="back-to-top" type="button" aria-label="回到顶部"><span class="back-to-top-arrow" aria-hidden="true"></span><span class="back-to-top-label" aria-hidden="true">TOP</span></button>');
     $('body').append($button);
 
     var toggleBackToTop = function(){
