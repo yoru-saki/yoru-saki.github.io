@@ -408,10 +408,11 @@
       var isSequence = /^sequenceDiagram/m.test(source.trim());
       if (isSequence) {
         var sequence = collectSequence(source);
-        diagram.classList.add("is-fallback");
+        diagram.classList.add("is-structured");
+        diagram.classList.remove("is-fallback");
         diagram.classList.remove("is-error");
         diagram.innerHTML =
-          '<div class="diagram-fallback-head"><span>Sequence</span><strong>时序结构</strong></div>' +
+          '<div class="diagram-fallback-head"><span>时序图</span><strong>调用链路</strong></div>' +
           '<ol class="diagram-edge-list diagram-flow-list">' + sequence.messages.map(function(edge) {
             return '<li><span>' + escapeHtml(sequence.participants[edge.from] || edge.from) + '</span><b aria-hidden="true">→</b><span>' + escapeHtml(sequence.participants[edge.to] || edge.to) + '</span><em>' + escapeHtml(edge.label) + '</em></li>';
           }).join("") + '</ol>' +
@@ -422,10 +423,11 @@
       }
 
       var flow = collectFlow(source);
-      diagram.classList.add("is-fallback");
+      diagram.classList.add("is-structured");
+      diagram.classList.remove("is-fallback");
       diagram.classList.remove("is-error");
       diagram.innerHTML =
-        '<div class="diagram-fallback-head"><span>Flowchart</span><strong>系统结构</strong></div>' +
+        '<div class="diagram-fallback-head"><span>结构图</span><strong>系统结构</strong></div>' +
         renderLevelMap(flow) +
         '<ol class="diagram-edge-list diagram-flow-list">' + flow.edges.map(function(edge) {
           return '<li><span>' + escapeHtml(flow.nodes[edge.from] || edge.from) + '</span><b aria-hidden="true">→</b><span>' + escapeHtml(flow.nodes[edge.to] || edge.to) + '</span>' + (edge.label ? '<em>' + escapeHtml(edge.label) + '</em>' : "") + '</li>';
@@ -441,6 +443,7 @@
       host.dataset.source = decodeDiagramSource(block.textContent);
       host.textContent = host.dataset.source;
       block.replaceWith(host);
+      renderFallback(host);
     });
 
     var render = function() {
@@ -449,6 +452,7 @@
       var diagrams = Array.from(document.querySelectorAll(".yoru-mermaid"));
       diagrams.forEach(function(diagram) {
         diagram.removeAttribute("data-processed");
+        diagram.classList.remove("is-structured");
         diagram.innerHTML = "";
         diagram.textContent = diagram.dataset.source || "";
       });
@@ -497,7 +501,15 @@
 
     wait(30);
     window.addEventListener("yoru:theme-change", function() {
-      window.setTimeout(render, 80);
+      window.setTimeout(function() {
+        if (window.mermaid) {
+          render();
+          return;
+        }
+        document.querySelectorAll(".yoru-mermaid").forEach(function(diagram) {
+          renderFallback(diagram);
+        });
+      }, 80);
     });
   };
 

@@ -1354,7 +1354,8 @@ figure.highlight .code {
   font-size: 13px;
 }
 
-.article-entry .yoru-mermaid.is-fallback {
+.article-entry .yoru-mermaid.is-fallback,
+.article-entry .yoru-mermaid.is-structured {
   white-space: normal;
 }
 
@@ -1502,6 +1503,11 @@ figure.highlight .code {
 
 .diagram-level-map + .diagram-flow-list {
   margin-top: 10px;
+}
+
+.diagram-node-grid {
+  max-height: 240px;
+  overflow: auto;
 }
 
 .article-more-link {
