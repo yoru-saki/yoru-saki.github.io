@@ -3689,10 +3689,6 @@ html[data-theme="dark"] .search-result-item {
 .latest-item:hover {
   border-color: var(--line-strong);
 }
-.featured-card:hover h3 a,
-.latest-item:hover h3 a {
-  color: var(--accent);
-}
 .toc-toggle {
   display: none;
   width: 100%;
@@ -4284,10 +4280,6 @@ a.article-title:hover,
   text-shadow: 0 10px 28px rgba(217,120,114,0.18);
   text-decoration: none;
 }
-.featured-card:hover h3 a,
-.latest-item:hover h3 a {
-  color: var(--washi-coral);
-}
 html[data-theme="dark"] .article-title:hover,
 html[data-theme="dark"] a.article-title:hover,
 html[data-theme="dark"] .featured-card h3 a:hover,
@@ -4295,9 +4287,7 @@ html[data-theme="dark"] .featured-card h3 a:focus-visible,
 html[data-theme="dark"] .latest-item h3 a:hover,
 html[data-theme="dark"] .latest-item h3 a:focus-visible,
 html[data-theme="dark"] .archive-article-title:hover,
-html[data-theme="dark"] .archive-article-title:focus-visible,
-html[data-theme="dark"] .featured-card:hover h3 a,
-html[data-theme="dark"] .latest-item:hover h3 a {
+html[data-theme="dark"] .archive-article-title:focus-visible {
   color: var(--washi-aqua-soft);
   text-shadow: 0 0 24px rgba(157,228,231,0.22);
   text-decoration: none;
