@@ -3453,10 +3453,81 @@ html[data-theme="dark"] .article-entry table {
   border-color: var(--line-soft);
   background: rgba(18,31,37,0.92);
 }
+html[data-theme="dark"] .article-entry blockquote {
+  color: #d3e6e4;
+  border-left-color: var(--accent-warm);
+  background: linear-gradient(135deg, rgba(24,39,46,0.96), rgba(18,31,37,0.94));
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+html[data-theme="dark"] .article-entry blockquote p,
+html[data-theme="dark"] .article-entry blockquote li,
+html[data-theme="dark"] .article-entry blockquote strong {
+  color: #d3e6e4;
+}
+html[data-theme="dark"] .article-entry table {
+  border-color: rgba(114,196,206,0.2);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+html[data-theme="dark"] .article-entry th,
+html[data-theme="dark"] .article-entry td {
+  color: #d8eceb;
+  border-bottom-color: rgba(114,196,206,0.18);
+  background: transparent;
+}
+html[data-theme="dark"] .article-entry th {
+  color: #edf7f6;
+  background: rgba(100,208,220,0.14);
+}
+html[data-theme="dark"] .article-table-wrap {
+  border-color: rgba(114,196,206,0.2);
+  background: rgba(18,31,37,0.92);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  scrollbar-color: rgba(114,196,206,0.42) rgba(18,31,37,0.92);
+}
+html[data-theme="dark"] figure.highlight,
+html[data-theme="dark"] .article-entry pre {
+  color: #edf7f6;
+  border-color: rgba(114,196,206,0.18);
+  background: rgba(9,22,27,0.94);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+html[data-theme="dark"] .article-entry figure.highlight table,
+html[data-theme="dark"] .article-entry figure.highlight tr,
+html[data-theme="dark"] .article-entry figure.highlight td,
+html[data-theme="dark"] .article-entry figure.highlight pre {
+  color: inherit;
+  border: 0;
+  background: transparent;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+html[data-theme="dark"] .article-entry figure.highlight .line {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+html[data-theme="dark"] .article-entry figure.highlight .line.marked {
+  background: rgba(100,208,220,0.12);
+}
 html[data-theme="dark"] .article-entry code {
   color: #e8f3f2;
   background: rgba(100,208,220,0.16);
   text-shadow: none;
+}
+html[data-theme="dark"] .article-entry pre code,
+html[data-theme="dark"] .article-entry figure.highlight code {
+  color: inherit;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  -webkit-box-shadow: none;
+  box-shadow: none;
 }
 html[data-theme="dark"] #footer {
   border-top-color: rgba(114,196,206,0.16);
