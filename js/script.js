@@ -1,529 +1,400 @@
-(function($){
-  var posts = [
-    {
-      title: '抛砖引玉：教你扩展一个多 Agent 智能平台，并配套落地强风格化前端',
-      url: '/2026/06/05/agent-platform-frontend-showcase/',
-      excerpt: 'Vue、FastAPI、LangGraph、多 Agent、RAG、Text2SQL、SSE 流式响应与 Codex 前端落地实践。',
-      tags: ['项目实战', '多 Agent', 'LangGraph', 'FastAPI', '强风格化前端']
-    },
-    {
-      title: 'AI Agent 开发入门教程：从概念到第一个可运行项目',
-      url: '/2026/06/05/ai-agent-getting-started/',
-      excerpt: '面向实操的 Agent 入门地图，覆盖工具链选择、RAG、质量验证、项目拆解和第一个可运行项目。',
-      tags: ['AI Agent', 'LangChain', 'RAG', 'Vibe Coding', '前端开发']
-    }
-  ];
+(function(){
+  var posts = window.__BLOG_POSTS__ || [];
+  var html = document.documentElement;
+  var body = document.body;
 
-  var initTheme = function(){
-    var savedTheme = window.localStorage && localStorage.getItem('blog-theme');
-    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    var bootTheme = $('html').attr('data-theme');
-    var theme = bootTheme || savedTheme || (prefersDark ? 'dark' : 'light');
+  var create = function(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text) node.textContent = text;
+    return node;
+  };
 
-    $('html').attr('data-theme', theme);
-    document.documentElement.style.colorScheme = theme;
+  var normalize = function(value) {
+    return (value || "").toLowerCase().replace(/\s+/g, " ").trim();
+  };
 
-    var $button = $('<button class="nav-icon theme-toggle" type="button" aria-label="切换深浅色"><span class="theme-symbol" aria-hidden="true"></span></button>');
-    $('#sub-nav .nav-search-btn').before($button);
+  var initTheme = function() {
+    var subNav = document.querySelector("#sub-nav");
+    var searchButton = document.querySelector(".nav-search-btn");
+    if (!subNav || !searchButton) return;
 
-    var syncButton = function(){
-      var isDark = $('html').attr('data-theme') === 'dark';
-      $button.attr('title', isDark ? '切换到浅色' : '切换到深色');
-      $button.find('.theme-symbol').text(isDark ? '☀' : '☾');
+    var button = create("button", "nav-icon theme-toggle");
+    button.type = "button";
+    button.setAttribute("aria-label", "切换深浅色");
+    var symbol = create("span", "theme-symbol");
+    symbol.setAttribute("aria-hidden", "true");
+    button.appendChild(symbol);
+    subNav.insertBefore(button, searchButton);
+
+    var sync = function() {
+      var isDark = html.getAttribute("data-theme") === "dark";
+      button.title = isDark ? "切换到浅色" : "切换到深色";
+      button.setAttribute("aria-pressed", isDark ? "true" : "false");
+      symbol.textContent = isDark ? "日" : "月";
     };
 
-    $button.on('click', function(event){
+    button.addEventListener("click", function(event) {
       event.stopPropagation();
-      var nextTheme = $('html').attr('data-theme') === 'dark' ? 'light' : 'dark';
-      $('html').attr('data-theme', nextTheme);
-      document.documentElement.style.colorScheme = nextTheme;
-      if (window.localStorage) localStorage.setItem('blog-theme', nextTheme);
-      syncButton();
-    });
-
-    syncButton();
-  };
-
-  var initSearch = function(){
-    var $dialog = $(
-      '<div class="search-dialog" role="dialog" aria-modal="true" aria-label="站内搜索">' +
-        '<div class="search-dialog-panel">' +
-          '<button class="search-dialog-close" type="button" aria-label="关闭搜索"><span class="fa fa-times"></span></button>' +
-          '<div class="search-dialog-head">' +
-            '<span>Search Notes</span>' +
-            '<strong>搜索文章、标签和关键词</strong>' +
-          '</div>' +
-          '<form class="search-dialog-form">' +
-            '<span class="fa fa-search" aria-hidden="true"></span>' +
-            '<input class="search-dialog-input" type="search" placeholder="输入 Agent、RAG、FastAPI...">' +
-          '</form>' +
-          '<div class="search-quick-tags" aria-label="快捷标签"></div>' +
-          '<div class="search-result-list" aria-live="polite"></div>' +
-        '</div>' +
-      '</div>'
-    );
-
-    $('body').append($dialog);
-
-    var $input = $dialog.find('.search-dialog-input');
-    var $results = $dialog.find('.search-result-list');
-    var $quickTags = $dialog.find('.search-quick-tags');
-    var allTags = [];
-
-    posts.forEach(function(post){
-      post.tags.forEach(function(tag){
-        if (allTags.indexOf(tag) === -1) allTags.push(tag);
-      });
-    });
-
-    allTags.slice(0, 8).forEach(function(tag){
-      $quickTags.append('<button type="button" data-query="' + tag + '">' + tag + '</button>');
-    });
-
-    var normalize = function(value){
-      return (value || '').toLowerCase().replace(/\s+/g, ' ').trim();
-    };
-
-    var renderResults = function(query){
-      var keyword = normalize(query);
-      var matched = posts.filter(function(post){
-        var haystack = normalize([post.title, post.excerpt, post.tags.join(' ')].join(' '));
-        return !keyword || haystack.indexOf(keyword) !== -1;
-      });
-
-      if (!matched.length) {
-        $results.html('<p class="search-empty">没有找到匹配内容。可以换一个关键词，或去归档里慢慢翻。</p>');
-        return;
-      }
-
-      $results.html(matched.map(function(post){
-        return '<a class="search-result-item" href="' + post.url + '">' +
-          '<strong>' + post.title + '</strong>' +
-          '<span>' + post.excerpt + '</span>' +
-          '<em>' + post.tags.slice(0, 4).join(' / ') + '</em>' +
-        '</a>';
-      }).join(''));
-    };
-
-    var openSearch = function(seed){
-      $dialog.addClass('is-open');
-      $('body').addClass('search-open');
-      renderResults(seed || '');
-      window.setTimeout(function(){
-        $input.val(seed || '').focus();
-      }, 80);
-    };
-
-    var closeSearch = function(){
-      $dialog.removeClass('is-open');
-      $('body').removeClass('search-open');
-      $input.val('');
-    };
-
-    $('.nav-search-btn').off('click').on('click', function(event){
-      event.preventDefault();
-      event.stopPropagation();
-      openSearch('');
-    });
-
-    $dialog.find('.search-dialog-close').on('click', closeSearch);
-    $dialog.on('click', function(event){
-      if (event.target === this) closeSearch();
-    });
-    $dialog.find('.search-dialog-form').on('submit', function(event){
-      event.preventDefault();
-      renderResults($input.val());
-    });
-    $input.on('input', function(){
-      renderResults(this.value);
-    });
-    $quickTags.on('click', 'button', function(){
-      var query = $(this).data('query');
-      $input.val(query).focus();
-      renderResults(query);
-    });
-
-    $(document).on('keydown', function(event){
-      if (event.key === 'Escape' && $dialog.hasClass('is-open')) closeSearch();
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
-        event.preventDefault();
-        openSearch('');
-      }
-    });
-  };
-
-  var initArticleEnhancements = function(){
-    $('.article-entry').each(function(){
-      var $entry = $(this);
-
-      $entry.find('img').each(function(){
-        var alt = this.alt;
-        if (alt && !$(this).next('.caption').length) $(this).after('<span class="caption">' + alt + '</span>');
-      });
-
-      $entry.find('table').not('figure.highlight table, .diagram-card table').each(function(){
-        var $table = $(this);
-        if ($table.parent('.article-table-wrap').length) return;
-        $table.wrap('<div class="article-table-wrap"></div>');
-      });
-
-      $entry.find('h2[id], h3[id], h4[id]').each(function(){
-        var $heading = $(this);
-        $heading.addClass('copyable-heading');
-        $heading.find('.headerlink').attr('aria-hidden', 'true').attr('tabindex', '-1');
-        if (!$heading.children('.heading-copy').length) {
-          $heading.append('<button class="heading-copy" type="button" aria-label="复制此段链接" title="复制链接"><span class="fa fa-link"></span></button>');
-        }
-      });
-    });
-  };
-
-  var initReadingProgress = function(){
-    if (!$('body').hasClass('is-post-page')) return;
-
-    var $progress = $('<div class="reading-progress" aria-hidden="true"><span></span></div>');
-    $('body').append($progress);
-
-    var updateProgress = function(){
-      var article = $('.article-entry')[0];
-      if (!article) return;
-
-      var start = $(article).offset().top;
-      var end = start + $(article).outerHeight() - window.innerHeight;
-      var current = window.pageYOffset;
-      var ratio = end <= start ? 1 : Math.min(1, Math.max(0, (current - start) / (end - start)));
-      $progress.find('span').css('transform', 'scaleX(' + ratio + ')');
-    };
-
-    $(window).on('scroll resize', updateProgress);
-    updateProgress();
-  };
-
-  var initToc = function(){
-    var $toc = $('.article-toc');
-    if (!$toc.length) return;
-
-    var $button = $('<button class="toc-toggle" type="button"><span class="fa fa-list-ul"></span> 文章目录</button>');
-    $toc.prepend($button);
-    if (window.innerWidth <= 1100) $toc.addClass('is-collapsed');
-
-    $button.on('click', function(){
-      $toc.toggleClass('is-collapsed');
-    });
-
-    var links = $toc.find('a[href^="#"]').toArray();
-    var headings = links.map(function(link){
-      var id = decodeURIComponent(link.getAttribute('href').slice(1));
-      return document.getElementById(id);
-    }).filter(Boolean);
-
-    var escapeSelector = function(value){
-      if (window.CSS && CSS.escape) return CSS.escape(value);
-      return value.replace(/([ !"#$%&'()*+,./:;<=>?@[\\\]^`{|}~])/g, '\\$1');
-    };
-
-    var setActive = function(){
-      var activeId = '';
-      headings.forEach(function(heading){
-        if (heading.getBoundingClientRect().top < 140) activeId = heading.id;
-      });
-      if (!activeId && headings[0]) activeId = headings[0].id;
-      $toc.find('a').removeClass('is-active');
-      if (activeId) {
-        $toc.find('a[href="#' + escapeSelector(activeId) + '"]').addClass('is-active');
-      }
-    };
-
-    $(window).on('scroll resize', setActive);
-    setActive();
-  };
-
-  var getCodeText = function($block){
-    var $lines = $block.find('td.code .line, pre .line');
-    if ($lines.length) {
-      return $lines.map(function(){ return $(this).text(); }).get().join('\n').replace(/\n+$/, '');
-    }
-    return $block.find('pre').first().text().replace(/\n+$/, '');
-  };
-
-  var copyText = function(text, callback){
-    var fallbackCopy = function(){
-      var textarea = document.createElement('textarea');
-      textarea.value = text;
-      textarea.setAttribute('readonly', 'readonly');
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select();
+      var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      html.setAttribute("data-theme", next);
+      html.style.colorScheme = next;
       try {
-        document.execCommand('copy');
-      } catch (error) {
-        if (window.console) console.warn('复制回退失败:', error);
-      }
-      document.body.removeChild(textarea);
-      callback();
-    };
-
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(callback).catch(fallbackCopy);
-      return;
-    }
-
-    fallbackCopy();
-  };
-
-  var initCodeCopy = function(){
-    $('.article-entry figure.highlight, .article-entry > pre').each(function(){
-      var $block = $(this);
-      if ($block.find('.code-copy').length) return;
-
-      var $button = $('<button class="code-copy" type="button"><span class="fa fa-copy"></span>复制</button>');
-      $block.addClass('code-copy-wrap').append($button);
-
-      $button.on('click', function(){
-        copyText(getCodeText($block), function(){
-          $button.addClass('is-copied').html('<span class="fa fa-check"></span>已复制');
-          window.setTimeout(function(){
-            $button.removeClass('is-copied').html('<span class="fa fa-copy"></span>复制');
-          }, 1600);
-        });
-      });
-    });
-  };
-
-  var initHeadingCopy = function(){
-    var handleHeadingCopy = function(event){
-      var button = event.target && event.target.closest ? event.target.closest('.article-entry .heading-copy') : this;
-      if (!button) return;
-
-      var heading = button.closest('h2[id], h3[id], h4[id]');
-      if (!heading) return;
-
-      event.preventDefault();
-      event.stopPropagation();
-      var href = '#' + heading.id;
-      var url = window.location.origin + window.location.pathname + href;
-      var $button = $(button);
-      var $icon = $button.find('.fa');
-      $button.addClass('is-copied');
-      $icon.removeClass('fa-link').addClass('fa-check');
-      window.history.replaceState(null, '', href);
-      window.setTimeout(function(){
-        $button.removeClass('is-copied');
-        $icon.removeClass('fa-check').addClass('fa-link');
-      }, 6000);
-      copyText(url, function(){});
-    };
-
-    $('.article-entry').off('click.blogcopy', '.heading-copy').on('click.blogcopy', '.heading-copy', handleHeadingCopy);
-  };
-
-  var initBackToTop = function(){
-    var $button = $('<button class="back-to-top" type="button" aria-label="回到顶部"><span class="back-to-top-arrow" aria-hidden="true"></span><span class="back-to-top-label" aria-hidden="true">TOP</span></button>');
-    $('body').append($button);
-
-    var toggleBackToTop = function(){
-      $button.toggleClass('is-visible', window.pageYOffset > 480);
-    };
-
-    $button.on('click', function(){
-      $('html, body').stop().animate({ scrollTop: 0 }, 520);
+        localStorage.setItem("blog-theme", next);
+      } catch (error) {}
+      sync();
     });
 
-    $(window).on('scroll', toggleBackToTop);
-    toggleBackToTop();
+    sync();
   };
 
-  var initLibraryFilter = function(){
-    var $library = $('.article-library');
-    var $items = $library.find('.latest-item');
-    if (!$library.length || !$items.length) return;
+  var initSearch = function() {
+    var openButton = document.querySelector(".nav-search-btn");
+    if (!openButton) return;
 
+    var dialog = create("div", "search-dialog");
+    dialog.setAttribute("role", "dialog");
+    dialog.setAttribute("aria-modal", "true");
+    dialog.setAttribute("aria-label", "站内搜索");
+    dialog.innerHTML =
+      '<div class="search-dialog-panel">' +
+        '<button class="search-dialog-close" type="button" aria-label="关闭搜索"><span aria-hidden="true">×</span></button>' +
+        '<div class="search-dialog-head"><span>Search Notes</span><strong>搜索文章、标签和关键词</strong></div>' +
+        '<form class="search-dialog-form"><span class="nav-search" aria-hidden="true"></span><input class="search-dialog-input" type="search" placeholder="输入 Agent、RAG、FastAPI..."></form>' +
+        '<div class="search-quick-tags" aria-label="快捷标签"></div>' +
+        '<div class="search-result-list" aria-live="polite"></div>' +
+      '</div>';
+    body.appendChild(dialog);
+
+    var input = dialog.querySelector(".search-dialog-input");
+    var results = dialog.querySelector(".search-result-list");
+    var quickTags = dialog.querySelector(".search-quick-tags");
+    var closeButton = dialog.querySelector(".search-dialog-close");
+    var previousFocus = null;
     var tags = [];
-    $items.each(function(){
-      var $item = $(this);
-      var itemTags = $item.find('.latest-tags a').map(function(){
-        return $(this).text().trim();
-      }).get();
-      $item.attr('data-tags', itemTags.join('|'));
-      itemTags.forEach(function(tag){
+
+    posts.forEach(function(post) {
+      (post.tags || []).forEach(function(tag) {
         if (tags.indexOf(tag) === -1) tags.push(tag);
       });
     });
 
-    var $filters = $('<div class="library-filters" aria-label="按标签筛选文章"></div>');
-    $filters.append('<button type="button" class="is-active" data-tag="all">全部</button>');
-    tags.forEach(function(tag){
-      $filters.append('<button type="button" data-tag="' + tag + '">' + tag + '</button>');
+    tags.slice(0, 8).forEach(function(tag) {
+      var tagButton = create("button", "", tag);
+      tagButton.type = "button";
+      tagButton.dataset.query = tag;
+      quickTags.appendChild(tagButton);
     });
-    $library.find('.library-stats').after($filters);
-    $library.find('.library-list').after('<p class="library-empty">这个标签下暂时没有文章。</p>');
 
-    var applyFilter = function(tag){
-      var visibleCount = 0;
-      $filters.find('button').removeClass('is-active');
-      $filters.find('[data-tag="' + tag + '"]').addClass('is-active');
-
-      $items.each(function(){
-        var $item = $(this);
-        var match = tag === 'all' || ($item.attr('data-tags') || '').split('|').indexOf(tag) !== -1;
-        $item.toggleClass('is-hidden', !match);
-        if (match) visibleCount += 1;
+    var render = function(query) {
+      var keyword = normalize(query);
+      var matched = posts.filter(function(post) {
+        var haystack = normalize([post.title, post.excerpt, (post.tags || []).join(" ")].join(" "));
+        return !keyword || haystack.indexOf(keyword) !== -1;
       });
 
-      $library.find('.library-empty').toggleClass('is-visible', visibleCount === 0);
+      if (!matched.length) {
+        results.innerHTML = '<p class="search-empty">没有找到匹配内容。可以换一个关键词，或去归档里慢慢翻。</p>';
+        return;
+      }
+
+      results.innerHTML = matched.map(function(post) {
+        return '<a class="search-result-item" href="' + post.url + '">' +
+          '<strong>' + post.title + '</strong>' +
+          '<span>' + post.excerpt + '</span>' +
+          '<em>' + (post.tags || []).slice(0, 4).join(" / ") + '</em>' +
+        '</a>';
+      }).join("");
     };
 
-    $filters.on('click', 'button', function(){
-      applyFilter($(this).data('tag'));
-    });
+    var open = function(seed) {
+      previousFocus = document.activeElement;
+      dialog.classList.add("is-open");
+      body.classList.add("search-open");
+      render(seed || "");
+      window.setTimeout(function() {
+        input.value = seed || "";
+        input.focus();
+      }, 60);
+    };
 
-    $library.on('click', '.latest-tags a', function(event){
+    var close = function() {
+      dialog.classList.remove("is-open");
+      body.classList.remove("search-open");
+      input.value = "";
+      if (previousFocus && previousFocus.focus) previousFocus.focus();
+    };
+
+    openButton.addEventListener("click", function(event) {
       event.preventDefault();
-      applyFilter($(this).text().trim());
-      document.getElementById('latest-posts-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      open("");
+    });
+    closeButton.addEventListener("click", close);
+    dialog.addEventListener("click", function(event) {
+      if (event.target === dialog) close();
+    });
+    dialog.querySelector(".search-dialog-form").addEventListener("submit", function(event) {
+      event.preventDefault();
+      render(input.value);
+    });
+    input.addEventListener("input", function() {
+      render(input.value);
+    });
+    quickTags.addEventListener("click", function(event) {
+      var button = event.target.closest("button");
+      if (!button) return;
+      input.value = button.dataset.query || "";
+      input.focus();
+      render(input.value);
+    });
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape" && dialog.classList.contains("is-open")) close();
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        open("");
+      }
     });
   };
 
-  var initReveal = function(){
-    var $targets = $('.reveal-panel, .featured-card, .latest-item');
-    if (!$targets.length) return;
+  var copyText = function(text, callback) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(callback).catch(function(){ fallbackCopy(text, callback); });
+      return;
+    }
+    fallbackCopy(text, callback);
+  };
 
-    if (!('IntersectionObserver' in window)) {
-      $targets.addClass('is-revealed');
+  var fallbackCopy = function(text, callback) {
+    var textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "readonly");
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy");
+    } catch (error) {}
+    body.removeChild(textarea);
+    callback();
+  };
+
+  var initArticleEnhancements = function() {
+    document.querySelectorAll(".article-entry img").forEach(function(image) {
+      if (image.alt && !image.nextElementSibling?.classList.contains("caption")) {
+        image.insertAdjacentHTML("afterend", '<span class="caption">' + image.alt + '</span>');
+      }
+    });
+
+    document.querySelectorAll(".article-entry table").forEach(function(table) {
+      if (table.closest("figure.highlight") || table.parentElement.classList.contains("article-table-wrap")) return;
+      var wrap = create("div", "article-table-wrap");
+      table.parentNode.insertBefore(wrap, table);
+      wrap.appendChild(table);
+    });
+
+    document.querySelectorAll(".article-entry h2[id], .article-entry h3[id], .article-entry h4[id]").forEach(function(heading) {
+      heading.classList.add("copyable-heading");
+      var headerlink = heading.querySelector(".headerlink");
+      if (headerlink) {
+        headerlink.setAttribute("aria-hidden", "true");
+        headerlink.setAttribute("tabindex", "-1");
+      }
+      if (!heading.querySelector(".heading-copy")) {
+        var button = create("button", "heading-copy");
+        button.type = "button";
+        button.title = "复制链接";
+        button.setAttribute("aria-label", "复制此段链接");
+        button.textContent = "#";
+        heading.appendChild(button);
+      }
+    });
+
+    document.querySelectorAll(".article-entry figure.highlight, .article-entry > pre").forEach(function(block) {
+      if (block.querySelector(".code-copy")) return;
+      block.classList.add("code-copy-wrap");
+      var button = create("button", "code-copy", "复制");
+      button.type = "button";
+      block.appendChild(button);
+      button.addEventListener("click", function() {
+        var code = block.querySelector("td.code, pre");
+        copyText((code ? code.textContent : block.textContent).replace(/\n+$/, ""), function() {
+          button.classList.add("is-copied");
+          button.textContent = "已复制";
+          window.setTimeout(function() {
+            button.classList.remove("is-copied");
+            button.textContent = "复制";
+          }, 1400);
+        });
+      });
+    });
+
+    document.addEventListener("click", function(event) {
+      var button = event.target.closest(".heading-copy");
+      if (!button) return;
+      var heading = button.closest("h2[id], h3[id], h4[id]");
+      if (!heading) return;
+      event.preventDefault();
+      var href = "#" + heading.id;
+      var url = window.location.origin + window.location.pathname + href;
+      window.history.replaceState(null, "", href);
+      copyText(url, function(){});
+      button.classList.add("is-copied");
+      window.setTimeout(function() {
+        button.classList.remove("is-copied");
+      }, 1400);
+    });
+  };
+
+  var initToc = function() {
+    var toc = document.querySelector(".article-toc");
+    if (!toc) return;
+
+    var button = create("button", "toc-toggle", "文章目录");
+    button.type = "button";
+    toc.insertBefore(button, toc.firstChild);
+    if (window.innerWidth <= 1100) toc.classList.add("is-collapsed");
+
+    button.addEventListener("click", function() {
+      toc.classList.toggle("is-collapsed");
+    });
+
+    var links = Array.from(toc.querySelectorAll('a[href^="#"]'));
+    var headings = links.map(function(link) {
+      return document.getElementById(decodeURIComponent(link.getAttribute("href").slice(1)));
+    }).filter(Boolean);
+
+    var setActive = function() {
+      var activeId = "";
+      headings.forEach(function(heading) {
+        if (heading.getBoundingClientRect().top < 140) activeId = heading.id;
+      });
+      links.forEach(function(link) {
+        link.classList.toggle("is-active", activeId && decodeURIComponent(link.getAttribute("href").slice(1)) === activeId);
+      });
+    };
+
+    window.addEventListener("scroll", setActive, { passive: true });
+    window.addEventListener("resize", setActive);
+    setActive();
+  };
+
+  var initBackToTop = function() {
+    var button = create("button", "back-to-top");
+    button.type = "button";
+    button.setAttribute("aria-label", "回到顶部");
+    button.innerHTML = '<span class="back-to-top-arrow" aria-hidden="true"></span><span class="back-to-top-label" aria-hidden="true">TOP</span>';
+    body.appendChild(button);
+
+    var sync = function() {
+      button.classList.toggle("is-visible", window.pageYOffset > 480);
+    };
+
+    button.addEventListener("click", function() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    window.addEventListener("scroll", sync, { passive: true });
+    sync();
+  };
+
+  var initLibraryFilter = function() {
+    var library = document.querySelector(".article-library");
+    if (!library) return;
+    var items = Array.from(library.querySelectorAll(".latest-item"));
+    if (!items.length) return;
+    var tags = [];
+
+    items.forEach(function(item) {
+      var itemTags = Array.from(item.querySelectorAll(".latest-tags a")).map(function(link) {
+        return link.textContent.trim();
+      });
+      item.dataset.tags = itemTags.join("|");
+      itemTags.forEach(function(tag) {
+        if (tags.indexOf(tag) === -1) tags.push(tag);
+      });
+    });
+
+    var filters = create("div", "library-filters");
+    filters.setAttribute("aria-label", "按标签筛选文章");
+    filters.innerHTML = '<button type="button" class="is-active" data-tag="all">全部</button>' +
+      tags.map(function(tag) { return '<button type="button" data-tag="' + tag + '">' + tag + '</button>'; }).join("");
+    library.querySelector(".library-stats").after(filters);
+    library.querySelector(".library-list").insertAdjacentHTML("afterend", '<p class="library-empty">这个标签下暂时没有文章。</p>');
+
+    var apply = function(tag) {
+      var visible = 0;
+      filters.querySelectorAll("button").forEach(function(button) {
+        button.classList.toggle("is-active", button.dataset.tag === tag);
+      });
+      items.forEach(function(item) {
+        var match = tag === "all" || (item.dataset.tags || "").split("|").indexOf(tag) !== -1;
+        item.classList.toggle("is-hidden", !match);
+        if (match) visible += 1;
+      });
+      library.querySelector(".library-empty").classList.toggle("is-visible", visible === 0);
+    };
+
+    filters.addEventListener("click", function(event) {
+      var button = event.target.closest("button");
+      if (button) apply(button.dataset.tag);
+    });
+    library.addEventListener("click", function(event) {
+      var link = event.target.closest(".latest-tags a");
+      if (!link) return;
+      event.preventDefault();
+      apply(link.textContent.trim());
+      document.getElementById("latest-posts-title").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  };
+
+  var initReveal = function() {
+    var targets = Array.from(document.querySelectorAll(".reveal-panel, .featured-card, .latest-item"));
+    if (!targets.length) return;
+    if (!("IntersectionObserver" in window)) {
+      targets.forEach(function(target) { target.classList.add("is-revealed"); });
       return;
     }
 
-    $('body').addClass('reveal-enabled');
-
-    var fallbackTimer = window.setTimeout(function(){
-      $('body').addClass('reveal-fallback');
+    body.classList.add("reveal-enabled");
+    var timer = window.setTimeout(function() {
+      body.classList.add("reveal-fallback");
     }, 900);
-
-    var observer = new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
         if (!entry.isIntersecting) return;
-        $(entry.target).addClass('is-revealed');
+        entry.target.classList.add("is-revealed");
         observer.unobserve(entry.target);
       });
-
-      if ($targets.length === $targets.filter('.is-revealed').length) {
-        window.clearTimeout(fallbackTimer);
+      if (targets.every(function(target) { return target.classList.contains("is-revealed"); })) {
+        window.clearTimeout(timer);
       }
     }, { threshold: 0.12 });
-
-    $targets.each(function(index){
-      $(this).css('transition-delay', Math.min(index * 35, 220) + 'ms');
-      observer.observe(this);
+    targets.forEach(function(target, index) {
+      target.style.transitionDelay = Math.min(index * 35, 220) + "ms";
+      observer.observe(target);
     });
   };
 
-  var initArticleDiagrams = function(){
-    var $diagrams = $('.diagram-card');
-    if (!$diagrams.length || !window.mermaid) return;
-
-    window.mermaid.initialize({
-      startOnLoad: false,
-      securityLevel: 'loose',
-      theme: 'base',
-      flowchart: {
-        htmlLabels: true,
-        curve: 'basis',
-        nodeSpacing: 38,
-        rankSpacing: 56,
-        padding: 18
-      },
-      sequence: {
-        actorMargin: 48,
-        boxMargin: 12,
-        messageMargin: 36,
-        mirrorActors: false
-      },
-      themeVariables: {
-        background: '#fffdf7',
-        mainBkg: '#fff9ec',
-        nodeBkg: '#fff9ec',
-        clusterBkg: '#f2fbfa',
-        clusterBorder: '#a8dbe1',
-        fontFamily: '"Noto Serif SC", "Microsoft YaHei", sans-serif',
-        primaryColor: '#fff9ec',
-        primaryTextColor: '#274256',
-        primaryBorderColor: '#56b7c4',
-        lineColor: '#77aebb',
-        secondaryColor: '#effbfa',
-        tertiaryColor: '#fff4e6',
-        noteBkgColor: '#fff7dc',
-        noteBorderColor: '#f1c768',
-        actorBkg: '#fff9ec',
-        actorBorder: '#56b7c4',
-        actorTextColor: '#274256',
-        signalColor: '#41687b',
-        signalTextColor: '#274256'
-      }
-    });
-
-    window.mermaid.run({ querySelector: '.diagram-card .mermaid' }).then(function(){
-      $diagrams.each(function(){
-        var $card = $(this);
-        var $viewport = $card.find('.diagram-viewport');
-        var svg = $viewport.find('svg')[0];
-        if (!svg) return;
-
-        svg.removeAttribute('height');
-        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-        if (window.innerWidth <= 760) {
-          $card.removeClass('is-original').addClass('is-fit');
-        }
-        if ($viewport[0].scrollWidth > $viewport[0].clientWidth + 4) {
-          $card.addClass('is-scrollable');
-        }
-      });
-    }).catch(function(error){
-      $diagrams.addClass('is-diagram-error');
-      if (window.console) console.warn('Mermaid render failed:', error);
-    });
-  };
-
-  var initMobileMenu = function(){
-    var $container = $('#container');
-    var isSiteMenuAnim = false;
-    var siteMenuAnimDuration = 200;
-
-    var startSiteMenuAnim = function(){
-      isSiteMenuAnim = true;
-    };
-
-    var stopSiteMenuAnim = function(){
-      setTimeout(function(){
-        isSiteMenuAnim = false;
-      }, siteMenuAnimDuration);
-    };
-
-    $('#main-nav-toggle').on('click', function(){
-      if (isSiteMenuAnim) return;
-
-      startSiteMenuAnim();
-      $container.toggleClass('site-menu-on');
-      stopSiteMenuAnim();
-    });
-
-    $('#wrap').on('click', function(){
-      if (isSiteMenuAnim || !$container.hasClass('site-menu-on')) return;
-      $container.removeClass('site-menu-on');
+  var initMobileMenu = function() {
+    var container = document.getElementById("container");
+    var button = document.getElementById("main-nav-toggle");
+    if (!container || !button) return;
+    button.addEventListener("click", function(event) {
+      event.stopPropagation();
+      var open = !container.classList.contains("site-menu-on");
+      container.classList.toggle("site-menu-on", open);
+      button.setAttribute("aria-expanded", open ? "true" : "false");
+      button.setAttribute("aria-label", open ? "收起导航" : "展开导航");
     });
   };
 
   initTheme();
   initSearch();
   initArticleEnhancements();
-  initReadingProgress();
   initToc();
-  initCodeCopy();
-  initHeadingCopy();
   initBackToTop();
   initLibraryFilter();
   initReveal();
-  initArticleDiagrams();
   initMobileMenu();
-  $('body').addClass('is-ready');
-})(jQuery);
+  body.classList.add("is-ready");
+})();
