@@ -89,7 +89,7 @@
       <h1 class="p-name article-title" itemprop="headline name">抛砖引玉：教你扩展一个多 Agent 智能平台，并配套落地强风格化前端</h1>
     </header>
     <section class="article-brief" aria-label="文章阅读概览">
-      <div><span>Reading Brief</span><strong>40 分钟阅读</strong></div>
+      <div><span>Reading Brief</span><strong>36 分钟阅读</strong></div>
       <div><span>Category</span><strong>项目实战</strong></div>
       <div><span>Keywords</span><strong>6 个标签</strong></div>
     </section>
@@ -182,31 +182,9 @@
 </ul>
 <figure class="diagram-card is-fit" data-diagram-index="1">
   <div class="diagram-viewport">
-    <pre class="mermaid">flowchart LR
-    User["用户"] --&gt; Frontend["Vue 前端&lt;br/&gt;统一 AI 对话入口"]
-    Frontend --&gt; StreamAPI["统一 AI 流式接口&lt;br/&gt;/api/ai/unified/chat/stream"]
-    Frontend --&gt; EduAPI["教务业务接口&lt;br/&gt;学生 / 教师 / 班级 / 成绩"]
-
-<pre><code>StreamAPI --&amp;gt; Supervisor[&quot;SupervisorAgent&amp;lt;br/&amp;gt;意图识别与分流&quot;]
-
-Supervisor --&amp;gt; Daiyu[&quot;林黛玉 Agent&quot;]
-Supervisor --&amp;gt; Classics[&quot;四大名著 RAG Agent&quot;]
-Supervisor --&amp;gt; Interview[&quot;模拟面试 Agent&quot;]
-Supervisor --&amp;gt; Assistant[&quot;教务助手 Agent&quot;]
-
-Daiyu --&amp;gt; LLM[&quot;DeepSeek 模型服务&quot;]
-Interview --&amp;gt; LLM
-Assistant --&amp;gt; LLM
-Classics --&amp;gt; LLM
-
-EduAPI --&amp;gt; MySQL[&quot;MySQL 业务数据库&quot;]
-Assistant --&amp;gt; MySQL
-StreamAPI --&amp;gt; Redis[&quot;Redis / 会话缓存&quot;]
-StreamAPI --&amp;gt; Memory[&quot;ConversationMemory&amp;lt;br/&amp;gt;会话历史&quot;]
-Classics --&amp;gt; Chroma[&quot;Chroma 向量库&quot;]
-Classics --&amp;gt; FTS[&quot;SQLite FTS5 全文索引&quot;]
-Classics --&amp;gt; Reranker[&quot;bge-reranker 精排&quot;]&lt;/pre&gt;
-</code></pre>
+    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/ac08d46b4cd2.svg">
+  <img src="/assets/diagrams/ac08d46b4cd2.svg" alt="Mermaid 结构图" loading="lazy">
+</figure>
   </div>
 </figure>
 
@@ -221,19 +199,9 @@ Classics --&amp;gt; Reranker[&quot;bge-reranker 精排&quot;]&lt;/pre&gt;
 </ul>
 <figure class="diagram-card is-fit" data-diagram-index="2">
   <div class="diagram-viewport">
-    <pre class="mermaid">flowchart TD
-    Q["用户问题"] --&gt; Router["SupervisorAgent.classify_intent"]
-
-<pre><code>Router --&amp;gt;|&quot;诗词 / 对联 / 情绪 / 作文 / 时辰&quot;| Daiyu[&quot;lindaiyu&quot;]
-Router --&amp;gt;|&quot;红楼梦 / 西游记 / 水浒传 / 三国演义事实问答&quot;| Classics[&quot;classics_rag&quot;]
-Router --&amp;gt;|&quot;面试 / HR / 岗位 / 简历&quot;| Interview[&quot;interview&quot;]
-Router --&amp;gt;|&quot;成绩 / 查询 / 通知 / 总结 / 建议&quot;| Assistant[&quot;assistant&quot;]
-
-Daiyu --&amp;gt; DYOut[&quot;角色化回复&quot;]
-Classics --&amp;gt; RAGOut[&quot;带出处的名著问答&quot;]
-Interview --&amp;gt; INTOut[&quot;面试官式追问与反馈&quot;]
-Assistant --&amp;gt; EDUOut[&quot;教务数据与文书结果&quot;]&lt;/pre&gt;
-</code></pre>
+    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/a5abec7c9e3e.svg">
+  <img src="/assets/diagrams/a5abec7c9e3e.svg" alt="Mermaid 结构图" loading="lazy">
+</figure>
   </div>
 </figure>
 
@@ -241,38 +209,9 @@ Assistant --&amp;gt; EDUOut[&quot;教务数据与文书结果&quot;]&lt;/pre&gt;
 <h2 id="4-所有-Agent-与工具调用链路"><a href="#4-所有-Agent-与工具调用链路" class="headerlink" title="4. 所有 Agent 与工具调用链路"></a>4. 所有 Agent 与工具调用链路</h2><p>下面这张图可以理解为系统的“能力地图”。你可以顺着箭头看：用户的问题先到统一聊天接口，再到 <code>SupervisorAgent</code>，然后被分到某个 Agent，最后才进入具体工具。</p>
 <figure class="diagram-card is-fit" data-diagram-index="3">
   <div class="diagram-viewport">
-    <pre class="mermaid">flowchart TD
-    User["用户输入"] --&gt; Unified["统一聊天接口"]
-    Unified --&gt; Supervisor["SupervisorAgent"]
-
-<pre><code>Supervisor --&amp;gt; Daiyu[&quot;林黛玉 Agent&quot;]
-Daiyu --&amp;gt; DY1[&quot;compose_poetry&quot;]
-Daiyu --&amp;gt; DY2[&quot;match_couplet&quot;]
-Daiyu --&amp;gt; DY3[&quot;play_poetry_game&quot;]
-Daiyu --&amp;gt; DY4[&quot;review_essay&quot;]
-Daiyu --&amp;gt; DY5[&quot;emotion_support&quot;]
-Daiyu --&amp;gt; DY6[&quot;detect_emotion&quot;]
-Daiyu --&amp;gt; DY7[&quot;tell_time&quot;]
-
-Supervisor --&amp;gt; RAG[&quot;四大名著 RAG Agent&quot;]
-RAG --&amp;gt; R1[&quot;书籍识别&quot;]
-RAG --&amp;gt; R2[&quot;Chroma 向量召回&quot;]
-RAG --&amp;gt; R3[&quot;SQLite FTS5 召回&quot;]
-RAG --&amp;gt; R4[&quot;章节锚点补召回&quot;]
-RAG --&amp;gt; R5[&quot;bge-reranker 精排&quot;]
-RAG --&amp;gt; R6[&quot;带引用生成&quot;]
-
-Supervisor --&amp;gt; Interview[&quot;模拟面试 Agent&quot;]
-Interview --&amp;gt; I1[&quot;岗位模拟&quot;]
-Interview --&amp;gt; I2[&quot;HR 问答&quot;]
-Interview --&amp;gt; I3[&quot;项目追问&quot;]
-
-Supervisor --&amp;gt; Assistant[&quot;教务助手 Agent&quot;]
-Assistant --&amp;gt; A1[&quot;text2sql&amp;lt;br/&amp;gt;自然语言问数&quot;]
-Assistant --&amp;gt; A2[&quot;function_call&amp;lt;br/&amp;gt;学生成绩 / 班级统计&quot;]
-Assistant --&amp;gt; A3[&quot;template&amp;lt;br/&amp;gt;通知 / 评语 / 报告 / 班会&quot;]
-Assistant --&amp;gt; A4[&quot;general&amp;lt;br/&amp;gt;学习建议 / 方法解释&quot;]&lt;/pre&gt;
-</code></pre>
+    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/f938a1763cd4.svg">
+  <img src="/assets/diagrams/f938a1763cd4.svg" alt="Mermaid 结构图" loading="lazy">
+</figure>
   </div>
 </figure>
 
@@ -290,21 +229,9 @@ Assistant --&amp;gt; A4[&quot;general&amp;lt;br/&amp;gt;学习建议 / 方法解
 </ol>
 <figure class="diagram-card is-fit" data-diagram-index="4">
   <div class="diagram-viewport">
-    <pre class="mermaid">flowchart TD
-    Input["用户输入"] --&gt; Guard["InputGuard&lt;br/&gt;输入检查与清洗"]
-    Guard --&gt; Memory["ConversationMemory&lt;br/&gt;读取历史与摘要"]
-    Memory --&gt; Prompt["PromptRouter&lt;br/&gt;注入林黛玉角色设定"]
-    Prompt --&gt; AgentNode["StateGraph: agent 节点&lt;br/&gt;绑定林黛玉工具"]
-
-<pre><code>AgentNode --&amp;gt;|&quot;需要工具&quot;| ToolNode[&quot;ToolNode&amp;lt;br/&amp;gt;执行具体工具&quot;]
-ToolNode --&amp;gt; AgentNode
-AgentNode --&amp;gt;|&quot;无需工具 / 工具完成&quot;| Summarize[&quot;summarize 节点&amp;lt;br/&amp;gt;整理最终回复&quot;]
-
-Summarize --&amp;gt; Emotion[&quot;情绪识别&amp;lt;br/&amp;gt;melancholy / witty / warm / neutral&quot;]
-Emotion --&amp;gt; Save[&quot;保存会话与情绪&quot;]
-Save --&amp;gt; SSE[&quot;SSE 流式输出&quot;]
-SSE --&amp;gt; Frontend[&quot;前端气泡 + 立绘状态&quot;]&lt;/pre&gt;
-</code></pre>
+    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/952d9eca70ea.svg">
+  <img src="/assets/diagrams/952d9eca70ea.svg" alt="Mermaid 结构图" loading="lazy">
+</figure>
   </div>
 </figure>
 
@@ -316,20 +243,9 @@ SSE --&amp;gt; Frontend[&quot;前端气泡 + 立绘状态&quot;]&lt;/pre&gt;
 </ul>
 <h3 id="5-2-林黛玉-7-个工具拆分"><a href="#5-2-林黛玉-7-个工具拆分" class="headerlink" title="5.2 林黛玉 7 个工具拆分"></a>5.2 林黛玉 7 个工具拆分</h3><figure class="diagram-card is-fit" data-diagram-index="5">
   <div class="diagram-viewport">
-    <pre class="mermaid">flowchart LR
-    Daiyu["林黛玉 Agent"] --&gt; Compose["compose_poetry&lt;br/&gt;诗词创作"]
-    Daiyu --&gt; Couplet["match_couplet&lt;br/&gt;对联对答"]
-    Daiyu --&gt; Game["play_poetry_game&lt;br/&gt;飞花令 / 接龙 / 对对联"]
-    Daiyu --&gt; Essay["review_essay&lt;br/&gt;作文点评"]
-    Daiyu --&gt; Support["emotion_support&lt;br/&gt;情绪疏导"]
-    Daiyu --&gt; Detect["detect_emotion&lt;br/&gt;心境判断"]
-    Daiyu --&gt; Time["tell_time&lt;br/&gt;时辰问答"]
-
-<pre><code>Compose --&amp;gt; Stream[&quot;作诗流式快路径&quot;]
-Support --&amp;gt; Mood[&quot;情绪标签&quot;]
-Detect --&amp;gt; Mood
-Mood --&amp;gt; Sprite[&quot;前端立绘切换&quot;]&lt;/pre&gt;
-</code></pre>
+    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/6231566dad80.svg">
+  <img src="/assets/diagrams/6231566dad80.svg" alt="Mermaid 结构图" loading="lazy">
+</figure>
   </div>
 </figure>
 
@@ -351,23 +267,9 @@ Mood --&amp;gt; Sprite[&quot;前端立绘切换&quot;]&lt;/pre&gt;
 <p><img src="/assets/project-agent-showcase/04-rag-answer.png" alt="RAG 问答效果"></p>
 <h3 id="6-1-最新-RAG-检索链路"><a href="#6-1-最新-RAG-检索链路" class="headerlink" title="6.1 最新 RAG 检索链路"></a>6.1 最新 RAG 检索链路</h3><figure class="diagram-card is-fit" data-diagram-index="6">
   <div class="diagram-viewport">
-    <pre class="mermaid">flowchart TD
-    Q["用户问题"] --&gt; Book["书籍识别&lt;br/&gt;关键词优先，必要时 LLM 判断"]
-    Book --&gt; Dense["多查询向量召回&lt;br/&gt;原问题 + 改写问题 + 关键词组合"]
-    Book --&gt; FTS["SQLite FTS5 旁路召回&lt;br/&gt;人物 / 物件 / 章节精确词"]
-    Book --&gt; Anchor["章节与关键词锚点补召回&lt;br/&gt;如林黛玉进贾府 -&gt; 第三回"]
-
-<pre><code>Dense --&amp;gt; Merge[&quot;召回结果合并去重&quot;]
-FTS --&amp;gt; Merge
-Anchor --&amp;gt; Merge
-
-Merge --&amp;gt; Parent[&quot;父子上下文扩展&amp;lt;br/&amp;gt;命中 chunk + 相邻 chunk&quot;]
-Parent --&amp;gt; Signal[&quot;召回信号预排序&amp;lt;br/&amp;gt;lexical / fts / chapter / rewrite_dense / dense / parent_context&quot;]
-Signal --&amp;gt; Rerank[&quot;bge-reranker-v2-m3&amp;lt;br/&amp;gt;CrossEncoder 精排&quot;]
-Rerank --&amp;gt; Context[&quot;构造原文上下文&quot;]
-Context --&amp;gt; LLM[&quot;LLM 流式生成&quot;]
-LLM --&amp;gt; Cite[&quot;答案 + 引用来源&quot;]&lt;/pre&gt;
-</code></pre>
+    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/237e925a885d.svg">
+  <img src="/assets/diagrams/237e925a885d.svg" alt="Mermaid 结构图" loading="lazy">
+</figure>
   </div>
 </figure>
 
@@ -385,26 +287,9 @@ LLM --&amp;gt; Cite[&quot;答案 + 引用来源&quot;]&lt;/pre&gt;
 <h2 id="7-教务助手：把自然语言变成业务工具调用"><a href="#7-教务助手：把自然语言变成业务工具调用" class="headerlink" title="7. 教务助手：把自然语言变成业务工具调用"></a>7. 教务助手：把自然语言变成业务工具调用</h2><p>教务助手是学生管理系统与 AI Agent 结合最直接的一条链路。它不是单纯聊天，而是会先判断用户想做什么，再选择合适的子能力。</p>
 <figure class="diagram-card is-fit" data-diagram-index="7">
   <div class="diagram-viewport">
-    <pre class="mermaid">flowchart TD
-    Assistant["教务助手 Agent"] --&gt; SkillRouter["内部技能选择"]
-
-<pre><code>SkillRouter --&amp;gt; Text2SQL[&quot;text2sql&quot;]
-Text2SQL --&amp;gt; SQLGen[&quot;生成 SELECT SQL&quot;]
-SQLGen --&amp;gt; DB[&quot;查询业务数据库&quot;]
-DB --&amp;gt; Table[&quot;返回表格化结果&quot;]
-
-SkillRouter --&amp;gt; FunctionCall[&quot;function_call&quot;]
-FunctionCall --&amp;gt; StudentGrade[&quot;查询单学生成绩&quot;]
-FunctionCall --&amp;gt; ClassStats[&quot;查询单班级成绩统计&quot;]
-StudentGrade --&amp;gt; Explain[&quot;流式解释结果&quot;]
-ClassStats --&amp;gt; Explain
-
-SkillRouter --&amp;gt; Template[&quot;template&quot;]
-Template --&amp;gt; Docs[&quot;通知 / 表扬 / 批评 / 总结 / 报告 / 班会 / 评语&quot;]
-
-SkillRouter --&amp;gt; General[&quot;general&quot;]
-General --&amp;gt; Advice[&quot;学习建议 / 方法解释 / 计划制定&quot;]&lt;/pre&gt;
-</code></pre>
+    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/5d3e79877003.svg">
+  <img src="/assets/diagrams/5d3e79877003.svg" alt="Mermaid 结构图" loading="lazy">
+</figure>
   </div>
 </figure>
 
@@ -429,25 +314,9 @@ General --&amp;gt; Advice[&quot;学习建议 / 方法解释 / 计划制定&quot;
 </ul>
 <figure class="diagram-card is-fit" data-diagram-index="8">
   <div class="diagram-viewport">
-    <pre class="mermaid">sequenceDiagram
-    participant U as 用户
-    participant F as 前端 AIChatView
-    participant API as 统一流式接口
-    participant S as SupervisorAgent
-    participant A as 目标 Agent
-    participant M as 模型/工具
-
-<pre><code>U-&amp;gt;&amp;gt;F: 输入问题
-F-&amp;gt;&amp;gt;API: POST /api/ai/unified/chat/stream
-API-&amp;gt;&amp;gt;S: 传入 query / force_agent / history
-S--&amp;gt;&amp;gt;F: meta 事件，说明调用哪个 Agent
-S-&amp;gt;&amp;gt;A: 分流到目标 Agent
-A-&amp;gt;&amp;gt;M: 调用模型、RAG 或业务工具
-M--&amp;gt;&amp;gt;A: token / 工具结果
-A--&amp;gt;&amp;gt;F: content 流式片段
-A--&amp;gt;&amp;gt;F: emotion / citations 等附加事件
-API--&amp;gt;&amp;gt;F: done&lt;/pre&gt;
-</code></pre>
+    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/2d9842ec720b.svg">
+  <img src="/assets/diagrams/2d9842ec720b.svg" alt="Mermaid 结构图" loading="lazy">
+</figure>
   </div>
 </figure>
 
@@ -470,13 +339,9 @@ API--&amp;gt;&amp;gt;F: done&lt;/pre&gt;
 <h3 id="10-2-前端设计步骤"><a href="#10-2-前端设计步骤" class="headerlink" title="10.2 前端设计步骤"></a>10.2 前端设计步骤</h3><p>我最后把前端设计拆成 7 步。这个顺序很适合新手参考：</p>
 <figure class="diagram-card is-fit" data-diagram-index="9">
   <div class="diagram-viewport">
-    <pre class="mermaid">flowchart LR
-    IA["1. 信息架构"] --&gt; Pages["2. 页面清单"]
-    Pages --&gt; Routes["3. 路由结构"]
-    Routes --&gt; Components["4. 组件拆分"]
-    Components --&gt; API["5. API 调用关系"]
-    API --&gt; Assets["6. 素材清单"]
-    Assets --&gt; Style["7. UI 风格规范"]</pre>
+    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/2aaf1b307698.svg">
+  <img src="/assets/diagrams/2aaf1b307698.svg" alt="Mermaid 结构图" loading="lazy">
+</figure>
   </div>
 </figure>
 
@@ -537,40 +402,18 @@ API--&amp;gt;&amp;gt;F: done&lt;/pre&gt;
 </ul>
 <figure class="diagram-card is-fit" data-diagram-index="10">
   <div class="diagram-viewport">
-    <pre class="mermaid">flowchart TD
-    App["AppLayout&lt;br/&gt;导航 / 顶栏 / 路由舞台"] --&gt; RouterView["router-view"]
-    RouterView --&gt; Dashboard["DashboardView"]
-    RouterView --&gt; DataViews["Students / Teachers / Classes / Grades"]
-    RouterView --&gt; AIChat["AIChatView&lt;br/&gt;统一 AI 对话"]
-    RouterView --&gt; AIWorkbenches["AI 专项工作台"]
-
-<pre><code>AIChat --&amp;gt; AgentTabs[&quot;Agent 模式切换&quot;]
-AIChat --&amp;gt; MessageList[&quot;消息列表&quot;]
-AIChat --&amp;gt; Composer[&quot;输入区 / 附件 / 发送&quot;]
-AIChat --&amp;gt; EventStream[&quot;SSE 事件消费&quot;]&lt;/pre&gt;
-</code></pre>
+    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/353c57413b40.svg">
+  <img src="/assets/diagrams/353c57413b40.svg" alt="Mermaid 结构图" loading="lazy">
+</figure>
   </div>
 </figure>
 
 <h3 id="10-7-API-调用关系"><a href="#10-7-API-调用关系" class="headerlink" title="10.7 API 调用关系"></a>10.7 API 调用关系</h3><p>前端 API 层分成普通 Axios 请求和 AI 流式请求两类。教务数据相关请求统一走 <code>request.ts</code> 封装，自动附带 token；AI 流式对话走 <code>fetch + ReadableStream</code>，以便逐段解析 SSE 事件。</p>
 <figure class="diagram-card is-fit" data-diagram-index="11">
   <div class="diagram-viewport">
-    <pre class="mermaid">flowchart TD
-    Views["Vue 页面"] --&gt; Request["request.ts&lt;br/&gt;Axios 封装"]
-    Request --&gt; Auth["auth.ts&lt;br/&gt;登录 / 用户信息"]
-    Request --&gt; EduAPI["students / teachers / classes / grades / notifications"]
-    Request --&gt; AIBase["ai.ts&lt;br/&gt;非流式 AI 接口"]
-
-<pre><code>AIChat[&quot;AIChatView&quot;] --&amp;gt; Stream[&quot;postEventStream&amp;lt;br/&amp;gt;fetch + text/event-stream&quot;]
-Stream --&amp;gt; Unified[&quot;/api/ai/unified/chat/stream&quot;]
-Unified --&amp;gt; SSEParse[&quot;readChatEventStream&amp;lt;br/&amp;gt;解析 meta/content/error/done&quot;]
-SSEParse --&amp;gt; UI[&quot;消息气泡 / Agent 状态 / 情绪标签&quot;]
-
-Auth --&amp;gt; Backend[&quot;后端 API&quot;]
-EduAPI --&amp;gt; Backend
-AIBase --&amp;gt; Backend
-Unified --&amp;gt; Backend&lt;/pre&gt;
-</code></pre>
+    <figure class="diagram-card mermaid-static" data-diagram-src="/assets/diagrams/79bc119cfb30.svg">
+  <img src="/assets/diagrams/79bc119cfb30.svg" alt="Mermaid 结构图" loading="lazy">
+</figure>
   </div>
 </figure>
 
@@ -693,7 +536,6 @@ Unified --&amp;gt; Backend&lt;/pre&gt;
   <script>
     window.__BLOG_POSTS__ = [{"title":"抛砖引玉：教你扩展一个多 Agent 智能平台，并配套落地强风格化前端","url":"/2026/05/23/agent-platform-frontend-showcase/","excerpt":"项目名：大观园智学系统技术关键词：Vue、FastAPI、LangGraph、多 Agent、RAG、Text2SQL、SSE 流式响应、Codex 前端落地 摘要这篇文章适合想把普通业务系统改造成 AI 应用的同学阅读。项目的起点是一个学","tags":["FastAPI","LangGraph","RAG","Vue","多 Agent","强风格化前端"]},{"title":"AI Agent 开发入门教程：从概念到第一个可运行项目","url":"/2026/05/10/ai-agent-getting-started/","excerpt":"导读：AI Agent 入门最容易浪费时间的地方，往往不是模型本身，而是工具链选择、开发流程、质量验证和项目拆解方式。这篇文章不是教科书式的理论堆砌，而是一份面向实操的入门地图：哪些坑可以提前避开，哪些捷径其实是弯路，以及最重要的一点：如何","tags":["RAG","AI Agent","LangChain","Vibe Coding","前端开发"]}];
   </script>
-  <script src="/vendor/mermaid.min.js?v=10.9.3"></script>
   <script src="/js/script.js?v=20260606-hexo-collage10"></script>
 </body>
 </html>
