@@ -72,6 +72,56 @@ const classForAspect = aspect => {
   return "diagram-standard";
 };
 
+const wrapLabelText = text => {
+  if (text.length <= 18 && !text.includes(" / ")) return text;
+  const parts = text.split(/\s*\/\s*/).filter(Boolean);
+  if (parts.length > 1) {
+    const lines = [];
+    let current = "";
+    for (const part of parts) {
+      const next = current ? `${current} / ${part}` : part;
+      if (next.length > 16 && current) {
+        lines.push(current);
+        current = part;
+      } else {
+        current = next;
+      }
+    }
+    if (current) lines.push(current);
+    return lines.join("<br/>");
+  }
+  return text.replace(/(.{1,16})(\s+|$)/g, "$1<br/>").replace(/<br\/>$/, "");
+};
+
+const normalizeDiagramSource = source => source
+  .replace(/\|"([^"]{18,})"\|/g, (match, label) => `|"${wrapLabelText(label)}"|`)
+  .replace(/<br\s*\/?>/gi, "<br/>");
+
+const themePresets = {
+  light: {
+    primaryColor: "#fff9ee",
+    primaryTextColor: "#17313d",
+    primaryBorderColor: "#80685d",
+    lineColor: "#8a7b6b",
+    secondaryColor: "#fbf3e5",
+    tertiaryColor: "#f6ecd9",
+    edgeLabelBackground: "#fff9ee",
+    clusterBkg: "#fbf3e5",
+    clusterBorder: "#b9a587"
+  },
+  dark: {
+    primaryColor: "#17272d",
+    primaryTextColor: "#eaf4f3",
+    primaryBorderColor: "#82d3d7",
+    lineColor: "#8fa7a5",
+    secondaryColor: "#1d333a",
+    tertiaryColor: "#14262c",
+    edgeLabelBackground: "#17272d",
+    clusterBkg: "#14262c",
+    clusterBorder: "#5b9095"
+  }
+};
+
 const listHtml = dir => {
   if (!existsSync(dir)) return [];
   return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
@@ -81,9 +131,10 @@ const listHtml = dir => {
   });
 };
 
-const render = source => {
-  const hash = createHash("sha1").update(source).digest("hex").slice(0, 12);
-  const fileName = `${hash}.svg`;
+const render = (source, mode) => {
+  const theme = themePresets[mode];
+  const hash = createHash("sha1").update(`${mode}:${source}`).digest("hex").slice(0, 12);
+  const fileName = `${hash}-${mode}.svg`;
   const output = join(diagramsDir, fileName);
   if (existsSync(output)) {
     const meta = readSvgMeta(output);
@@ -111,12 +162,15 @@ const render = source => {
     },
     themeVariables: {
       background: "transparent",
-      primaryColor: "#fffaf2",
-      primaryTextColor: "#0f2732",
-      primaryBorderColor: "#0a7080",
-      lineColor: "#8a7b6b",
-      secondaryColor: "#eef7f5",
-      tertiaryColor: "#f8f0df",
+      primaryColor: theme.primaryColor,
+      primaryTextColor: theme.primaryTextColor,
+      primaryBorderColor: theme.primaryBorderColor,
+      lineColor: theme.lineColor,
+      secondaryColor: theme.secondaryColor,
+      tertiaryColor: theme.tertiaryColor,
+      edgeLabelBackground: theme.edgeLabelBackground,
+      clusterBkg: theme.clusterBkg,
+      clusterBorder: theme.clusterBorder,
       fontFamily: "Inter, Arial, sans-serif",
       fontSize: "14px"
     }
@@ -150,12 +204,15 @@ mkdirSync(diagramsDir, { recursive: true });
 
 let rendered = 0;
 const renderFigure = source => {
-  const result = render(source);
+  const normalized = normalizeDiagramSource(source);
+  const light = render(normalized, "light");
+  const dark = render(normalized, "dark");
   rendered += 1;
-  const aspectClass = classForAspect(result.aspect);
+  const aspectClass = classForAspect(light.aspect);
   return [
-    `<figure class="diagram-card mermaid-static ${aspectClass}" data-diagram-src="${escapeAttr(result.url)}">`,
-    `  <img src="${escapeAttr(result.url)}" alt="Mermaid 结构图" loading="lazy">`,
+    `<figure class="diagram-card mermaid-static ${aspectClass}" data-diagram-light="${escapeAttr(light.url)}" data-diagram-dark="${escapeAttr(dark.url)}">`,
+    `  <img class="diagram-image diagram-image-light" src="${escapeAttr(light.url)}" alt="Mermaid 结构图" loading="lazy">`,
+    `  <img class="diagram-image diagram-image-dark" src="${escapeAttr(dark.url)}" alt="Mermaid 结构图" loading="lazy">`,
     `</figure>`
   ].join("\n");
 };

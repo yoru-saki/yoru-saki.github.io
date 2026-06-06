@@ -581,6 +581,7 @@
     var previewPanel = overlay.querySelector(".diagram-preview-panel");
     var closeButton = overlay.querySelector(".diagram-preview-close");
     var previousFocus = null;
+    var activeFigure = null;
     var transformState = {
       scale: 1,
       x: 0,
@@ -632,9 +633,21 @@
       applyTransform();
     };
 
-    var open = function(image) {
+    var diagramSrcForTheme = function(figure) {
+      var isDark = html.getAttribute("data-theme") === "dark";
+      return (isDark ? figure.dataset.diagramDark : figure.dataset.diagramLight) || figure.dataset.diagramSrc || "";
+    };
+
+    var syncPreviewTheme = function() {
+      if (!activeFigure || !overlay.classList.contains("is-open")) return;
+      var nextSrc = diagramSrcForTheme(activeFigure);
+      if (nextSrc && previewImage.getAttribute("src") !== nextSrc) previewImage.src = nextSrc;
+    };
+
+    var open = function(figure, image) {
       previousFocus = document.activeElement;
-      previewImage.src = image.currentSrc || image.src;
+      activeFigure = figure;
+      previewImage.src = diagramSrcForTheme(figure) || image.currentSrc || image.src;
       previewImage.alt = image.alt || "结构图";
       overlay.classList.add("is-open");
       body.classList.add("diagram-preview-open");
@@ -646,6 +659,7 @@
       overlay.classList.remove("is-open");
       body.classList.remove("diagram-preview-open");
       previewImage.removeAttribute("src");
+      activeFigure = null;
       resetTransform();
       if (previousFocus && previousFocus.focus) previousFocus.focus();
     };
@@ -658,12 +672,12 @@
       figure.setAttribute("tabindex", "0");
       figure.setAttribute("aria-label", "点击放大结构图");
       figure.addEventListener("click", function() {
-        open(image);
+        open(figure, image);
       });
       figure.addEventListener("keydown", function(event) {
         if (event.key !== "Enter" && event.key !== " ") return;
         event.preventDefault();
-        open(image);
+        open(figure, image);
       });
     });
 
@@ -767,6 +781,7 @@
     document.addEventListener("keydown", function(event) {
       if (event.key === "Escape" && overlay.classList.contains("is-open")) close();
     });
+    window.addEventListener("yoru:theme-change", syncPreviewTheme);
     window.addEventListener("resize", function() {
       if (overlay.classList.contains("is-open")) applyTransform();
     });
