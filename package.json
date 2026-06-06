@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "migrate": "node tools/migrate-posts.mjs",
-    "build": "node tools/build.mjs",
+    "prepare:posts": "node tools/prepare-post-dates.mjs",
+    "build": "node tools/prepare-post-dates.mjs && node tools/build.mjs",
     "server": "node tools/server.mjs"
   },
   "dependencies": {
