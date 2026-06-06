@@ -255,6 +255,8 @@
 
     var cleanLabel = function(value) {
       return (value || "")
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
         .replace(/&gt;/g, ">")
         .replace(/<br\s*\/?>/gi, " / ")
         .replace(/\s+/g, " ")
@@ -268,6 +270,19 @@
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
+    };
+
+    var decodeDiagramSource = function(value) {
+      var text = (value || "").replace(/\u00a0/g, " ");
+      for (var i = 0; i < 2; i += 1) {
+        text = text
+          .replace(/&amp;/g, "&")
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">")
+          .replace(/&quot;/g, '"')
+          .replace(/&#39;|&apos;/g, "'");
+      }
+      return text;
     };
 
     var collectFlow = function(source) {
@@ -301,6 +316,62 @@
       });
 
       return { nodes: nodes, order: order, edges: edges };
+    };
+
+    var buildFlowLevels = function(flow) {
+      var indegree = {};
+      var outgoing = {};
+      flow.order.forEach(function(id) {
+        indegree[id] = 0;
+        outgoing[id] = [];
+      });
+      flow.edges.forEach(function(edge) {
+        if (indegree[edge.to] === undefined) indegree[edge.to] = 0;
+        if (!outgoing[edge.from]) outgoing[edge.from] = [];
+        outgoing[edge.from].push(edge.to);
+        indegree[edge.to] += 1;
+      });
+
+      var levels = {};
+      var queue = flow.order.filter(function(id) { return indegree[id] === 0; });
+      if (!queue.length) queue = flow.order.slice(0, 1);
+      queue.forEach(function(id) { levels[id] = 0; });
+
+      var guard = 0;
+      while (queue.length && guard < flow.order.length * flow.order.length) {
+        var current = queue.shift();
+        guard += 1;
+        (outgoing[current] || []).forEach(function(next) {
+          var nextLevel = (levels[current] || 0) + 1;
+          if (levels[next] === undefined || nextLevel > levels[next]) levels[next] = nextLevel;
+          indegree[next] -= 1;
+          if (indegree[next] <= 0) queue.push(next);
+        });
+      }
+
+      flow.order.forEach(function(id) {
+        if (levels[id] === undefined) levels[id] = 0;
+      });
+
+      var maxLevel = Math.max.apply(null, flow.order.map(function(id) { return levels[id]; }).concat([0]));
+      var columns = [];
+      for (var i = 0; i <= maxLevel; i += 1) columns.push([]);
+      flow.order.forEach(function(id) {
+        columns[levels[id]].push(id);
+      });
+      return columns;
+    };
+
+    var renderLevelMap = function(flow) {
+      var columns = buildFlowLevels(flow);
+      if (!columns.length) return "";
+      var stageNames = ["入口", "接口", "调度", "能力", "工具", "数据", "输出"];
+      return '<div class="diagram-level-map" aria-label="分层结构">' + columns.map(function(column, index) {
+        var title = stageNames[index] || ("层级 " + (index + 1));
+        return '<section><small>' + escapeHtml(title) + '</small>' + column.map(function(id) {
+          return '<span>' + escapeHtml(flow.nodes[id] || id) + '</span>';
+        }).join("") + '</section>';
+      }).join("") + '</div>';
     };
 
     var collectSequence = function(source) {
@@ -337,38 +408,42 @@
       var isSequence = /^sequenceDiagram/m.test(source.trim());
       if (isSequence) {
         var sequence = collectSequence(source);
-        diagram.classList.add("is-fallback");
+        diagram.classList.add("is-structured");
+        diagram.classList.remove("is-fallback");
         diagram.classList.remove("is-error");
         diagram.innerHTML =
-          '<div class="diagram-fallback-head"><span>Sequence</span><strong>时序结构</strong></div>' +
-          '<div class="diagram-node-grid">' + sequence.order.map(function(id) {
-            return '<span>' + escapeHtml(sequence.participants[id] || id) + '</span>';
-          }).join("") + '</div>' +
-          '<ol class="diagram-edge-list">' + sequence.messages.map(function(edge) {
+          '<div class="diagram-fallback-head"><span>时序图</span><strong>调用链路</strong></div>' +
+          '<ol class="diagram-edge-list diagram-flow-list">' + sequence.messages.map(function(edge) {
             return '<li><span>' + escapeHtml(sequence.participants[edge.from] || edge.from) + '</span><b aria-hidden="true">→</b><span>' + escapeHtml(sequence.participants[edge.to] || edge.to) + '</span><em>' + escapeHtml(edge.label) + '</em></li>';
-          }).join("") + '</ol>';
+          }).join("") + '</ol>' +
+          '<div class="diagram-node-grid" aria-label="参与方">' + sequence.order.map(function(id) {
+            return '<span>' + escapeHtml(sequence.participants[id] || id) + '</span>';
+          }).join("") + '</div>';
         return;
       }
 
       var flow = collectFlow(source);
-      diagram.classList.add("is-fallback");
+      diagram.classList.add("is-structured");
+      diagram.classList.remove("is-fallback");
       diagram.classList.remove("is-error");
       diagram.innerHTML =
-        '<div class="diagram-fallback-head"><span>Flowchart</span><strong>系统结构</strong></div>' +
-        '<div class="diagram-node-grid">' + flow.order.map(function(id) {
-          return '<span>' + escapeHtml(flow.nodes[id] || id) + '</span>';
-        }).join("") + '</div>' +
-        '<ol class="diagram-edge-list">' + flow.edges.map(function(edge) {
+        '<div class="diagram-fallback-head"><span>结构图</span><strong>系统结构</strong></div>' +
+        renderLevelMap(flow) +
+        '<ol class="diagram-edge-list diagram-flow-list">' + flow.edges.map(function(edge) {
           return '<li><span>' + escapeHtml(flow.nodes[edge.from] || edge.from) + '</span><b aria-hidden="true">→</b><span>' + escapeHtml(flow.nodes[edge.to] || edge.to) + '</span>' + (edge.label ? '<em>' + escapeHtml(edge.label) + '</em>' : "") + '</li>';
-        }).join("") + '</ol>';
+        }).join("") + '</ol>' +
+        '<div class="diagram-node-grid" aria-label="节点清单">' + flow.order.map(function(id) {
+          return '<span>' + escapeHtml(flow.nodes[id] || id) + '</span>';
+        }).join("") + '</div>';
     };
 
     blocks.forEach(function(block, index) {
       var host = create("div", "mermaid yoru-mermaid");
       host.id = "mermaid-diagram-" + index;
-      host.dataset.source = block.textContent.replace(/\u00a0/g, " ");
+      host.dataset.source = decodeDiagramSource(block.textContent);
       host.textContent = host.dataset.source;
       block.replaceWith(host);
+      renderFallback(host);
     });
 
     var render = function() {
@@ -377,6 +452,7 @@
       var diagrams = Array.from(document.querySelectorAll(".yoru-mermaid"));
       diagrams.forEach(function(diagram) {
         diagram.removeAttribute("data-processed");
+        diagram.classList.remove("is-structured");
         diagram.innerHTML = "";
         diagram.textContent = diagram.dataset.source || "";
       });
@@ -396,9 +472,15 @@
           fontFamily: getComputedStyle(document.documentElement).getPropertyValue("--font-sans").trim()
         }
       });
-      window.mermaid.run({ nodes: diagrams }).catch(function(error) {
+      diagrams.reduce(function(chain, diagram) {
+        return chain.then(function() {
+          return window.mermaid.run({ nodes: [diagram] }).catch(function() {
+            renderFallback(diagram);
+          });
+        });
+      }, Promise.resolve()).catch(function() {
         diagrams.forEach(function(diagram) {
-          renderFallback(diagram);
+          if (!diagram.querySelector("svg")) renderFallback(diagram);
         });
       });
     };
@@ -419,7 +501,15 @@
 
     wait(30);
     window.addEventListener("yoru:theme-change", function() {
-      window.setTimeout(render, 80);
+      window.setTimeout(function() {
+        if (window.mermaid) {
+          render();
+          return;
+        }
+        document.querySelectorAll(".yoru-mermaid").forEach(function(diagram) {
+          renderFallback(diagram);
+        });
+      }, 80);
     });
   };
 
