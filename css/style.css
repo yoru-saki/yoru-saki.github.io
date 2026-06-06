@@ -1275,23 +1275,28 @@ body:before {
 }
 .main-nav-link,
 .nav-icon {
-  color: var(--ink);
-  opacity: 0.72;
+  color: #fff;
+  opacity: 1;
   text-shadow: none;
   font-weight: 600;
   letter-spacing: 0;
   padding: 12px 14px;
   margin: 4px 5px;
   border-radius: 999px;
-  background: rgba(255,253,245,0.62);
-  border: 1px solid rgba(41,191,203,0.2);
+  background: linear-gradient(145deg, #0b88a3, #1c8ca0);
+  border: 1px solid rgba(255,255,255,0.68);
   backdrop-filter: blur(5px);
+  -webkit-box-shadow: 0 14px 32px rgba(11,136,163,0.22), 0 0 0 1px rgba(43,128,148,0.16), inset 0 1px 0 rgba(255,255,255,0.24);
+  box-shadow: 0 14px 32px rgba(11,136,163,0.22), 0 0 0 1px rgba(43,128,148,0.16), inset 0 1px 0 rgba(255,255,255,0.24);
 }
 .main-nav-link:hover,
 .nav-icon:hover {
   opacity: 1;
-  color: var(--aqua-deep);
-  background: rgba(255,255,255,0.86);
+  color: #fff;
+  border-color: rgba(255,255,255,0.9);
+  background: linear-gradient(145deg, #0b88a3, #d36f6b);
+  -webkit-box-shadow: 0 18px 38px rgba(11,136,163,0.28), 0 0 0 5px rgba(41,191,203,0.12), inset 0 1px 0 rgba(255,255,255,0.3);
+  box-shadow: 0 18px 38px rgba(11,136,163,0.28), 0 0 0 5px rgba(41,191,203,0.12), inset 0 1px 0 rgba(255,255,255,0.3);
 }
 .nav-icon {
   width: auto;
@@ -3431,6 +3436,29 @@ html[data-theme="dark"] #wrap {
   color: var(--ink);
   background: linear-gradient(180deg, #101b20, #14242b 44%, #101b20);
 }
+html[data-theme="dark"] #logo {
+  color: rgba(216,236,235,0.88);
+  text-shadow: 0 2px 18px rgba(100,208,220,0.16);
+}
+html[data-theme="dark"] #subtitle {
+  color: rgba(183,203,201,0.78);
+  border-color: rgba(114,196,206,0.22);
+  text-shadow: none;
+}
+html[data-theme="dark"] .main-nav-link,
+html[data-theme="dark"] #main-nav-toggle {
+  color: #e8f3f2;
+  border-color: rgba(114,196,206,0.24);
+  background: linear-gradient(145deg, rgba(31,49,57,0.98), rgba(17,31,37,0.94));
+  -webkit-box-shadow: 0 14px 32px rgba(0,0,0,0.24), inset 0 0 0 1px rgba(255,255,255,0.08);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.24), inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+html[data-theme="dark"] .main-nav-link:hover,
+html[data-theme="dark"] #main-nav-toggle:hover {
+  color: #101b20;
+  border-color: rgba(100,208,220,0.48);
+  background: linear-gradient(145deg, var(--accent), #f5d37b);
+}
 html[data-theme="dark"] .article-inner,
 html[data-theme="dark"] .archive-article-inner,
 html[data-theme="dark"] #page-nav,
@@ -3482,24 +3510,24 @@ html[data-theme="dark"] #footer {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
-  margin: 6px;
+  width: 44px;
+  height: 44px;
+  margin: 4px 5px;
   padding: 0;
-  border: 1px solid rgba(43,128,148,0.18);
+  border: 1px solid rgba(255,255,255,0.68);
   border-radius: 999px;
-  color: #274256;
-  background: rgba(255,255,255,0.42);
-  box-shadow: 0 14px 34px rgba(39,84,101,0.12), inset 0 0 0 1px rgba(255,255,255,0.46);
+  color: #fff;
+  background: linear-gradient(145deg, #0b88a3, #1c8ca0);
+  box-shadow: 0 14px 32px rgba(11,136,163,0.22), 0 0 0 1px rgba(43,128,148,0.16), inset 0 1px 0 rgba(255,255,255,0.24);
   text-shadow: none;
   opacity: 1;
   transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
 }
 .theme-toggle.nav-icon:hover,
 .theme-toggle.nav-icon:focus-visible {
-  border-color: rgba(43,128,148,0.34);
-  background: rgba(255,255,255,0.62);
-  box-shadow: 0 18px 42px rgba(39,84,101,0.18), 0 0 0 5px rgba(41,191,203,0.1);
+  border-color: rgba(255,255,255,0.9);
+  background: linear-gradient(145deg, #0b88a3, #d36f6b);
+  box-shadow: 0 18px 38px rgba(11,136,163,0.28), 0 0 0 5px rgba(41,191,203,0.12), inset 0 1px 0 rgba(255,255,255,0.3);
   transform: translateY(-2px);
   outline: 0;
 }
@@ -3511,7 +3539,7 @@ html[data-theme="dark"] .theme-toggle.nav-icon {
 }
 .theme-toggle.nav-icon .theme-symbol {
   width: auto;
-  font-size: 22px;
+  font-size: 19px;
   font-weight: 800;
   line-height: 1;
 }
@@ -3532,9 +3560,9 @@ html[data-theme="dark"] .theme-toggle.nav-icon {
   -ms-flex-pack: center;
   -webkit-justify-content: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
-  margin: 6px;
+  width: 44px;
+  height: 44px;
+  margin: 4px 5px;
   padding: 0;
   border-radius: 999px;
   box-sizing: border-box;
@@ -3547,7 +3575,7 @@ html[data-theme="dark"] .theme-toggle.nav-icon {
   box-shadow: 0 16px 36px rgba(11,136,163,0.28), 0 0 0 1px rgba(43,128,148,0.18), inset 0 1px 0 rgba(255,255,255,0.26);
 }
 #sub-nav .nav-icon .fa {
-  font-size: 21px;
+  font-size: 18px;
   line-height: 1;
 }
 #sub-nav .nav-icon:hover,
