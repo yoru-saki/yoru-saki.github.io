@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <script>
+    (function(){
+      try {
+        var savedTheme = window.localStorage && localStorage.getItem("blog-theme");
+        var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = savedTheme || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.style.colorScheme = theme;
+      } catch (error) {
+        document.documentElement.setAttribute("data-theme", "light");
+        document.documentElement.style.colorScheme = "light";
+      }
+    })();
+  </script>
+  <style>
+    html[data-theme="dark"]{color-scheme:dark;background:#101a1f}
+    html[data-theme="dark"] body{background:#101a1f}
+  </style>
+  <title>Claude Code 入门：从安装到上手（零基础版） | 海马成长痛</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="这篇教程写给完全没有编程基础的朋友，只讲两件事：把 Claude Code 装好、会用，再用 CC Switch 一键切换不同的 AI 模型。你只需要跟着一步步复制、粘贴、点击，就能跑起来。内容涵盖 Git 与 Node.js 安装、Claude Code 安装、PATH 路径配置、/model /compact /rewind 三个常用命令、国产模型推荐，以及 CC Switch 的下载与配置。">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Claude Code 入门：从安装到上手（零基础版）">
+  <meta property="og:url" content="https://yoru-saki.github.io/2026/07/14/claude-code-getting-started/">
+  <meta property="og:site_name" content="海马成长痛">
+  <meta property="og:description" content="这篇教程写给完全没有编程基础的朋友，只讲两件事：把 Claude Code 装好、会用，再用 CC Switch 一键切换不同的 AI 模型。你只需要跟着一步步复制、粘贴、点击，就能跑起来。内容涵盖 Git 与 Node.js 安装、Claude Code 安装、PATH 路径配置、/model /compact /rewind 三个常用命令、国产模型推荐，以及 CC Switch 的下载与配置。">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="article:author" content="Yoru Saki">
+  <meta name="twitter:card" content="summary">
+  <link rel="shortcut icon" href="/images/seahorse-hero.png">
+  <link rel="stylesheet" href="/css/style.css?v=20260606-hexo-collage10">
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+<body class="is-inner-page is-post-page">
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-inner" class="inner">
+      <nav id="main-nav" aria-label="主导航">
+        <button id="main-nav-toggle" class="nav-icon" type="button" aria-label="展开导航" aria-expanded="false">
+          <span class="nav-bars" aria-hidden="true"></span>
+        </button>
+        
+          <a class="main-nav-link" href="/">首页</a>
+        
+          <a class="main-nav-link" href="/archives/">归档</a>
+        
+      </nav>
+      <nav id="sub-nav" aria-label="辅助导航">
+        <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/yoru-saki" aria-label="GitHub 主页">
+          <span class="nav-github" aria-hidden="true"></span>
+        </a>
+        <button class="nav-icon nav-search-btn" type="button" aria-label="搜索">
+          <span class="nav-search" aria-hidden="true"></span>
+        </button>
+      </nav>
+    </div>
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">海马成长痛</a>
+      </h1>
+      <h2 id="subtitle-wrap">
+        <a href="/" id="subtitle">个人成长记录与技术分享</a>
+      </h2>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main">
+<article id="claude-code-getting-started" class="h-entry article article-type-post" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/07/14/claude-code-getting-started/" class="article-date"><time datetime="2026-07-14T04:00:00.000Z" itemprop="datePublished">2026-07-14</time></a>
+    
+      <div class="article-category">
+        <a class="article-category-link" href="/categories/AI-%E5%B7%A5%E5%85%B7/">AI 工具</a>
+      </div>
+    
+  </div>
+  <div class="article-inner">
+    <header class="article-header">
+      <h1 class="p-name article-title" itemprop="headline name">Claude Code 入门：从安装到上手（零基础版）</h1>
+    </header>
+    <section class="article-brief" aria-label="文章阅读概览">
+      <div><span>Reading Brief</span><strong>9 分钟阅读</strong></div>
+      <div><span>Category</span><strong>AI 工具</strong></div>
+      <div><span>Keywords</span><strong>4 个标签</strong></div>
+    </section>
+    <aside class="article-source-card" aria-label="文章链接">
+      <div><span>Article Links</span><strong>作者 GitHub 主页</strong></div>
+      <div class="article-link-actions"><a href="https://github.com/yoru-saki" target="_blank" rel="noopener">GitHub 主页</a></div>
+    </aside>
+    <div class="article-reading-grid">
+      <aside class="article-toc" aria-label="文章目录">
+        <p>On this page</p>
+        <nav><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E6%B5%81%E7%A8%8B%E9%80%9F%E8%A7%88"><span class="toc-text">总流程速览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E4%B9%8B%E5%89%8D%EF%BC%9A%E5%85%88%E8%AE%A4%E8%AF%86%E2%80%9D%E7%BB%88%E7%AB%AF%E2%80%9D"><span class="toc-text">开始之前：先认识”终端”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81Claude-Code-%E5%AE%89%E8%A3%85%E5%8F%8A%E4%BD%BF%E7%94%A8"><span class="toc-text">一、Claude Code 安装及使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%AE%83%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">1.1 它是什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4%EF%BC%88Windows-macOS-Linux%EF%BC%89"><span class="toc-text">1.2 安装步骤（Windows &#x2F; macOS &#x2F; Linux）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E5%A6%82%E6%9E%9C%E8%BE%93%E5%85%A5%E5%91%BD%E4%BB%A4%E6%8F%90%E7%A4%BA%E2%80%9D%E6%89%BE%E4%B8%8D%E5%88%B0%E2%80%9D%EF%BC%88%E9%85%8D%E7%BD%AE-PATH-%E8%B7%AF%E5%BE%84%EF%BC%89"><span class="toc-text">1.3 如果输入命令提示”找不到”（配置 PATH 路径）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-%E6%97%A5%E5%B8%B8%E6%9C%80%E5%B8%B8%E7%94%A8%E7%9A%84%E4%B8%89%E4%B8%AA%E5%91%BD%E4%BB%A4"><span class="toc-text">1.4 日常最常用的三个命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B%E6%8E%A8%E8%8D%90"><span class="toc-text">1.5 国产模型推荐</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81CC-Switch-%E5%AE%89%E8%A3%85%E5%8F%8A%E4%BD%BF%E7%94%A8"><span class="toc-text">二、CC Switch 安装及使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%AE%83%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">2.1 它是什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%8E%BB%E5%AE%98%E7%BD%91%E4%B8%8B%E8%BD%BD%E5%AE%89%E8%A3%85"><span class="toc-text">2.2 去官网下载安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E9%85%8D%E7%BD%AE%E6%95%99%E5%AD%A6%EF%BC%88%E7%85%A7%E7%9D%80%E5%A1%AB%E5%B0%B1%E8%A1%8C%EF%BC%89"><span class="toc-text">2.3 配置教学（照着填就行）</span></a></li></ol></li></ol></nav>
+      </aside>
+      <div class="e-content article-entry" itemprop="articleBody"><blockquote>
+<p>这篇教程写给完全没有编程基础的朋友。<br>只讲两件事：把 <strong>Claude Code</strong> 装好、会用，再用 <strong>CC Switch</strong> 一键切换不同的 AI 模型。<br>你只需要跟着一步步复制、粘贴、点击，就能跑起来。</p>
+</blockquote>
+<h2 id="总流程速览"><a href="#总流程速览" class="headerlink" title="总流程速览"></a>总流程速览</h2><p>赶时间的话，先看这张表，知道整体要走几步、大概会用到什么：</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>要做的事</th>
+<th>对应章节</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>打开终端，装好 Git 和 Node.js（基础工具）</td>
+<td>1.2</td>
+</tr>
+<tr>
+<td>2</td>
+<td>用一行命令装好 Claude Code 本体</td>
+<td>1.2</td>
+</tr>
+<tr>
+<td>3</td>
+<td>如果命令”找不到”，去补一下环境变量 PATH</td>
+<td>1.3</td>
+</tr>
+<tr>
+<td>4</td>
+<td>学会三个常用命令：<code>/model</code> <code>/compact</code> <code>/rewind</code></td>
+<td>1.4</td>
+</tr>
+<tr>
+<td>5</td>
+<td>了解一下可选的国产模型，方便后面挑选</td>
+<td>1.5</td>
+</tr>
+<tr>
+<td>6</td>
+<td>去官网下载安装 CC Switch（模型切换器）</td>
+<td>2.2</td>
+</tr>
+<tr>
+<td>7</td>
+<td>在 CC Switch 里填好地址和密钥，选一个模型</td>
+<td>2.3</td>
+</tr>
+</tbody></table>
+<p>七步走完，你就有了一个能用、能换模型的 AI 编程助手。下面开始逐步说明。</p>
+<hr>
+<h2 id="开始之前：先认识”终端”"><a href="#开始之前：先认识”终端”" class="headerlink" title="开始之前：先认识”终端”"></a>开始之前：先认识”终端”</h2><p>我们全程会用到一个叫<strong>终端</strong>的小工具。它就是电脑里一个可以”打字给电脑下命令”的黑框框——</p>
+<ul>
+<li>Windows：在开始菜单搜索 <strong>PowerShell</strong> 或 <strong>终端</strong>，点开即可；</li>
+<li>macOS：在”启动台”里搜索 <strong>终端（Terminal）</strong>，点开即可。</li>
+</ul>
+<p>下面凡是灰色框里的内容，都是<strong>复制进终端、按回车执行</strong>的命令。看不懂没关系，照做就行。</p>
+<hr>
+<h2 id="一、Claude-Code-安装及使用"><a href="#一、Claude-Code-安装及使用" class="headerlink" title="一、Claude Code 安装及使用"></a>一、Claude Code 安装及使用</h2><h3 id="1-1-它是什么"><a href="#1-1-它是什么" class="headerlink" title="1.1 它是什么"></a>1.1 它是什么</h3><p>你可以把 Claude Code 理解成一个”住在终端里的 AI 助手”。你用大白话告诉它要做什么，它就能帮你读文件、写代码、改内容、跑程序。你不需要自己敲每一行代码，只负责提需求、看结果、做决定。</p>
+<p>新手如果只想先上手一个工具，推荐从 Claude Code 开始：用起来简单，对国内常见的 AI 模型也支持得比较好，配合后面讲的 CC Switch 还能随时换模型。</p>
+<h3 id="1-2-安装步骤（Windows-macOS-Linux）"><a href="#1-2-安装步骤（Windows-macOS-Linux）" class="headerlink" title="1.2 安装步骤（Windows &#x2F; macOS &#x2F; Linux）"></a>1.2 安装步骤（Windows &#x2F; macOS &#x2F; Linux）</h3><p>俗话说”工欲善其事，必先利其器”，我们先把地基打好。</p>
+<p><strong>第一步：先装两个基础工具——Git 和 Node.js</strong></p>
+<p>这两个是 AI 编程工具运行的”底座”，装一次以后一直能用，你不用去理解它们具体是什么。</p>
+<p>Windows 用户，把下面两行<strong>分别</strong>复制进终端、各按一次回车：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">winget install Git.Git</span><br><span class="line">winget install OpenJS.NodeJS</span><br></pre></td></tr></table></figure>
+
+<p>macOS 用户（需先装好 Homebrew）执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">brew install git node</span><br></pre></td></tr></table></figure>
+
+<p>Linux 用户（以 Ubuntu &#x2F; Debian 为例）执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install -y git nodejs npm</span><br></pre></td></tr></table></figure>
+
+<p>装完后，逐行输入下面的命令验证。只要每行都能显示出一串版本号（而不是报错），就说明装好了：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git --version</span><br><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二步：安装 Claude Code 本体</strong></p>
+<p>推荐用下面这行命令安装（通用、最省事）：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install -g @anthropic-ai/claude-code</span><br></pre></td></tr></table></figure>
+
+<p>Windows 用户也可以改用系统自带的工具一键安装：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">winget install Anthropic.ClaudeCode</span><br></pre></td></tr></table></figure>
+
+<p>装好后，在终端输入 <code>claude</code> 回车，如果能进入 Claude Code 的界面，就说明本体装成功了。</p>
+<blockquote>
+<p>提示：第一次进去后，它还没接上可用的模型，暂时先不用急着对话。等走完第二部分、用 CC Switch 配好模型，就能正式开始使用了。</p>
+</blockquote>
+<h3 id="1-3-如果输入命令提示”找不到”（配置-PATH-路径）"><a href="#1-3-如果输入命令提示”找不到”（配置-PATH-路径）" class="headerlink" title="1.3 如果输入命令提示”找不到”（配置 PATH 路径）"></a>1.3 如果输入命令提示”找不到”（配置 PATH 路径）</h3><p>有时装完后，在终端输入 <code>claude</code>、<code>node</code> 或 <code>npm</code>，会提示 <strong>“不是内部或外部命令”</strong>。这不是装坏了，只是电脑还不知道去哪找它们。我们手动告诉电脑一下路径即可（下面主要针对 Windows）。</p>
+<p><strong>情况一：<code>node</code> 找不到——补 Node.js 的路径</strong></p>
+<ol>
+<li>先找到 Node.js 的安装文件夹：用官方安装包装的话，通常就是 <code>C:\Program Files\nodejs\</code>（如果你安装时改过位置，就用你当时选的那个文件夹）；</li>
+<li>右键”此电脑” → 属性 → 高级系统设置 → 环境变量；</li>
+<li>在下方”系统变量”里找到名为 <strong>Path</strong> 的一项，双击打开；</li>
+<li>点”新建”，把上面那个文件夹路径粘进去，一路点”确定”保存；</li>
+<li><strong>关掉终端再重新打开</strong>，输入 <code>node -v</code> 验证，能显示版本号就成功了。</li>
+</ol>
+<p><strong>情况二：<code>claude</code> 找不到——补 npm 的路径</strong></p>
+<p>用命令装的工具（比如 <code>claude</code>）会被放进 npm 的一个专门文件夹里，把这个文件夹也加进 Path 即可：</p>
+<ol>
+<li>在终端输入 <code>npm config get prefix</code> 回车，会显示一个文件夹路径（常见的是 <code>C:\Users\你的用户名\AppData\Roaming\npm</code>）；</li>
+<li>和上面一样，打开”环境变量 → Path → 新建”，把这个路径粘进去，保存；</li>
+<li><strong>重新打开终端</strong>，输入 <code>claude --version</code> 验证。</li>
+</ol>
+<blockquote>
+<p>一句话记住：<code>node</code> 找不到就补 <strong>Node.js 的文件夹</strong>，<code>claude</code> 找不到就补 <strong>npm 的文件夹</strong>。改完路径后一定要<strong>关掉终端重新打开</strong>才会生效。</p>
+</blockquote>
+<h3 id="1-4-日常最常用的三个命令"><a href="#1-4-日常最常用的三个命令" class="headerlink" title="1.4 日常最常用的三个命令"></a>1.4 日常最常用的三个命令</h3><p>装好之后，天天要用的其实就几个。在和 Claude Code 对话时，直接输入以斜杠 <code>/</code> 开头的命令再回车就行。先记住下面这三个，入门足够了。</p>
+<p><strong><code>/model</code>——换模型</strong></p>
+<p>不同的活儿适合不同的 AI 模型：做整体规划、想复杂问题时用聪明一点的模型，写些简单内容时用便宜快速的模型更划算。对话中输入 <code>/model</code>，就能在<strong>你已经配好的几个模型之间</strong>随时切换，不用退出重来。</p>
+<blockquote>
+<p>简单区分一下：<strong>CC Switch</strong> 负责”把模型接进来”（填地址、密钥，一次性配置好，见第二部分）；<code>/model</code> 负责在用的时候”临时换着用”。</p>
+</blockquote>
+<p><strong><code>/compact</code>——精简对话（压缩上下文）</strong></p>
+<p>“上下文”你可以理解成 AI 的”短期记忆”。聊得越久，它要记的东西越多，不但反应变慢，还容易忘掉前面说过的话。这时输入 <code>/compact</code>，它会把之前聊过的内容浓缩成一小段摘要：重点留下、废话清掉，腾出记忆空间继续顺畅地聊。如果担心某些内容被删掉，可以在命令后面补一句，告诉它”重点保留 XXX”。</p>
+<p><strong><code>/rewind</code>——反悔、撤回（回到上一步）</strong></p>
+<p>让 AI 干活时，它偶尔会”自信满满”地改错东西。别慌——输入 <code>/rewind</code>，就能回到之前某个时间点的状态，把最近这几步改动撤销掉，对话和文件都能退回去。可以把它当成软件自带的”后悔药”，有了它，你才敢放心大胆地让 AI 去试。</p>
+<h3 id="1-5-国产模型推荐"><a href="#1-5-国产模型推荐" class="headerlink" title="1.5 国产模型推荐"></a>1.5 国产模型推荐</h3><p>Claude Code 本身只是个”外壳”，真正干活的是背后的 AI 模型。下面三款国产模型的编程能力都不错，各有各的长处，可以按自己的需要挑：</p>
+<p><strong>DeepSeek-V4</strong></p>
+<p>深度求索出品，擅长”记性好”和”想得深”。它能一次性记住很长很长的内容，适合帮你做整体规划、搭建项目框架、处理复杂改动；还分”快速版”和”深度思考版”两种模式，按需选用，用起来很划算。</p>
+<p><strong>智谱 GLM-5.1</strong></p>
+<p>智谱 AI 出品，中文理解和写代码都很均衡，你说什么它照做的稳定性好，日常常规任务都能稳稳接住，是一款综合表现很全面的模型。</p>
+<p><strong>Kimi K2.6</strong></p>
+<p>月之暗面出品，长处是”能看图”和”记性长”。在处理和图片、页面排版有关的任务时特别出色，也能胜任日常写代码和帮忙检查代码；内容再长也不容易”读串”。</p>
+<hr>
+<h2 id="二、CC-Switch-安装及使用"><a href="#二、CC-Switch-安装及使用" class="headerlink" title="二、CC Switch 安装及使用"></a>二、CC Switch 安装及使用</h2><h3 id="2-1-它是什么"><a href="#2-1-它是什么" class="headerlink" title="2.1 它是什么"></a>2.1 它是什么</h3><p>CC Switch 是一个”模型切换器”。有了它，你不用手动去改一堆复杂配置，点几下就能给 Claude Code 接上、并换成你想用的模型。它不只服务 Claude Code，其他 AI 编程软件也能用。</p>
+<p>在这套教程里，我们正是<strong>靠它来给 Claude Code 配好第一个能用的模型</strong>，所以这一步建议一定要完成。</p>
+<h3 id="2-2-去官网下载安装"><a href="#2-2-去官网下载安装" class="headerlink" title="2.2 去官网下载安装"></a>2.2 去官网下载安装</h3><p>打开下面的官网，下载适合你系统（Windows &#x2F; macOS）的安装包，像装普通软件一样双击安装即可：</p>
+<ul>
+<li>官网地址：<a target="_blank" rel="noopener" href="https://cc-switch.cc/">https://cc-switch.cc/</a></li>
+</ul>
+<p>装好后打开 CC Switch，就可以开始配置了。</p>
+<h3 id="2-3-配置教学（照着填就行）"><a href="#2-3-配置教学（照着填就行）" class="headerlink" title="2.3 配置教学（照着填就行）"></a>2.3 配置教学（照着填就行）</h3><p>打开 CC Switch，新增或编辑一个配置，按下面的顺序填写：</p>
+<ol>
+<li><strong>请求地址</strong>：填写 <code>https://newapi.dzkjm.cn</code></li>
+<li><strong>API Key</strong>：填写发放给你的那串密钥（相当于”钥匙”，复制粘贴进去即可）</li>
+<li>点开下方的 <strong>高级选项</strong></li>
+<li>点击 <strong>获取模型列表</strong></li>
+<li>稍等片刻，列表会自动列出可用的模型，从中<strong>选中你想用的那个</strong>即可</li>
+</ol>
+<p>填完保存，在 CC Switch 里切换到这个配置，Claude Code 就会自动用上你选好的模型了。到这里，整套工具就配置完成，可以正式开始使用啦。</p>
+</div>
+    </div>
+    
+      <footer class="article-footer">
+        <div class="article-tag-list" aria-label="文章标签">
+          <a class="article-tag-list-link" href="/tags/Claude-Code/">Claude Code</a><a class="article-tag-list-link" href="/tags/CC-Switch/">CC Switch</a><a class="article-tag-list-link" href="/tags/AI-%E7%BC%96%E7%A8%8B/">AI 编程</a><a class="article-tag-list-link" href="/tags/%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B/">入门教程</a>
+        </div>
+      </footer>
+    
+  </div>
+</article>
+</section>
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2026 Yoru Saki<br>
+      Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+  </div>
+  <script>
+    window.__BLOG_POSTS__ = [{"title":"Claude Code 入门：从安装到上手（零基础版）","url":"/2026/07/14/claude-code-getting-started/","excerpt":"这篇教程写给完全没有编程基础的朋友。只讲两件事：把 Claude Code 装好、会用，再用 CC Switch 一键切换不同的 AI 模型。你只需要跟着一步步复制、粘贴、点击，就能跑起来。 总流程速览赶时间的话，先看这张表，知道整体要走几","tags":["Claude Code","CC Switch","AI 编程","入门教程"]},{"title":"抛砖引玉：教你扩展一个多 Agent 智能平台，并配套落地强风格化前端","url":"/2026/05/23/agent-platform-frontend-showcase/","excerpt":"项目名：大观园智学系统技术关键词：Vue、FastAPI、LangGraph、多 Agent、RAG、Text2SQL、SSE 流式响应、Codex 前端落地 摘要这篇文章适合想把普通业务系统改造成 AI 应用的同学阅读。项目的起点是一个学","tags":["FastAPI","LangGraph","RAG","Vue","多 Agent","强风格化前端"]},{"title":"AI Agent 开发入门教程：从概念到第一个可运行项目","url":"/2026/05/10/ai-agent-getting-started/","excerpt":"导读：AI Agent 入门最容易浪费时间的地方，往往不是模型本身，而是工具链选择、开发流程、质量验证和项目拆解方式。这篇文章不是教科书式的理论堆砌，而是一份面向实操的入门地图：哪些坑可以提前避开，哪些捷径其实是弯路，以及最重要的一点：如何","tags":["RAG","AI Agent","LangChain","Vibe Coding","前端开发"]}];
+  </script>
+  <script src="/js/script.js?v=20260606-hexo-collage10"></script>
+</body>
+</html>
